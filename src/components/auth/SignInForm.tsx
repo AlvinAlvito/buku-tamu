@@ -12,12 +12,12 @@ export default function SignInForm() {
   return (
     <div className="flex flex-col flex-1">
       <div className="w-full max-w-md pt-5 mx-auto">
-      <img
-                  width={131}
-                  height={58}
-                  src="/images/logo/logo.png"
-                  alt="Logo"
-                />
+        <img
+          width={131}
+          height={58}
+          src="/images/logo/logo.png"
+          alt="Logo"
+        />
       </div>
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         <div>
@@ -25,7 +25,7 @@ export default function SignInForm() {
             <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
               Masuk
             </h1>
-            
+
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Masukan NIM dan Password anda
             </p>
@@ -81,18 +81,6 @@ export default function SignInForm() {
                 </div>
               </div>
             </form>
-
-            {/* <div className="mt-5">
-              <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
-                Don&apos;t have an account? {""}
-                <Link
-                  to="/signup"
-                  className="text-brand-500 hover:text-brand-600 dark:text-brand-400"
-                >
-                  Sign Up
-                </Link>
-              </p>
-            </div> */}
           </div>
         </div>
       </div>

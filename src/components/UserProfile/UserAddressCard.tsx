@@ -1,18 +1,85 @@
+import { useEffect, useState } from "react";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
+import Switch from "../../components/form/switch/Switch";
+import Alert from "../../components/ui/alert/Alert";
 
 export default function UserAddressCard() {
   const { isOpen, openModal, closeModal } = useModal();
-  const handleSave = () => {
-    // Handle save logic here
-    console.log("Saving changes...");
-    closeModal();
+  const [form, setForm] = useState({
+    lokasi: "",
+    gedung: "",
+    jadwal: "",
+    status: true
+  });
+
+  // Ambil data dari PHP saat komponen mount
+  useEffect(() => {
+    fetch("http://localhost/be.php")
+      .then((res) => res.json())
+      .then((data) => {
+        setForm({
+          lokasi: data.lokasi_kampus,
+          gedung: data.gedung_ruangan,
+          jadwal: data.jadwal_libur,
+          status: data.status_ketersediaan,
+        });
+      });
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name]: value,
+    }));
   };
+  const [alertVisible, setAlertVisible] = useState(true);
+  const [alertMessage, setAlertMessage] = useState("");
+
+  const handleSave = () => {
+    fetch("http://localhost/be.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setAlertMessage("Data berhasil diperbarui");
+          setAlertVisible(true);
+          closeModal();
+        }
+      });
+  };
+  
+  useEffect(() => {
+    if (alertVisible) {
+      const timer = setTimeout(() => {
+        setAlertVisible(false); // Sembunyikan alert setelah 3 detik
+      }, 3000);
+  
+      return () => clearTimeout(timer); // Bersihkan timer saat komponen unmount
+    }
+  }, [alertVisible]); // Efek hanya berjalan ketika alertVisible berubah
+  
+
+
   return (
     <>
+      <div>
+        {alertVisible && (
+          <Alert
+            variant="success"
+            title="Data Berhasil Diubah"
+            message={alertMessage} // Gunakan pesan dari state
+            showLink={false}
+          />
+        )}
+      </div>
       <div className="p-5 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div>
@@ -26,7 +93,7 @@ export default function UserAddressCard() {
                   Lokasi Kampus
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  Kampus 4 UINSU Tuntungan
+                  {form.lokasi}
                 </p>
               </div>
 
@@ -35,7 +102,7 @@ export default function UserAddressCard() {
                   Gedung/Ruangan
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  Gedung FST, Ruangan Prodi Ilmu Komputer
+                  {form.gedung}
                 </p>
               </div>
 
@@ -44,7 +111,7 @@ export default function UserAddressCard() {
                   Jadwal Libur
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  Kamis, Jumat
+                  {form.jadwal}
                 </p>
               </div>
 
@@ -53,7 +120,7 @@ export default function UserAddressCard() {
                   Status Ketersediaan
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  Tersedia
+                  {form.status ? "Tersedia" : "Tidak Tersedia"}
                 </p>
               </div>
             </div>
@@ -82,6 +149,7 @@ export default function UserAddressCard() {
           </button>
         </div>
       </div>
+
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
         <div className="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
@@ -97,23 +165,36 @@ export default function UserAddressCard() {
               <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                 <div>
                   <Label>Lokasi Kampus</Label>
-                  <Input type="text" value="Kampus 4 UINSU Tuntungan" />
+                  <Input name="lokasi" type="text" value={form.lokasi} onChange={handleChange} />
                 </div>
 
                 <div>
                   <Label>Gedung/Ruangan</Label>
-                  <Input type="text" value="Gedung FST, Ruangan Prodi Ilmu Komputer" />
+                  <Input name="gedung" type="text" value={form.gedung} onChange={handleChange} />
                 </div>
 
                 <div>
                   <Label>Jadwal Libur</Label>
-                  <Input type="text" value="Kamis, Jumat" />
+                  <Input name="jadwal" type="text" value={form.jadwal} onChange={handleChange} />
                 </div>
 
                 <div>
                   <Label>Status Ketersediaan</Label>
-                  <Input type="text" value="Tersedia" />
+                  <div className="flex items-center gap-3">
+                    <Switch
+                      label=""
+                      defaultChecked={form.status}
+                      onChange={(checked) =>
+                        setForm((prev) => ({ ...prev, status: checked }))
+                      }
+                      color="blue"
+                    />
+                    <span className="text-sm text-lime-50">
+                      {form.status ? "Tersedia" : "Tidak Tersedia"}
+                    </span>
+                  </div>
                 </div>
+
               </div>
             </div>
             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
@@ -121,6 +202,8 @@ export default function UserAddressCard() {
                 Tutup
               </Button>
               <Button size="sm" onClick={handleSave}>
+
+
                 Simpan
               </Button>
             </div>

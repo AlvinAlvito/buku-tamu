@@ -1,7 +1,7 @@
 import UserAktif from "../../components/dashboard/UserAktif";
 import MonthlySalesChart from "../../components/ecommerce/MonthlySalesChart";
 import PageMeta from "../../components/common/PageMeta";
-import Antrian from "../../components/antrian/Antrian";
+import Dosen from "../../components/mahasiswa/DaftarDosen";
 
 export default function Dashboard() {
   return (
@@ -15,7 +15,7 @@ export default function Dashboard() {
           <UserAktif />
         </div>
         <div className="col-span-12 xl:col-span-12">
-          <Antrian />
+          <Dosen />
         </div>
         <div className="col-span-12 xl:col-span-12">
           <MonthlySalesChart />

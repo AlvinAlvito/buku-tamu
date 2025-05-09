@@ -22,13 +22,16 @@ import DosenDashboard from "./pages/Dosen/Dasboard";
 import DaftarDosen from "./pages/Dosen/DaftarDosen";
 import RiwayatAntrianDosen from "./pages/Dosen/RiwayatAntrian";
 import KalenderDosen from "./pages/Dosen/Kalender";
+import TutorialDosen from "./pages/Dosen/Tutorial";
 
 import MahasiswaDashboard from "./pages/Mahasiswa/Dasboard";
 import MahasiswaProfile from "./pages/Mahasiswa/Profile";
 import MahasiswaDaftarDosen from "./pages/Mahasiswa/Dosen/DaftarDosen";
 import MahasiswaDaftarDosenAntrian from "./pages/Mahasiswa/Dosen/Antrian";
 import RiwayatAntrianMahasiswa from "./pages/Mahasiswa/RiwayatAntrian";
-import KalenderMahasiswa from "./pages/Mahasiswa/Kalender"
+import KalenderMahasiswa from "./pages/Mahasiswa/Kalender";
+import TutorialMahasiswa from "./pages/Mahasiswa/Tutorial";
+
 export default function App() {
   return (
     <>
@@ -46,6 +49,7 @@ export default function App() {
             <Route path="/dosen/daftar-dosen" element={<DaftarDosen />} />
             <Route path="/dosen/riwayat-antrian" element={<RiwayatAntrianDosen />} />
             <Route path="/dosen/kalender" element={<KalenderDosen />} />
+            <Route path="/dosen/tutorial" element={<TutorialDosen />} />
 
             {/* Mahasiswa Page */}
             <Route path="/mahasiswa" element={<MahasiswaDashboard />} />
@@ -53,25 +57,18 @@ export default function App() {
             <Route path="/mahasiswa/daftar-dosen" element={<MahasiswaDaftarDosen />} />
             <Route path="/mahasiswa/daftar-dosen/antrian" element={<MahasiswaDaftarDosenAntrian />} />
             <Route path="/mahasiswa/riwayat-antrian" element={<RiwayatAntrianMahasiswa />} />
-             <Route path="/mahasiswa/kalender" element={<KalenderMahasiswa />} />
+            <Route path="/mahasiswa/kalender" element={<KalenderMahasiswa />} />
+            <Route path="/mahasiswa/tutorial" element={<TutorialMahasiswa />} />
 
             <Route path="/blank" element={<Blank />} />
-
-            {/* Forms */}
             <Route path="/form-elements" element={<FormElements />} />
-
-            {/* Tables */}
             <Route path="/basic-tables" element={<BasicTables />} />
-
-            {/* Ui Elements */}
             <Route path="/alerts" element={<Alerts />} />
             <Route path="/avatars" element={<Avatars />} />
             <Route path="/badge" element={<Badges />} />
             <Route path="/buttons" element={<Buttons />} />
             <Route path="/images" element={<Images />} />
             <Route path="/videos" element={<Videos />} />
-
-            {/* Charts */}
             <Route path="/line-chart" element={<LineChart />} />
             <Route path="/bar-chart" element={<BarChart />} />
           </Route>

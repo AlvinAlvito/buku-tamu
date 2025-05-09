@@ -52,6 +52,11 @@ const navItems: NavItem[] = [
     name: "Kalender",
     path: "/dosen/kalender",
   },
+    {
+    icon: <TableIcon />,
+    name: "Tutorial",
+    path: "/dosen/tutorial",
+  },
   {
     icon: <GridIcon />,
     name: "Dashboard Mahasiswa",
@@ -76,6 +81,11 @@ const navItems: NavItem[] = [
     icon: <CalenderIcon />,
     name: "Kalender",
     path: "/mahasiswa/kalender",
+  },
+      {
+    icon: <TableIcon />,
+    name: "Tutorial",
+    path: "/mahasiswa/tutorial",
   },
 
 ];

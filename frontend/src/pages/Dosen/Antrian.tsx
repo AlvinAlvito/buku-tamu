@@ -1,5 +1,5 @@
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import Antrian from "../../components/antrian/Antrian";
+import AntrianDosen from "../../components/dosen/AntrianDosen";
 
 export default function BasicTables() {
   return (
@@ -7,7 +7,7 @@ export default function BasicTables() {
 
       <PageBreadcrumb pageTitle="Antrian" />
       <div className="space-y-6">
-          <Antrian />
+          <AntrianDosen />
       </div>
     </>
   );

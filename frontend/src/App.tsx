@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router";
 import SignIn from "./pages/AuthPages/SignIn";
 import NotFound from "./pages/OtherPage/NotFound";
-import UserProfiles from "./pages/UserProfiles";
 import Videos from "./pages/UiElements/Videos";
 import Images from "./pages/UiElements/Images";
 import Alerts from "./pages/UiElements/Alerts";
@@ -10,19 +9,26 @@ import Avatars from "./pages/UiElements/Avatars";
 import Buttons from "./pages/UiElements/Buttons";
 import LineChart from "./pages/Charts/LineChart";
 import BarChart from "./pages/Charts/BarChart";
-import Calendar from "./pages/Calendar";
 import BasicTables from "./pages/Tables/BasicTables";
 import FormElements from "./pages/Forms/FormElements";
 import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
-import Dosen from "./pages/Dosen/Dosen";
-import Antrian from "./pages/Antrian/Antrian";
-import Riwayat from "./pages/Antrian/RiwayatAntrian";
-import AntrianDosen from "./pages/Dosen/AntrianDosen";
 
+import DosenAntrian from "./pages/Dosen/Antrian";
+import DosenProfile from "./pages/Dosen/Profile";
+import DosenDashboard from "./pages/Dosen/Dasboard";
+import DaftarDosen from "./pages/Dosen/DaftarDosen";
+import RiwayatAntrianDosen from "./pages/Dosen/RiwayatAntrian";
+import KalenderDosen from "./pages/Dosen/Kalender";
 
+import MahasiswaDashboard from "./pages/Mahasiswa/Dasboard";
+import MahasiswaProfile from "./pages/Mahasiswa/Profile";
+import MahasiswaDaftarDosen from "./pages/Mahasiswa/Dosen/DaftarDosen";
+import MahasiswaDaftarDosenAntrian from "./pages/Mahasiswa/Dosen/Antrian";
+import RiwayatAntrianMahasiswa from "./pages/Mahasiswa/RiwayatAntrian";
+import KalenderMahasiswa from "./pages/Mahasiswa/Kalender"
 export default function App() {
   return (
     <>
@@ -33,13 +39,22 @@ export default function App() {
           <Route element={<AppLayout />}>
             <Route index path="/" element={<Home />} />
 
-            {/* Others Page */}
-            <Route path="/profile" element={<UserProfiles />} />
-            <Route path="/dosen" element={<Dosen />} />
-            <Route path="/dosen/antrian" element={<AntrianDosen />} />
-            <Route path="/antrian" element={<Antrian />} />
-            <Route path="/riwayat" element={<Riwayat />} />
-            <Route path="/calendar" element={<Calendar />} />
+            {/* Dosen Page */}
+            <Route path="/dosen" element={<DosenDashboard />} />
+            <Route path="/dosen/profile" element={<DosenProfile />} />
+            <Route path="/dosen/antrian" element={<DosenAntrian />} />
+            <Route path="/dosen/daftar-dosen" element={<DaftarDosen />} />
+            <Route path="/dosen/riwayat-antrian" element={<RiwayatAntrianDosen />} />
+            <Route path="/dosen/kalender" element={<KalenderDosen />} />
+
+            {/* Mahasiswa Page */}
+            <Route path="/mahasiswa" element={<MahasiswaDashboard />} />
+            <Route path="/mahasiswa/profile" element={<MahasiswaProfile />} />
+            <Route path="/mahasiswa/daftar-dosen" element={<MahasiswaDaftarDosen />} />
+            <Route path="/mahasiswa/daftar-dosen/antrian" element={<MahasiswaDaftarDosenAntrian />} />
+            <Route path="/mahasiswa/riwayat-antrian" element={<RiwayatAntrianMahasiswa />} />
+             <Route path="/mahasiswa/kalender" element={<KalenderMahasiswa />} />
+
             <Route path="/blank" element={<Blank />} />
 
             {/* Forms */}

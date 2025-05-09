@@ -1,7 +1,7 @@
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import Dosen from "../../components/dosen/Dosen";
+import Dosen from "../../components/dosen/DaftarDosen";
 
-export default function BasicTables() {
+export default function DaftarDosen() {
   return (
     <>
 

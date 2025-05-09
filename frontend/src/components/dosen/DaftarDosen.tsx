@@ -233,7 +233,7 @@ import { Link } from "react-router";
               {tableData.map((product) => (
                 <TableRow key={product.id} className="">
                  <TableCell className="py-3">
-                    <Link to="/dosen/antrian" className="block hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md p-2 transition ">
+                    <Link to="/dosen/daftar-dosen" className="block hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md p-2 transition ">
                       <div className="flex items-center gap-3">
                         <div className="h-[50px] w-[50px] overflow-hidden rounded-md">
                           <img

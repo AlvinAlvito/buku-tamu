@@ -24,33 +24,58 @@ type NavItem = {
 const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
-    name: "Dashboard",
-    path: "/",
-  },
-  {
-    icon: <UserCircleIcon />,
-    name: "Profle",
-    path: "/profile",
-  },
-  {
-    icon: <PlugInIcon />,
-    name: "Antrian",
-    path: "/antrian",
-  },
-  {
-    icon: <BoxCubeIcon/>,
-    name: "Dosen",
+    name: "Dashboard Dosen",
     path: "/dosen",
   },
   {
+    icon: <UserCircleIcon />,
+    name: "Profle Dosen",
+    path: "/dosen/profile",
+  },
+  {
+    icon: <PlugInIcon />,
+    name: "Antrian Tamu",
+    path: "/dosen/antrian",
+  },
+  {
+    icon: <BoxCubeIcon/>,
+    name: "Daftar Dosen",
+    path: "/dosen/daftar-dosen",
+  },
+  {
     icon: <PieChartIcon/>,
-    name: "Riwayat",
-    path: "/riwayat",
+    name: "Riwayat Antrian",
+    path: "/dosen/riwayat-antrian",
   },
   {
     icon: <CalenderIcon />,
     name: "Kalender",
-    path: "/calendar",
+    path: "/dosen/kalender",
+  },
+  {
+    icon: <GridIcon />,
+    name: "Dashboard Mahasiswa",
+    path: "/mahasiswa",
+  },
+   {
+    icon: <UserCircleIcon />,
+    name: "Profle Mahasiswa",
+    path: "/mahasiswa/profile",
+  },
+    {
+    icon: <BoxCubeIcon/>,
+    name: "Daftar Dosen",
+    path: "/mahasiswa/daftar-dosen",
+  },
+  {
+    icon: <PieChartIcon/>,
+    name: "Riwayat Antrian",
+    path: "/mahasiswa/riwayat-antrian",
+  },
+   {
+    icon: <CalenderIcon />,
+    name: "Kalender",
+    path: "/mahasiswa/kalender",
   },
 
 ];

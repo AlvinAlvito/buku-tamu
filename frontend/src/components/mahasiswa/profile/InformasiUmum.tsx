@@ -3,6 +3,7 @@ import { Modal } from "../../ui/modal";
 import Button from "../../ui/button/Button";
 import Input from "../../form/input/InputField";
 import Label from "../../form/Label";
+import { useEffect, useState } from "react";
 
 export default function InformasiUmum() {
   const { isOpen, openModal, closeModal } = useModal();
@@ -11,6 +12,15 @@ export default function InformasiUmum() {
     console.log("Saving changes...");
     closeModal();
   };
+
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
   return (
     <>
       <div className="p-5 rounded-2xl border border-gray-200 bg-white  dark:border-gray-800 dark:bg-white/[0.03]  lg:p-6">
@@ -21,21 +31,21 @@ export default function InformasiUmum() {
             </div>
             <div className="order-3 xl:order-2">
               <h4 className="mb-2 text-lg font-semibold text-center text-gray-800 dark:text-white/90 xl:text-left">
-                Paris Alvito
+                {user?.name}
               </h4>
               <div className="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left">
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Mahasiswa
+                  {user?.role}
                 </p>
                 <div className="hidden h-3.5 w-px bg-gray-300 dark:bg-gray-700 xl:block"></div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  NIP 0701212165
+                  NIM {user?.nim}
                 </p>
               </div>
             </div>
             <div className="flex items-center order-2 gap-2 grow xl:order-3 xl:justify-end">
               <a
-                href="https://www.facebook.com/PimjoHQ"
+                href={user?.facebook}
                 target="_blank"
                 rel="noopener"
                 className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
@@ -56,7 +66,7 @@ export default function InformasiUmum() {
               </a>
 
               <a
-                href="https://x.com/PimjoHQ"
+                href={user?.twitter}
                 target="_blank"
                 rel="noopener"
                 className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
@@ -98,7 +108,7 @@ export default function InformasiUmum() {
               </a>
 
               <a
-                href="https://instagram.com/PimjoHQ"
+                href={user?.instagram}
                 target="_blank"
                 rel="noopener"
                 className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
@@ -187,7 +197,7 @@ export default function InformasiUmum() {
                   </div>
                 </div>
               </div>
-             
+
             </div>
             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
               <Button size="sm" variant="outline" onClick={closeModal}>

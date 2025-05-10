@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router";
-import SignIn from "./pages/AuthPages/SignIn";
+import Login from "./pages/AuthPages/Login";
+import Logout from "./pages/AuthPages/Logout";
+
 import NotFound from "./pages/OtherPage/NotFound";
 import Videos from "./pages/UiElements/Videos";
 import Images from "./pages/UiElements/Images";
@@ -31,6 +33,7 @@ import MahasiswaDaftarDosenAntrian from "./pages/Mahasiswa/Dosen/Antrian";
 import RiwayatAntrianMahasiswa from "./pages/Mahasiswa/RiwayatAntrian";
 import KalenderMahasiswa from "./pages/Mahasiswa/Kalender";
 import TutorialMahasiswa from "./pages/Mahasiswa/Tutorial";
+
 
 export default function App() {
   return (
@@ -74,7 +77,8 @@ export default function App() {
           </Route>
 
           {/* Auth Layout */}
-          <Route path="/signin" element={<SignIn />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/logout" element={<Logout />} />
 
           {/* Fallback Route */}
           <Route path="*" element={<NotFound />} />

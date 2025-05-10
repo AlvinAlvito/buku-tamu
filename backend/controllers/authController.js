@@ -3,13 +3,13 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 exports.register = async (req, res) => {
-  const { nama, nim, email, password, posisi } = req.body;
+  const { name, nim, email, password, role } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
     await db.execute(
-      "INSERT INTO users (nama, nim, email, password, posisi) VALUES (?, ?, ?, ?, ?)",
-      [nama, nim, email, hashedPassword, posisi]
+      "INSERT INTO users (name, nim, email, password, role) VALUES (?, ?, ?, ?, ?)",
+      [name, nim, email, hashedPassword, role]
     );
     res.status(201).json({ message: "User registered successfully." });
   } catch (err) {
@@ -34,7 +34,7 @@ exports.login = async (req, res) => {
     if (!isMatch) return res.status(401).json({ error: "Invalid credentials" });
 
     const token = jwt.sign(
-      { id: user.id, posisi: user.posisi },
+      { id: user.id, role: user.role },
       process.env.JWT_SECRET,
       {
         expiresIn: "1d",
@@ -45,9 +45,15 @@ exports.login = async (req, res) => {
       token,
       user: { 
         id: user.id,
-        nama: user.nama, 
-        posisi: user.posisi 
-      
+        name: user.name, 
+        role: user.role ,
+        nim: user.nim,
+        email: user.email,
+        facebook: user.facebook,
+        twitter: user.twitter,
+        instagram: user.instagram,
+        whatsapp: user.whatsapp,
+        bio: user.bio      
       },
     });
   } catch (err) {

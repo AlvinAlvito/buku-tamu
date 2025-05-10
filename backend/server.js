@@ -23,16 +23,16 @@ const onlineUsers = { mahasiswa: 0, dosen: 0 };
 io.on("connection", (socket) => {
   console.log("🟢 New client connected");
 
-  socket.on("user-join", (posisi) => {
-    if (posisi === "mahasiswa" || posisi === "dosen") {
-      onlineUsers[posisi]++;
+  socket.on("user-join", (role) => {
+    if (role === "mahasiswa" || role === "dosen") {
+      onlineUsers[role]++;
       io.emit("online-counts", onlineUsers);
     }
   });
 
   socket.on("disconnect", () => {
     console.log("🔴 Client disconnected");
-    // Tidak tahu posisi user, jadi tidak dikurangi
+    // Tidak tahu role user, jadi tidak dikurangi
   });
 });
 

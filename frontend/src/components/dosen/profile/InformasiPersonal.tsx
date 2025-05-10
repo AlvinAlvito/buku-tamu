@@ -3,6 +3,7 @@ import { Modal } from "../../ui/modal";
 import Button from "../../ui/button/Button";
 import Input from "../../form/input/InputField";
 import Label from "../../form/Label";
+import { useEffect, useState } from "react";
 
 export default function InformasiPersonal() {
   const { isOpen, openModal, closeModal } = useModal();
@@ -11,6 +12,15 @@ export default function InformasiPersonal() {
     console.log("Saving changes...");
     closeModal();
   };
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
   return (
     <div className="p-5 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]  lg:p-6">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
@@ -25,7 +35,7 @@ export default function InformasiPersonal() {
                 Nama
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Armansyah M.Kom
+                {user?.name}
               </p>
             </div>
 
@@ -34,7 +44,7 @@ export default function InformasiPersonal() {
                 Posisi
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Dosen
+                {user?.dosen}
               </p>
             </div>
 
@@ -43,7 +53,7 @@ export default function InformasiPersonal() {
                 Email address
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                armansyah69@uinsu.ac.id
+                {user?.email}
               </p>
             </div>
 
@@ -52,7 +62,7 @@ export default function InformasiPersonal() {
                 No Whatsapp
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                +62 812-9837-0129
+                {user?.whatsapp}
               </p>
             </div>
 
@@ -61,7 +71,7 @@ export default function InformasiPersonal() {
                 Bio
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Tetap Semangat
+                {user?.bio}
               </p>
             </div>
           </div>
@@ -110,27 +120,27 @@ export default function InformasiPersonal() {
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2 lg:col-span-1">
                     <Label>Nama</Label>
-                    <Input type="text" value="Armansyah M.Kom" />
+                    <Input type="text" value={user?.name} />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
                     <Label>Posisi</Label>
-                    <Input type="text" value="Dosen" />
+                    <Input type="text" value={user?.role} />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
                     <Label>Alamat Email</Label>
-                    <Input type="text" value="armansyah69@uinsu.ac.id" />
+                    <Input type="text" value={user?.email} />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
                     <Label>No Whatsapp</Label>
-                    <Input type="text" value="+62 812-9837-0129" />
+                    <Input type="text" value={user?.whatsapp} />
                   </div>
 
                   <div className="col-span-2">
                     <Label>Bio</Label>
-                    <Input type="text" value="Tetap Semangat" />
+                    <Input type="text" value={user?.bio} />
                   </div>
                 </div>
               </div>

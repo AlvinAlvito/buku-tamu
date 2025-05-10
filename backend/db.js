@@ -1,4 +1,4 @@
-const mysql = require("mysql2");
+const mysql = require("mysql2/promise");
 require("dotenv").config();
 
 const pool = mysql.createPool({
@@ -8,12 +8,14 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME,
 });
 
-pool.getConnection((err, conn) => {
-  if (err) {
-    console.error("❌ Database connection failed:", err.message);
-  } else {
+// Tes koneksi
+pool.getConnection()
+  .then(conn => {
     console.log("✅ MySQL Connected Successfully!");
     conn.release();
-  }
-});
-module.exports = pool.promise();
+  })
+  .catch(err => {
+    console.error("❌ Database connection failed:", err.message);
+  });
+
+module.exports = pool;

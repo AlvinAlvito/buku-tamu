@@ -5,8 +5,8 @@ import Button from "../../ui/button/Button";
 import Input from "../../form/input/InputField";
 import Label from "../../form/Label";
 import Switch from "../../form/switch/Switch";
-import Alert from "../../ui/alert/Alert";
 import Badge from "../../ui/badge/Badge";
+import Select from "../../form/Select";
 
 export default function InformasiKetersediaan() {
   const { isOpen, openModal, closeModal } = useModal();
@@ -14,61 +14,13 @@ export default function InformasiKetersediaan() {
     lokasi: "",
     gedung: "",
     jadwal: "",
-    status: true
+    status: true,
   });
-
-  // Ambil data dari PHP saat komponen mount
-  useEffect(() => {
-    fetch("http://localhost/be.php")
-      .then((res) => res.json())
-      .then((data) => {
-        setForm({
-          lokasi: data.lokasi_kampus,
-          gedung: data.gedung_ruangan,
-          jadwal: data.jadwal_libur,
-          status: data.status_ketersediaan,
-        });
-      });
-  }, []);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setForm((prevForm) => ({
-      ...prevForm,
-      [name]: value,
-    }));
-  };
-  const [alertVisible, setAlertVisible] = useState(true);
-  const [alertMessage, setAlertMessage] = useState("");
-
-  const handleSave = () => {
-    fetch("http://localhost/be.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          setAlertMessage("Data berhasil diperbarui");
-          setAlertVisible(true);
-          closeModal();
-        }
-      });
-  };
-
-  useEffect(() => {
-    if (alertVisible) {
-      const timer = setTimeout(() => {
-        setAlertVisible(false); // Sembunyikan alert setelah 3 detik
-      }, 3000);
-
-      return () => clearTimeout(timer); // Bersihkan timer saat komponen unmount
-    }
-  }, [alertVisible]); // Efek hanya berjalan ketika alertVisible berubah
 
   const [user, setUser] = useState<any>(null);
 
+
+  // Ambil data user dari localStorage
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -76,18 +28,93 @@ export default function InformasiKetersediaan() {
     }
   }, []);
 
+  // Ambil data ketersediaan berdasarkan user.id saat komponen pertama kali mount
+  useEffect(() => {
+    if (user?.id) {
+      fetch(`http://localhost:3000/api/ketersediaan/${user.id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data) {
+            setForm({
+              lokasi: data.lokasi_kampus,
+              gedung: data.gedung_ruangan,
+              jadwal: data.jadwal_libur,
+              status: data.status_ketersediaan,
+            });
+          }
+        });
+    }
+  }, [user]);
+
+  // Handle perubahan form
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name]: value,
+    }));
+  };
+  const handleSelectChange = (selectedOption: any) => {
+    setForm((prevForm) => ({
+      ...prevForm,
+      lokasi: selectedOption?.value || "",
+    }));
+  };
+
+  // Handle proses penyimpanan data (create/update)
+ const handleSave = () => {
+    console.log("Form data yang akan dikirim:", form); // Debugging form data
+
+    // Gunakan PUT untuk update karena Anda ingin memperbarui data yang sudah ada
+    const method = "PUT"; 
+
+    fetch(`http://localhost:3000/api/ketersediaan/${user?.id}`, {
+      method: method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        lokasi_kampus: form.lokasi,
+        gedung_ruangan: form.gedung,
+        jadwal_libur: form.jadwal,
+        status_ketersediaan: form.status,
+      }),
+    })
+      .then((res) => {
+        console.log("Response Status:", res.status); // Debugging status response
+        if (!res.ok) {
+          throw new Error('Gagal mengupdate data');
+        }
+        return res.json();
+      })
+      .then((data) => {
+        console.log("Response Data:", data); // Debugging response data
+        if (data.success) {
+          console.log("Data berhasil diperbarui"); // Log saat berhasil
+          closeModal(); // Menutup modal setelah berhasil
+        } else {
+          console.log("Terjadi kesalahan saat memperbarui data.", data); // Log kesalahan jika tidak berhasil
+        }
+      })
+      .catch((error) => {
+        console.error("Terjadi kesalahan pada server:", error); // Log error pada server
+      });
+  };
+
+
+  // Menyembunyikan alert setelah beberapa detik
+  
+
+  const options = [
+    { value: "Kampus 1 UINSU Sutomo", label: "Kampus 1 UINSU Sutomo" },
+    { value: "Kampus 2 UINSU Pancing", label: "Kampus 2 UINSU Pancing" },
+    { value: "Kampus 3 UINSU Helvetia", label: "Kampus 3 UINSU Helvetia" },
+    { value: "Kampus 4 UINSU Tuntungan", label: "Kampus 4 UINSU Tuntungan" },
+  ];
   return (
     <>
-      <div>
-        {alertVisible && (
-          <Alert
-            variant="success"
-            title="Data Berhasil Diubah"
-            message={alertMessage} // Gunakan pesan dari state
-            showLink={false}
-          />
-        )}
-      </div>
+
+
       <div className="p-5 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div>
@@ -181,9 +208,17 @@ export default function InformasiKetersediaan() {
             <div className="px-2 overflow-y-auto custom-scrollbar">
               <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                 <div>
-                  <Label>Lokasi Kampus</Label>
-                  <Input name="lokasi" type="text" value={form.lokasi} onChange={handleChange} />
+                  <Label>Pilih Lokasi Kampus</Label>
+                  <Select
+                    options={options}
+                    placeholder="Pilih Kampus UINSU"
+                    onChange={handleSelectChange}
+                    className="dark:bg-dark-900"
+                    value={form.lokasi}
+                  />
+
                 </div>
+
 
                 <div>
                   <Label>Gedung/Ruangan</Label>

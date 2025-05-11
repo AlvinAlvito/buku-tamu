@@ -5,9 +5,9 @@ import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
+import { io } from "socket.io-client";
 
 export default function LoginForm() {
-
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [nim, setNim] = useState("");
@@ -48,6 +48,22 @@ export default function LoginForm() {
       } else if (userRole === "dosen") {
         navigate("/dosen");
       }
+
+      // Koneksi ke Socket.IO dengan token
+      const socket = io("http://localhost:3000", {
+        auth: {
+          token: data.token,
+        },
+      });
+
+      socket.on("connect", () => {
+        console.log("Connected to Socket.IO server");
+        socket.emit("user-join", userRole); // Kirim role saat konek
+      });
+
+      socket.on("connect_error", (err) => {
+        console.error("Socket connection error:", err.message);
+      });
 
     } catch (err: any) {
       setError(err.message);

@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router";
 import Login from "./pages/AuthPages/Login";
 import Logout from "./pages/AuthPages/Logout";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 import NotFound from "./pages/OtherPage/NotFound";
 import Videos from "./pages/UiElements/Videos";
@@ -41,8 +42,8 @@ export default function App() {
       <Router>
         <ScrollToTop />
         <Routes>
-          {/* Dashboard Layout */}
-          <Route element={<AppLayout />}>
+          {/* Dashboard Layout - hanya untuk yang sudah login */}
+          <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
             <Route index path="/" element={<Home />} />
 
             {/* Dosen Page */}
@@ -84,6 +85,7 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
+
     </>
   );
 }

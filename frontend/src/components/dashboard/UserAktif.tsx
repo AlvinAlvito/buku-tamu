@@ -6,42 +6,36 @@ import {
 } from "../../icons";
 import Badge from "../ui/badge/Badge";
 import { useEffect, useState } from "react";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 
-// Inisialisasi socket di luar komponen agar tidak reconnect terus
-const socket = io("http://localhost:3000", {
-  transports: ["websocket"],
-  reconnectionAttempts: 5,
-  reconnectionDelay: 1000,
-});
-
-export default function USerAktif() {
+export default function UserAktif() {
   const [online, setOnline] = useState({ mahasiswa: 0, dosen: 0 });
 
   useEffect(() => {
-    const handleConnect = () => {
+    // Inisialisasi socket saat komponen mount
+    const socket: Socket = io("http://localhost:3000", {
+      transports: ["websocket"],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
+
+    socket.on("connect", () => {
       console.log("✅ Connected to server");
       socket.emit("user-join", "mahasiswa");
-    };
+    });
 
-    const handleError = (err: any) => {
+    socket.on("connect_error", (err) => {
       console.error("❌ Connection error:", err.message);
-    };
+    });
 
-    const handleOnlineCounts = (data: any) => {
+    socket.on("online-counts", (data) => {
       console.log("📡 Received online-counts", data);
       setOnline(data);
-    };
+    });
 
-    socket.on("connect", handleConnect);
-    socket.on("connect_error", handleError);
-    socket.on("online-counts", handleOnlineCounts);
-
-    // Cleanup: hanya hapus listener (tidak disconnect socket)
+    // Cleanup
     return () => {
-      socket.off("connect", handleConnect);
-      socket.off("connect_error", handleError);
-      socket.off("online-counts", handleOnlineCounts);
+      socket.disconnect(); // putuskan koneksi saat unmount
     };
   }, []);
 

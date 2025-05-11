@@ -6,6 +6,7 @@ import {
   BoxCubeIcon,
   CalenderIcon,
   ChevronDownIcon,
+  ChevronLeftIcon,
   GridIcon,
   HorizontaLDots,
   PieChartIcon,
@@ -28,22 +29,24 @@ type User = {
 
 
 const navItemsMahasiswa: NavItem[] = [
-  { icon: <GridIcon />, name: "Dashboard Mahasiswa", path: "/mahasiswa" },
-  { icon: <UserCircleIcon />, name: "Profile Mahasiswa", path: "/mahasiswa/profile" },
+  { icon: <GridIcon />, name: "Dashboard", path: "/mahasiswa" },
+  { icon: <UserCircleIcon />, name: "Profile", path: "/mahasiswa/profile" },
   { icon: <BoxCubeIcon />, name: "Daftar Dosen", path: "/mahasiswa/daftar-dosen" },
   { icon: <PieChartIcon />, name: "Riwayat Antrian", path: "/mahasiswa/riwayat-antrian" },
   { icon: <CalenderIcon />, name: "Kalender", path: "/mahasiswa/kalender" },
   { icon: <TableIcon />, name: "Tutorial", path: "/mahasiswa/tutorial" },
+  { icon: <ChevronLeftIcon />, name: "Keluar", path: "/logout" },
 ];
 
 const navItemsDosen: NavItem[] = [
-  { icon: <GridIcon />, name: "Dashboard Dosen", path: "/dosen" },
-  { icon: <UserCircleIcon />, name: "Profile Dosen", path: "/dosen/profile" },
+  { icon: <GridIcon />, name: "Dashboard", path: "/dosen" },
+  { icon: <UserCircleIcon />, name: "Profile", path: "/dosen/profile" },
   { icon: <PlugInIcon />, name: "Antrian Tamu", path: "/dosen/antrian" },
   { icon: <BoxCubeIcon />, name: "Daftar Dosen", path: "/dosen/daftar-dosen" },
   { icon: <PieChartIcon />, name: "Riwayat Antrian", path: "/dosen/riwayat-antrian" },
   { icon: <CalenderIcon />, name: "Kalender", path: "/dosen/kalender" },
   { icon: <TableIcon />, name: "Tutorial", path: "/dosen/tutorial" },
+   { icon: <ChevronLeftIcon />, name: "Keluar", path: "/logout" },
 ];
 
 

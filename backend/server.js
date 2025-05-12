@@ -10,6 +10,8 @@ const ketersediaanRoutes = require("./routes/ketersediaanRoutes");
 
 const app = express();
 const server = http.createServer(app);
+const activeUsers = new Map(); // userId => Set of socket.id (bisa multi tab)
+
 const io = socketIo(server, {
   cors: { origin: "*" },
 });
@@ -26,42 +28,52 @@ const socketRoleMap = {}; // socket.id => "mahasiswa" / "dosen"
 
 // Middleware untuk memverifikasi token di Socket.IO
 io.use((socket, next) => {
-  const token = socket.handshake.auth.token; // Ambil token dari socket.handshake.auth
+  const token = socket.handshake.auth.token;
+  console.log("🔐 Incoming socket token:", token);
 
-  if (!token) {
-    return next(new Error("Unauthorized")); // Jika token tidak ada, tolak koneksi
-  }
+  if (!token) return next(new Error("Unauthorized"));
 
   try {
-    // Verifikasi token
     const user = jwt.verify(token, process.env.JWT_SECRET);
-    socket.user = user; // Simpan data user di socket (seperti role)
-    next(); // Jika token valid, lanjutkan koneksi
+    socket.user = user;
+    console.log("✅ Token valid. User:", user);
+    next();
   } catch (err) {
-    next(new Error("Invalid token")); // Jika token tidak valid, tolak koneksi
+    console.error("❌ Token invalid:", err.message);
+    next(new Error("Invalid token"));
   }
 });
 
 // Socket.IO logic
 io.on("connection", (socket) => {
-  console.log("🟢 New client connected");
+  const { id: userId, role } = socket.user;
 
-  // Ambil role user dari socket.user yang sudah diset oleh middleware
-  const role = socket.user?.role;
+  if (!["mahasiswa", "dosen"].includes(role)) return;
 
-  socket.on("user-join", () => {
-    if (role === "mahasiswa" || role === "dosen") {
-      socketRoleMap[socket.id] = role;
-      onlineUsers[role]++;
-      io.emit("online-counts", onlineUsers);
-      console.log("✅", role, "connected:", onlineUsers);
-    }
-  });
+  // Simpan userId ke socket.id
+  if (!activeUsers.has(userId)) {
+    activeUsers.set(userId, new Set());
+    onlineUsers[role]++; // Hanya tambah kalau ini user pertama kali muncul
+  }
+
+  activeUsers.get(userId).add(socket.id);
+  socketRoleMap[socket.id] = { userId, role };
+
+  console.log("✅", role, "connected:", onlineUsers);
+  io.emit("online-counts", onlineUsers);
 
   socket.on("disconnect", () => {
-    const role = socketRoleMap[socket.id];
-    if (role && onlineUsers[role] > 0) {
-      onlineUsers[role]--;
+    const { userId, role } = socketRoleMap[socket.id] || {};
+
+    if (userId && activeUsers.has(userId)) {
+      const sockets = activeUsers.get(userId);
+      sockets.delete(socket.id);
+
+      if (sockets.size === 0) {
+        activeUsers.delete(userId);
+        onlineUsers[role]--;
+      }
+
       delete socketRoleMap[socket.id];
       io.emit("online-counts", onlineUsers);
       console.log("⛔", role, "disconnected:", onlineUsers);

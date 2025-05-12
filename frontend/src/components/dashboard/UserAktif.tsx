@@ -5,23 +5,45 @@ import {
   GroupIcon,
 } from "../../icons";
 import Badge from "../ui/badge/Badge";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
 export default function UserAktif() {
   const [online, setOnline] = useState({ mahasiswa: 0, dosen: 0 });
+  const joinedRef = useRef(false); // Mencegah emit ganda
+  const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    // Inisialisasi socket saat komponen mount
+    console.log("👀 useEffect dipanggil!");
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      console.error("❌ No token found");
+      return;
+    }
+
     const socket: Socket = io("http://localhost:3000", {
+      auth: {
+        token: token,
+      },
       transports: ["websocket"],
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
     });
 
+    socketRef.current = socket;
+
     socket.on("connect", () => {
       console.log("✅ Connected to server");
-      socket.emit("user-join", "mahasiswa");
+
+      // Hanya emit sekali saja
+      if (!joinedRef.current) {
+        socket.emit("user-join");
+        joinedRef.current = true;
+      }
     });
 
     socket.on("connect_error", (err) => {
@@ -33,9 +55,11 @@ export default function UserAktif() {
       setOnline(data);
     });
 
-    // Cleanup
     return () => {
-      socket.disconnect(); // putuskan koneksi saat unmount
+      if (socket.connected) {
+        socket.disconnect();
+      }
+      socketRef.current = null;
     };
   }, []);
 

@@ -17,6 +17,7 @@ exports.register = async (req, res) => {
   }
 };
 
+
 exports.login = async (req, res) => {
   const { nim, password } = req.body;
 
@@ -60,3 +61,21 @@ exports.login = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.verifyToken = async(socket, next) =>{
+  const token = socket.handshake.auth.token;
+  console.log("🔐 Incoming socket token:", token);
+
+  if (!token) return next(new Error("Unauthorized"));
+
+  try {
+    const user = jwt.verify(token, process.env.JWT_SECRET);
+    socket.user = user;
+    console.log("✅ Token valid. User:", user);
+    next();
+  } catch (err) {
+    console.error("❌ Token invalid:", err.message);
+    next(new Error("Invalid token"));
+  }
+}
+

@@ -1,22 +1,26 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router'; 
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
+import { disconnectSocket, getSocket } from "../../utils/socket";
 
 const Logout = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Hapus semua data otentikasi
-    localStorage.removeItem("token");  
-    localStorage.removeItem("user");    
-    sessionStorage.clear();             
-    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  const socket = getSocket();
+  if (socket) {
+    socket.emit("manual-logout"); // 👈 Kirim event manual logout
+    disconnectSocket(); // Putus koneksi
+  }
 
-    // Optional: log untuk debugging
-    console.log("User berhasil logout. Semua sesi dihapus.");
+  // Hapus token dll
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  sessionStorage.clear();
+  document.cookie =
+    "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
-    // Redirect ke login
-    navigate("/login");
-  }, [navigate]);
+  navigate("/login");
+}, [navigate]);
 
   return null;
 };

@@ -34,10 +34,30 @@ import MahasiswaDaftarDosenAntrian from "./pages/Mahasiswa/Dosen/Antrian";
 import RiwayatAntrianMahasiswa from "./pages/Mahasiswa/RiwayatAntrian";
 import KalenderMahasiswa from "./pages/Mahasiswa/Kalender";
 import TutorialMahasiswa from "./pages/Mahasiswa/Tutorial";
+import { useEffect } from "react";
+import { initSocket } from "./utils/socket";
 
 
 export default function App() {
-  
+   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const socket = initSocket(token);
+
+      socket.on("connect", () => {
+        console.log("✅ Socket connected.");
+        socket.emit("user-join");
+      });
+
+      socket.on("online-counts", (data) => {
+        console.log("📡 Online counts:", data);
+      });
+
+      socket.on("disconnect", () => {
+        console.log("⛔ Socket disconnected.");
+      });
+    }
+  }, []);
   return (
     <>
       <Router>

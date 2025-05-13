@@ -78,7 +78,7 @@ export default function AntrianDosen() {
       <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Antrian Tamu Saat ini
+            Antrian Tamu Dosen Saat ini
           </h3>
         </div>
 

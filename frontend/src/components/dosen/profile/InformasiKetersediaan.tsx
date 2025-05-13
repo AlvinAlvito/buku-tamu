@@ -127,7 +127,7 @@ export default function InformasiKetersediaan() {
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                   Lokasi Kampus
                 </p>
-                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                <p className="text-xl font-medium text-gray-800 dark:text-white/90">
                   {form.lokasi}
                 </p>
               </div>
@@ -136,7 +136,7 @@ export default function InformasiKetersediaan() {
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                   Gedung/Ruangan
                 </p>
-                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                <p className="text-xl font-medium text-gray-800 dark:text-white/90">
                   {form.gedung}
                 </p>
               </div>
@@ -145,7 +145,7 @@ export default function InformasiKetersediaan() {
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                   Jadwal Libur
                 </p>
-                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                <p className="text-xl font-medium text-gray-800 dark:text-white/90">
                   {form.jadwal}
                 </p>
               </div>
@@ -154,7 +154,7 @@ export default function InformasiKetersediaan() {
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                   Status Ketersediaan
                 </p>
-                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                <p className="text-xl font-medium text-gray-800 dark:text-white/90">
                   {form.status ? (
                     <Badge variant="light" color="success">
                       Tersedia

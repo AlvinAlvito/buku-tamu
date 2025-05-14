@@ -23,8 +23,8 @@ import {
   const tableData: Product[] = [
     {
       id: 1,
-      name: "Riski Maulana",
-      kategori: "Mahasiswa",
+      name: "Muhammad Ikhsan ST, M.Kom",
+      kategori: "Dosen",
       tujuan: "Ingin Meminta TTD Sempro",
       waktu: "5 Menit yang lalu",
       status: "Selesai",
@@ -32,8 +32,8 @@ import {
     },
     {
       id: 2,
-      name: "Zikri Pinem",
-      kategori: "Mahasiswa",
+      name: "Abdul Hasugian M.Kom",
+      kategori: "Dosen",
       tujuan: "Bimbingan Terakhir kali",
       waktu: "10 Menit yang lalu",
       status: "Selesai",
@@ -41,8 +41,8 @@ import {
     },
     {
       id: 3,
-      name: "Dimas Yudistira",
-      kategori: "Mahasiswa",
+      name: "Armansyah M.Kom",
+      kategori: "Dosen",
       tujuan: "Meminta Ttd Sempro",
       waktu: "15 Menit yang lalu",
       status: "Selesai",
@@ -50,8 +50,8 @@ import {
     },
     {
       id: 4,
-      name: "Alex Yudistira",
-      kategori: "Mahasiswa",
+      name: "Sriani M.Kom",
+      kategori: "Dosen",
       tujuan: "Daftar Ulang",
       waktu: "18 Menit yang lalu",
       status: "Selesai",
@@ -59,8 +59,8 @@ import {
     },
     {
       id: 5,
-      name: "Alvin Alvito",
-      kategori: "Mahasiswa",
+      name: "Yusuf Ramadhan M.Kom",
+      kategori: "Dosen",
       tujuan: "Bimbingan dan Kumpul Tugas",
       waktu: "19 Menit yang lalu",
       status: "Selesai",

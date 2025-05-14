@@ -16,7 +16,7 @@ export default function BuatJanji() {
     <>
       <div className="p-5 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-          <Link to="/dosen" className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition">
+          <Link to="/mahasiswa" className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition">
             <ChevronLeftIcon className="size-5" />
             Kembali
           </Link>

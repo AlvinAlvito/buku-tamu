@@ -1,5 +1,5 @@
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import Riwayat from "../../components/dosen/RiwayatAntrian";
+import Riwayat from "../../components/mahasiswa/RiwayatAntrian";
 
 export default function RiwayatAntrian() {
   return (

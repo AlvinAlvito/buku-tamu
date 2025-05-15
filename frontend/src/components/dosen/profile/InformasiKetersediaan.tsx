@@ -9,6 +9,13 @@ import Badge from "../../ui/badge/Badge";
 import Select from "../../form/Select";
 
 export default function InformasiKetersediaan() {
+  const coordinate = {
+    lat: -3.597031,
+    lng: 98.678513
+  };
+  const gmapsUrl = `https://www.google.com/maps?q=${coordinate.lat},${coordinate.lng}`;
+  const gmapsImage = `https://maps.googleapis.com/maps/api/staticmap?center=${coordinate.lat},${coordinate.lng}&zoom=15&size=600x300&markers=color:red%7C${coordinate.lat},${coordinate.lng}&key=YOUR_GOOGLE_MAPS_API_KEY`; // ganti dengan API key
+
   const { isOpen, openModal, closeModal } = useModal();
   const [form, setForm] = useState({
     lokasi: "",
@@ -62,11 +69,11 @@ export default function InformasiKetersediaan() {
   };
 
   // Handle proses penyimpanan data (create/update)
- const handleSave = () => {
+  const handleSave = () => {
     console.log("Form data yang akan dikirim:", form); // Debugging form data
 
     // Gunakan PUT untuk update karena Anda ingin memperbarui data yang sudah ada
-    const method = "PUT"; 
+    const method = "PUT";
 
     fetch(`http://localhost:3000/api/ketersediaan/${user?.id}`, {
       method: method,
@@ -103,26 +110,51 @@ export default function InformasiKetersediaan() {
 
 
   // Menyembunyikan alert setelah beberapa detik
-  
+
 
   const options = [
     { value: "Kampus 1 UINSU Sutomo", label: "Kampus 1 UINSU Sutomo" },
     { value: "Kampus 2 UINSU Pancing", label: "Kampus 2 UINSU Pancing" },
     { value: "Kampus 3 UINSU Helvetia", label: "Kampus 3 UINSU Helvetia" },
     { value: "Kampus 4 UINSU Tuntungan", label: "Kampus 4 UINSU Tuntungan" },
+    { value: "Lainnya", label: "Lainnya" }    
   ];
   return (
     <>
 
 
       <div className="p-5 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start lg:justify-between">
           <div>
-            <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
-              Informasi Ketersediaan
-            </h4>
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:mb-6">
+              <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+                Informasi Ketersediaan
+              </h4>
 
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
+              <button
+                onClick={openModal}
+                className="flex w-full mb-3 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:w-auto"
+              >
+                <svg
+                  className="fill-current"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M15.0911 2.78206C14.2125 1.90338 12.7878 1.90338 11.9092 2.78206L4.57524 10.116C4.26682 10.4244 4.0547 10.8158 3.96468 11.2426L3.31231 14.3352C3.25997 14.5833 3.33653 14.841 3.51583 15.0203C3.69512 15.1996 3.95286 15.2761 4.20096 15.2238L7.29355 14.5714C7.72031 14.4814 8.11172 14.2693 8.42013 13.9609L15.7541 6.62695C16.6327 5.74827 16.6327 4.32365 15.7541 3.44497L15.0911 2.78206ZM12.9698 3.84272C13.2627 3.54982 13.7376 3.54982 14.0305 3.84272L14.6934 4.50563C14.9863 4.79852 14.9863 5.2734 14.6934 5.56629L14.044 6.21573L12.3204 4.49215L12.9698 3.84272ZM11.2597 5.55281L5.6359 11.1766C5.53309 11.2794 5.46238 11.4099 5.43238 11.5522L5.01758 13.5185L6.98394 13.1037C7.1262 13.0737 7.25666 13.003 7.35947 12.9002L12.9833 7.27639L11.2597 5.55281Z"
+                    fill=""
+                  />
+                </svg>
+                Update Informasi Ketersediaan
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 lg:gap-7 2xl:gap-x-32">
               <div>
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                   Lokasi Kampus
@@ -167,30 +199,36 @@ export default function InformasiKetersediaan() {
 
                 </p>
               </div>
+
+            </div>
+
+          </div>
+          <div>
+            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+              Titik Kordinat
+            </p>
+            <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+              <a href={gmapsUrl} target="_blank" rel="noopener noreferrer" className="block rounded-xl overflow-hidden border border-gray-300 dark:border-gray-700">
+                <iframe
+                  width="100%"
+                  height="200"
+                  loading="lazy"
+                  allowFullScreen
+                  className="rounded-xl"
+                  // src={`https://www.google.com/maps?q=${coordinate.lat},${coordinate.lng}&hl=es;z=14&output=embed`}
+                  src={`https://www.google.com/maps?q=-3.597031,98.678513&hl=es;z=14&output=embed`}
+                ></iframe>
+              </a>
+
+              <div className="px-4 py-2 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-white/90">
+                Koordinat: <span className="font-medium">{coordinate.lat}, {coordinate.lng}</span>
+              </div>
             </div>
           </div>
 
-          <button
-            onClick={openModal}
-            className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
-          >
-            <svg
-              className="fill-current"
-              width="18"
-              height="18"
-              viewBox="0 0 18 18"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M15.0911 2.78206C14.2125 1.90338 12.7878 1.90338 11.9092 2.78206L4.57524 10.116C4.26682 10.4244 4.0547 10.8158 3.96468 11.2426L3.31231 14.3352C3.25997 14.5833 3.33653 14.841 3.51583 15.0203C3.69512 15.1996 3.95286 15.2761 4.20096 15.2238L7.29355 14.5714C7.72031 14.4814 8.11172 14.2693 8.42013 13.9609L15.7541 6.62695C16.6327 5.74827 16.6327 4.32365 15.7541 3.44497L15.0911 2.78206ZM12.9698 3.84272C13.2627 3.54982 13.7376 3.54982 14.0305 3.84272L14.6934 4.50563C14.9863 4.79852 14.9863 5.2734 14.6934 5.56629L14.044 6.21573L12.3204 4.49215L12.9698 3.84272ZM11.2597 5.55281L5.6359 11.1766C5.53309 11.2794 5.46238 11.4099 5.43238 11.5522L5.01758 13.5185L6.98394 13.1037C7.1262 13.0737 7.25666 13.003 7.35947 12.9002L12.9833 7.27639L11.2597 5.55281Z"
-                fill=""
-              />
-            </svg>
-            Update Informasi Ketersediaan
-          </button>
+
+
+
         </div>
       </div>
 
@@ -252,6 +290,10 @@ export default function InformasiKetersediaan() {
                     )}
 
                   </div>
+                </div>
+                 <div>
+                  <Label>Masukan Titik Kordinat Link Goggle Maps</Label>
+                  <Input name="kordinat" type="text" onChange={handleChange} />
                 </div>
 
               </div>

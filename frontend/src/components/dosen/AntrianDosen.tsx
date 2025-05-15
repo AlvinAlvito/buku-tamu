@@ -1,15 +1,10 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "../ui/table";
+
 import Badge from "../ui/badge/Badge";
 import Button from "../../components/ui/button/Button";
 import { useEffect, useState } from "react";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
+import { TimerIcon } from "lucide-react";
 
 interface Product {
   id: number;
@@ -112,135 +107,98 @@ export default function RecentOrders() {
             Antrian Tamu Anda Saat ini
           </h3>
         </div>
-
-        <div className="flex items-center gap-3">
-
-
-        </div>
       </div>
-      <div className="max-w-full overflow-x-auto">
-        <Table>
-          {/* Table Header */}
-          <TableHeader className="border-gray-100 dark:border-gray-800 border-y">
-            <TableRow>
-              <TableCell
-                isHeader
-                className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Nama
-              </TableCell>
-              <TableCell
-                isHeader
-                className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Waktu
-              </TableCell>
-              <TableCell
-                isHeader
-                className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Tujuan
-              </TableCell>
-              <TableCell
-                isHeader
-                className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Status
-              </TableCell>
-              <TableCell
-                isHeader
-                className="py-3 font-medium  text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Panggil
-              </TableCell>
-            </TableRow>
-          </TableHeader>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
+        {tableData.map((product) => (
+          <div
+            key={product.id}
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow p-6 flex flex-col justify-between"
+          >
+            <div className="flex items-center gap-4 mb-4">
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-14 h-14 rounded-xl object-cover"
+              />
+              <div>
+                <p className="font-medium text-gray-800 dark:text-white/90">
+                  {product.name}
+                </p>
+                <p className="text-gray-500 text-sm dark:text-gray-400">
+                  {product.kategori}
+                </p>
+              </div>
+            </div>
 
-          {/* Table Body */}
-
-          <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {tableData.map((product) => (
-              <TableRow key={product.id} className="">
-                <TableCell className="py-3">
-                  <div className="flex items-center gap-3">
-                    <div className="h-[50px] w-[50px] overflow-hidden rounded-md">
-                      <img
-                        src={product.image}
-                        className="h-[50px] w-[50px]"
-                        alt={product.name}
-                      />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                        {product.name}
-                      </p>
-                      <span className="text-gray-500 text-theme-xs dark:text-gray-400">
-                        {product.kategori}
-                      </span>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                  {product.waktu}
-                </TableCell>
-                <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                  {product.tujuan}
-                </TableCell>
-                <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                  <Badge
-                    size="sm"
-                    color={
-                      product.status === "Proses"
-                        ? "success"
-                        : product.status === "Menunggu"
-                          ? "warning"
-                          : product.status === "Dibatalkan"
-                            ? "error"
-                            : "primary"
-                    }
-                  >
-                    {product.status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                  {product.panggil === true
-                    ? <Button onClick={openModal} className="mx-1" size="sm" variant="primary">
-                      Panggil
-                    </Button>
-                    :
-                    <Button className="mx-1" size="sm" variant="outline">
-                      Panggil
-                    </Button>
+            <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+              <p><span className="font-medium text-gray-700 dark:text-white">Waktu:</span> {product.waktu}</p>
+              <p><span className="font-medium text-gray-700 dark:text-white">Tujuan:</span> {product.tujuan}</p>
+              <p>
+                <span className="font-medium text-gray-700 dark:text-white">Status:</span>{" "}
+                <Badge
+                  size="sm"
+                  color={
+                    product.status === "Proses"
+                      ? "success"
+                      : product.status === "Menunggu"
+                        ? "warning"
+                        : product.status === "Dibatalkan"
+                          ? "error"
+                          : "primary"
                   }
-                  <Button className="mx-1" size="sm" variant="danger">
-                    Hapus
-                  </Button>
-                  <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
-                    <div className="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11">
-                      <div className="px-2 pr-14">
-                        <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-                          Sedang Memanggil Tamu Anda
-                        </h4>
-                        <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-                          Notifikasi Pemanggilan Telah Dikirim Pada Tamu Anda. Harap Tunggu Dalam Waktu..
-                        </p>
-                      </div>
-                      <div className="flex justify-center gap-2 font-large from-neutral-50">
-                        <h4 className="mb-2 text-5xl font-semibold text-gray-800 dark:text-white/90">
-                          {countdown} Detik
-                        </h4>
-                      </div>
-                    </div>
-                  </Modal>
+                >
+                  {product.status}
+                </Badge>
+              </p>
+            </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-2 w-full">
+              {product.panggil === true ? (
+                <Button onClick={openModal} size="sm" variant="primary" className="w-full">
+                  Panggil
+                </Button>
+              ) : (
+                <Button size="sm" variant="outline" className="w-full">
+                  Panggil
+                </Button>
+              )}
+              <Button size="sm" variant="success" className="w-full">
+                Selesai
+              </Button>
+            </div>
 
 
+            {/* Modal */}
+            <Modal isOpen={isOpen} onClose={closeModal} className="max-w-xl min-h-[400px] m-4">
+              <div className="relative w-full p-6 lg:p-10 overflow-y-auto rounded-2xl bg-white shadow-xl dark:bg-gray-900 transition-all duration-300">
+                <div className="flex flex-col items-center text-center">
+                  <TimerIcon className="w-12 h-12 text-primary mb-4 font-semibold text-gray-800 dark:text-white animate-pulse" />
+                  <h4 className="text-2xl font-semibold text-gray-800 dark:text-white mb-2">
+                    Sedang Memanggil Mahasiswa
+                  </h4>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                    Notifikasi pemanggilan telah dikirim. Harap tunggu dalam waktu berikut...
+                  </p>
 
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                  <div className="flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-800 px-6 py-4 rounded-xl mb-6">
+                    <span className="text-5xl font-bold text-gray-800 dark:text-white">
+                      {countdown}
+                    </span>
+                    <span className="text-lg font-medium text-gray-600 dark:text-gray-300">detik</span>
+                  </div>
+
+                  <div className="w-full flex mt-3 justify-end">
+                    <Button size="sm" variant="success" className="w-full md:w-auto">
+                      Mahasiswa Sudah Hadir
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </Modal>
+          </div>
+        ))}
       </div>
+
     </div>
 
 

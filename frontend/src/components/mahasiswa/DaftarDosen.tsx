@@ -1,12 +1,7 @@
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHeader,
-    TableRow,
-  } from "../ui/table";
+
   import Badge from "../ui/badge/Badge";
 import { Link } from "react-router";
+import Button from "../ui/button/Button";
   
   // Define the TypeScript interface for the table rows
   interface Product {
@@ -164,7 +159,7 @@ import { Link } from "react-router";
               </svg>
               Filter
             </button>
-            <div className="hidden lg:block">
+            <div className=" lg:block">
             <form>
               <div className="relative">
                 <span className="absolute -translate-y-1/2 pointer-events-none left-4 top-1/2">
@@ -195,73 +190,34 @@ import { Link } from "react-router";
           </div>
           </div>
         </div>
-        <div className="max-w-full overflow-x-auto">
-          <Table>
-            {/* Table Header */}
-            <TableHeader className="border-gray-100 dark:border-gray-800 border-y">
-              <TableRow>
-                <TableCell
-                  isHeader
-                  className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  Nama
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  Lokasi
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  NIP
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  Status
-                </TableCell>
-              </TableRow>
-            </TableHeader>
-  
-            {/* Table Body */}
-  
-            <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
-              {tableData.map((product) => (
-                <TableRow key={product.id} className="">
-                 <TableCell className="py-3">
-                    <Link to="/mahasiswa/daftar-dosen/antrian" className="block hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md p-2 transition ">
-                      <div className="flex items-center gap-3">
-                        <div className="h-[50px] w-[50px] overflow-hidden rounded-md">
-                          <img
-                            src={product.image}
-                            className="h-[50px] w-[50px]"
-                            alt={product.name}
-                          />
-                        </div>
-                        <div>
-                          <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {product.name}
-                          </p>
-                          <span className="text-gray-500 text-theme-xs dark:text-gray-400">
-                            {product.kategori}
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                  </TableCell>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
+        {tableData.map((product) => (
+          <div
+            key={product.id}
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow p-6 flex flex-col justify-between"
+          >
+            <div className="flex items-center gap-4 mb-4">
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-14 h-14 rounded-xl object-cover"
+              />
+              <div>
+                <p className="font-medium text-gray-800 dark:text-white/90">
+                  {product.name}
+                </p>
+                <p className="text-gray-500 text-sm dark:text-gray-400">
+                  {product.kategori}
+                </p>
+              </div>
+            </div>
 
-                  <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                    {product.lokasi}
-                  </TableCell>
-                  <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                    {product.nip}
-                  </TableCell>
-                  <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                    <Badge
+            <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+              <p><span className="font-medium text-gray-700 dark:text-white">Lokasi Keberadaan  <br /></span> {product.lokasi}</p>
+              <p><span className="font-medium text-gray-700 dark:text-white">NIP  <br /></span> {product.nip}</p>
+              <p>
+                <span className="font-medium text-gray-700 dark:text-white">Status </span>{" "}
+                <Badge
                       size="sm"
                       color={
                         product.status === "Tersedia"
@@ -271,12 +227,25 @@ import { Link } from "react-router";
                     >
                       {product.status}
                     </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </p>
+            </div>
+
+            <div className="mt-4  gap-2 w-full">
+              <Link to="/mahasiswa/daftar-dosen/antrian">
+              <Button size="sm" variant="success" className="w-full">
+                Lihat Profil
+              </Button>
+              </Link>
+            </div>
+
+
+            {/* Modal */}
+  
+          </div>
+        ))}
+      </div>
+      
+       
       </div>
     );
   }

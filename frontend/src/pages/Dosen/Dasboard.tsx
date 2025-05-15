@@ -3,9 +3,22 @@ import MonthlySalesChart from "../../components/ecommerce/MonthlySalesChart";
 import PageMeta from "../../components/common/PageMeta";
 import AntrianDosen from "../../components/dosen/AntrianDosen";
 import InformasiKetersediaan from "../../components/dosen/profile/InformasiKetersediaan";
+import { useLocation, useNavigate } from "react-router";
+import { useEffect } from "react";
 
 export default function Dashboard() {
+  const location = useLocation();
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    const hasReloaded = new URLSearchParams(location.search).get("reloaded");
+
+    if (!hasReloaded) {
+      // Tambahkan parameter ?reloaded=true dan reload
+      navigate(`${location.pathname}?reloaded=true`, { replace: true });
+      window.location.reload();
+    }
+  }, [location, navigate]);
   return (
     <>
       <PageMeta

@@ -5,6 +5,7 @@ import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import { ChevronLeftIcon } from "../../icons";
 import { Link } from "react-router";
+import Alert from "../ui/alert/Alert";
 export default function BuatJanji() {
   const { isOpen, openModal, closeModal } = useModal();
   const handleSave = () => {
@@ -41,6 +42,14 @@ export default function BuatJanji() {
             </svg>
             Buat Janji Temu
           </button>
+          
+        </div>
+        <div className="flex flex-col gap-4 my-3">
+          <Alert
+            variant="warning"
+            title="Peringatan"
+            message="Anda sudah ditambahkan kedalam antrian dosen. Tetaplah berada diarea sekitar dosen sambil menunggu dosen memanggil anda. Tetaplah Siaga sampai notifikasi panggilan berbunyi."
+          />
         </div>
       </div>
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">

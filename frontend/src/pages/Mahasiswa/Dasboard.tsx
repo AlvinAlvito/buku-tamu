@@ -1,11 +1,23 @@
+import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router";
 import UserAktif from "../../components/dashboard/UserAktif";
 import MonthlySalesChart from "../../components/ecommerce/MonthlySalesChart";
 import PageMeta from "../../components/common/PageMeta";
 import Dosen from "../../components/mahasiswa/DaftarDosen";
 
-
 export default function Dashboard() {
+  const location = useLocation();
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    const hasReloaded = new URLSearchParams(location.search).get("reloaded");
+
+    if (!hasReloaded) {
+      // Tambahkan parameter ?reloaded=true dan reload
+      navigate(`${location.pathname}?reloaded=true`, { replace: true });
+      window.location.reload();
+    }
+  }, [location, navigate]);
 
   return (
     <>

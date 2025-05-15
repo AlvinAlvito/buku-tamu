@@ -87,88 +87,52 @@ export default function AntrianDosen() {
 
         </div>
       </div>
-      <div className="max-w-full overflow-x-auto">
-        <Table>
-          {/* Table Header */}
-          <TableHeader className="border-gray-100 dark:border-gray-800 border-y">
-            <TableRow>
-              <TableCell
-                isHeader
-                className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Nama
-              </TableCell>
-              <TableCell
-                isHeader
-                className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Waktu
-              </TableCell>
-              <TableCell
-                isHeader
-                className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Tujuan
-              </TableCell>
-              <TableCell
-                isHeader
-                className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Status
-              </TableCell>
-            </TableRow>
-          </TableHeader>
+       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
+        {tableData.map((product) => (
+          <div
+            key={product.id}
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow p-6 flex flex-col justify-between"
+          >
+            <div className="flex items-center gap-4 mb-4">
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-14 h-14 rounded-3xl object-cover"
+              />
+              <div>
+                <p className="font-medium text-gray-800 dark:text-white/90">
+                  {product.name}
+                </p>
+                <p className="text-gray-500 text-sm dark:text-gray-400">
+                  {product.kategori}
+                </p>
+              </div>
+            </div>
 
-          {/* Table Body */}
+            <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+              <p><span className="font-medium text-gray-700 dark:text-white">Waktu  <br /></span> {product.waktu}</p>
+              <p><span className="font-medium text-gray-700 dark:text-white">Tujuan <br /></span> {product.tujuan}</p>
+              <p>
+                <span className="font-medium text-gray-700 dark:text-white">Status </span>{" "}
+                <Badge
+                  size="sm"
+                  color={
+                    product.status === "Proses"
+                      ? "success"
+                      : product.status === "Menunggu"
+                        ? "warning"
+                        : product.status === "Dibatalkan"
+                          ? "error"
+                          : "primary"
+                  }
+                >
+                  {product.status}
+                </Badge>
+              </p>
+            </div>
 
-          <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {tableData.map((product) => (
-              <TableRow key={product.id} className="">
-                <TableCell className="py-3">
-                  <div className="flex items-center gap-3">
-                    <div className="h-[50px] w-[50px] overflow-hidden rounded-md">
-                      <img
-                        src={product.image}
-                        className="h-[50px] w-[50px]"
-                        alt={product.name}
-                      />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                        {product.name}
-                      </p>
-                      <span className="text-gray-500 text-theme-xs dark:text-gray-400">
-                        {product.kategori}
-                      </span>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                  {product.waktu}
-                </TableCell>
-                <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                  {product.tujuan}
-                </TableCell>
-                <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                  <Badge
-                    size="sm"
-                    color={
-                      product.status === "Proses"
-                        ? "success"
-                        : product.status === "Menunggu"
-                          ? "warning"
-                          : product.status === "Dibatalkan"
-                            ? "error"
-                            : "primary"
-                    }
-                  >
-                    {product.status}
-                  </Badge>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+          </div>
+        ))}
       </div>
     </div>
 

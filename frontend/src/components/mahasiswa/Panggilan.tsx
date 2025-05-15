@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
-
+import { BellIcon } from "lucide-react";
 export default function BuatJanji() {
     const { isOpen, openModal, closeModal } = useModal();
     const [countdown, setCountdown] = useState(60);
@@ -52,23 +52,29 @@ export default function BuatJanji() {
                 Panggilan
             </button>
 
-            <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
-                <div className="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11">
-                    <div className="px-2 pr-14">
-                        <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
+
+
+            <Modal isOpen={isOpen} onClose={closeModal} className="max-w-xl m-4">
+                <div className="relative w-full p-6 lg:p-10 overflow-y-auto rounded-2xl bg-white shadow-xl dark:bg-gray-900 transition-all duration-300">
+                    <div className="flex flex-col items-center text-center">
+                        <BellIcon className="w-12 h-12 text-yellow-500 mb-4 animate-bounce" />
+                        <h4 className="text-2xl font-semibold text-gray-800 dark:text-white mb-2">
                             Antrian Anda Sudah Selesai!
                         </h4>
-                        <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-                            Panggilan Kepada Anda, Dosen Anda Sedang Menunggu Kamu! Segera Temui Dosen Anda dalam Waktu..
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 max-w-md">
+                            Antrian Sudah Selesai. Dosen sedang menunggu Anda! Silakan segera temui dosen Anda dalam waktu...
                         </p>
-                    </div>
-                    <div className="flex justify-center gap-2 font-large from-neutral-50">
-                        <h4 className="mb-2 text-5xl font-semibold text-gray-800 dark:text-white/90">
-                            {countdown} Detik
-                        </h4>
+
+                        <div className="flex items-center justify-center gap-2 bg-yellow-100 dark:bg-yellow-900 px-6 py-4 rounded-xl mb-6 shadow-inner">
+                            <span className="text-5xl font-bold text-yellow-700 dark:text-yellow-300">
+                                {countdown}
+                            </span>
+                            <span className="text-lg font-medium text-yellow-700 dark:text-yellow-300">detik</span>
+                        </div>
                     </div>
                 </div>
             </Modal>
+
         </>
     );
 }

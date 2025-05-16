@@ -7,6 +7,8 @@ require("dotenv").config();
 const authRoutes = require("./routes/auth");
 const ketersediaanRoutes = require("./routes/ketersediaanRoutes");
 const profilRoutes = require("./routes/profilRoutes");
+const daftarDosenRoutes = require("./routes/daftarDosenRoutes");
+
 const { handleSocketConnection } = require("./controllers/socketController");
 const authMiddleware = require("./middlewares/authMiddleware");
 
@@ -21,6 +23,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api", ketersediaanRoutes);
 app.use("/api", profilRoutes);
+app.use("/api", daftarDosenRoutes);
 
 // Middleware untuk memverifikasi token di Socket.IO
 io.use(authMiddleware);

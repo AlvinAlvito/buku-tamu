@@ -25,7 +25,7 @@ exports.register = async (req, res) => {
 
       await db.execute(
         "INSERT INTO tb_ketersediaan (user_id, lokasi_kampus, status_ketersediaan, link_maps, gedung_ruangan) VALUES (?, ?, ?, ?, ?)",
-        [userId, null, null, null, '-']
+        [userId, null, 'Tidak Tersedia', null, '-']
       );
 
       console.log("Insert into tb_ketersediaan sukses");

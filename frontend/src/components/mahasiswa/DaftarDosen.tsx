@@ -1,165 +1,103 @@
 
-  import Badge from "../ui/badge/Badge";
+import Badge from "../ui/badge/Badge";
 import { Link } from "react-router";
 import Button from "../ui/button/Button";
-  
-  // Define the TypeScript interface for the table rows
-  interface Product {
-    id: number; // Unique identifier for each product
-    name: string; // Product name
-    kategori: string; // Number of kategori (e.g., "1 Variant", "2 kategori")
-    nip: string; // nip of the product
-    lokasi: string; // lokasi of the product (as a string with currency symbol)
-    image: string; // URL or path to the product image
-    status: "Tersedia" |  "Tidak Tersedia"; // Status of the product
-  }
+import { useEffect, useState } from "react";
 
-  // Define the table data using the interface
-  const tableData: Product[] = [
-    {
-      id: 1,
-      name: "Armansyah M.Kom",
-      kategori: "Dosen",
-      nip: "1090292003",
-      lokasi: "Kampus 4 Tuntungan, ruangan prodi ilmu komputer",
-      status: "Tersedia",
-      image: "/images/user/user-01.jpg",
-    },
-    {
-      id: 2,
-      name: "Abdul Hasibuan M.Kom",
-      kategori: "Dosen",
-      nip: "2090292003",
-      lokasi: "Kampus 4 Tuntungan, ruangan prodi ilmu komputer",
-      status: "Tersedia",
-      image: "/images/user/user-02.jpg",
-    },
-    {
-      id: 3,
-      name: "Ucok Syahban M.Ag",
-      kategori: "Dosen",
-      nip: "2090292003",
-      lokasi: "Kampus 2 Sutomo, ruangan aula gedung hanif",
-      status: "Tersedia",
-      image: "/images/user/user-02.jpg",
-    },
-    {
-      id: 3,
-      name: "Ucok Syahban M.Ag",
-      kategori: "Dosen",
-      nip: "2030292003",
-      lokasi: "Kampus 2 Sutomo, ruangan aula gedung hanif",
-      status: "Tersedia",
-      image: "/images/user/user-03.jpg",
-    },
-    {
-      id: 4,
-      name: "Udin Petot M.M",
-      kategori: "Dosen",
-      nip: "2190292003",
-      lokasi: "Kampus 2 Sutomo, ruangan rapat 1",
-      status: "Tersedia",
-      image: "/images/user/user-04.jpg",
-    },
-    {
-      id: 5,
-      name: "Sentot Prabuwijaya S.T M.Ag",
-      kategori: "Dosen",
-      nip: "2990292003",
-      lokasi: "Kampus 1 Pancing, Gedung Biro",
-      status: "Tersedia",
-      image: "/images/user/user-05.jpg",
-    },
-    {
-      id: 6,
-      name: "Habib Zidan M.Pd",
-      kategori: "Dosen",
-      nip: "2990292003",
-      lokasi: "-",
-      status: "Tidak Tersedia",
-      image: "/images/user/user-06.jpg",
-    },
-    {
-      id: 7,
-      name: "Siti Nurbayah M.Pd",
-      kategori: "Dosen",
-      nip: "1990292003",
-      lokasi: "-",
-      status: "Tidak Tersedia",
-      image: "/images/user/user-07.jpg",
-    },
-    {
-      id: 8,
-      name: "Habib Riziq M.Pd",
-      kategori: "Dosen",
-      nip: "2440292003",
-      lokasi: "-",
-      status: "Tidak Tersedia",
-      image: "/images/user/user-08.jpg",
-    },
-    {
-      id: 9,
-      name: "Nurhasanah M.Ag",
-      kategori: "Dosen",
-      nip: "1110292003",
-      lokasi: "-",
-      status: "Tidak Tersedia",
-      image: "/images/user/user-09.jpg",
-    },
+interface Dosen {
+  id: number;
+  user_id: number;
+  name: string;
+  nim: string;
+  foto_profil: string | null;
+  lokasi_kampus: string;
+  gedung_ruangan: string;
+  link_maps: string;
+  jadwal_libur: string;
+  status_ketersediaan: "Tersedia" | "Tidak Tersedia";
+}
 
-  
-  ];
-  
-  export default function DaftarDosen() {
-    return (
-      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
-        <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-              Daftar Dosen & Pegawai 
-            </h3>
-          </div>
-  
-          <div className="flex items-center gap-3">
-            <button className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
-              <svg
-                className="stroke-current fill-white dark:fill-gray-800"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M2.29004 5.90393H17.7067"
-                  stroke=""
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M17.7075 14.0961H2.29085"
-                  stroke=""
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M12.0826 3.33331C13.5024 3.33331 14.6534 4.48431 14.6534 5.90414C14.6534 7.32398 13.5024 8.47498 12.0826 8.47498C10.6627 8.47498 9.51172 7.32398 9.51172 5.90415C9.51172 4.48432 10.6627 3.33331 12.0826 3.33331Z"
-                  fill=""
-                  stroke=""
-                  strokeWidth="1.5"
-                />
-                <path
-                  d="M7.91745 11.525C6.49762 11.525 5.34662 12.676 5.34662 14.0959C5.34661 15.5157 6.49762 16.6667 7.91745 16.6667C9.33728 16.6667 10.4883 15.5157 10.4883 14.0959C10.4883 12.676 9.33728 11.525 7.91745 11.525Z"
-                  fill=""
-                  stroke=""
-                  strokeWidth="1.5"
-                />
-              </svg>
-              Filter
-            </button>
-            <div className=" lg:block">
+export default function DaftarDosen() {
+  const [data, setData] = useState<Dosen[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/api/daftar-dosen");
+        const result = await res.json();
+        setData(result);
+        setLoading(false);
+      } catch (err) {
+        console.error("Gagal fetch data dosen:", err);
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+  };
+
+  if (loading) return <p>Memuat data dosen...</p>;
+  return (
+    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
+      <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+            Daftar Dosen & Pegawai
+          </h3>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
+            <svg
+              className="stroke-current fill-white dark:fill-gray-800"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M2.29004 5.90393H17.7067"
+                stroke=""
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M17.7075 14.0961H2.29085"
+                stroke=""
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M12.0826 3.33331C13.5024 3.33331 14.6534 4.48431 14.6534 5.90414C14.6534 7.32398 13.5024 8.47498 12.0826 8.47498C10.6627 8.47498 9.51172 7.32398 9.51172 5.90415C9.51172 4.48432 10.6627 3.33331 12.0826 3.33331Z"
+                fill=""
+                stroke=""
+                strokeWidth="1.5"
+              />
+              <path
+                d="M7.91745 11.525C6.49762 11.525 5.34662 12.676 5.34662 14.0959C5.34661 15.5157 6.49762 16.6667 7.91745 16.6667C9.33728 16.6667 10.4883 15.5157 10.4883 14.0959C10.4883 12.676 9.33728 11.525 7.91745 11.525Z"
+                fill=""
+                stroke=""
+                strokeWidth="1.5"
+              />
+            </svg>
+            Filter
+          </button>
+          <div className=" lg:block">
             <form>
               <div className="relative">
                 <span className="absolute -translate-y-1/2 pointer-events-none left-4 top-1/2">
@@ -188,65 +126,106 @@ import Button from "../ui/button/Button";
               </div>
             </form>
           </div>
-          </div>
         </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
-        {tableData.map((product) => (
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {currentItems.map((dosen) => (
           <div
-            key={product.id}
+            key={dosen.id}
             className="bg-white dark:bg-gray-900 rounded-2xl shadow p-6 flex flex-col justify-between"
           >
             <div className="flex items-center gap-4 mb-4">
               <img
-                src={product.image}
-                alt={product.name}
+                src={dosen.foto_profil ? dosen.foto_profil : "/images/user/user-01.jpg"}
+                alt={dosen.name}
                 className="w-14 h-14 rounded-xl object-cover"
               />
               <div>
                 <p className="font-medium text-gray-800 dark:text-white/90">
-                  {product.name}
+                  {dosen.name}
                 </p>
                 <p className="text-gray-500 text-sm dark:text-gray-400">
-                  {product.kategori}
+                  NIP: {dosen.nim}
                 </p>
               </div>
             </div>
 
             <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-              <p><span className="font-medium text-gray-700 dark:text-white">Lokasi Keberadaan  <br /></span> {product.lokasi}</p>
-              <p><span className="font-medium text-gray-700 dark:text-white">NIP  <br /></span> {product.nip}</p>
               <p>
-                <span className="font-medium text-gray-700 dark:text-white">Status </span>{" "}
+                <span className="font-medium text-gray-700 dark:text-white">
+                  Lokasi Kampus: <br />
+                </span>
+                {dosen.lokasi_kampus}
+              </p>
+              <p>
+                <span className="font-medium text-gray-700 dark:text-white">
+                  Ruangan: <br />
+                </span>
+                {dosen.gedung_ruangan}
+              </p>
+              <p>
+                <span className="font-medium text-gray-700 dark:text-white">
+                  Status{" "}
+                </span>
                 <Badge
-                      size="sm"
-                      color={
-                        product.status === "Tersedia"
-                          ? "success"
-                          : "error"
-                      }
-                    >
-                      {product.status}
-                    </Badge>
+                  size="sm"
+                  color={
+                    dosen.status_ketersediaan === "Tersedia"
+                      ? "success"
+                      : "error"
+                  }
+                >
+                  {dosen.status_ketersediaan}
+                </Badge>
               </p>
             </div>
 
-            <div className="mt-4  gap-2 w-full">
-              <Link to="/mahasiswa/daftar-dosen/antrian">
-              <Button size="sm" variant="success" className="w-full">
-                Lihat Profil
-              </Button>
+            <div className="mt-4 gap-2 w-full">
+              <Link to={`/mahasiswa/daftar-dosen/${dosen.id}`}>
+                <Button size="sm" variant="success" className="w-full">
+                  Lihat Profil
+                </Button>
               </Link>
             </div>
-
-
-            {/* Modal */}
-  
           </div>
         ))}
       </div>
-      
-       
+
+      {/* Pagination */}
+      <div className="flex justify-center mt-6 gap-2">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="px-3 py-1 rounded border border-gray-300 dark:border-gray-700 disabled:opacity-50 dark:text-gray-200"
+        >
+          Prev
+        </button>
+
+        {[...Array(totalPages)].map((_, idx) => {
+          const pageNum = idx + 1;
+          return (
+            <button
+              key={pageNum}
+              onClick={() => handlePageChange(pageNum)}
+              className={`px-3 py-1 rounded border ${pageNum === currentPage
+                ? "bg-blue-500 text-white border-blue-500 dark:text-gray-200"
+                : "border-gray-300 dark:border-gray-700"
+                }`}
+            >
+              {pageNum}
+            </button>
+          );
+        })}
+
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="px-3 py-1 rounded border border-gray-300 dark:border-gray-700 disabled:opacity-50 dark:text-gray-200"
+        >
+          Next
+        </button>
       </div>
-    );
-  }
-  
+    </div>
+  );
+}

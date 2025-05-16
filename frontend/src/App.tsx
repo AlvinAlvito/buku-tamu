@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import Login from "./pages/AuthPages/Login";
 import Logout from "./pages/AuthPages/Logout";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -10,14 +10,13 @@ import Alerts from "./pages/UiElements/Alerts";
 import Badges from "./pages/UiElements/Badges";
 import Avatars from "./pages/UiElements/Avatars";
 import Buttons from "./pages/UiElements/Buttons";
-import LineChart from "./pages/Charts/LineChart";
-import BarChart from "./pages/Charts/BarChart";
-import BasicTables from "./pages/Tables/BasicTables";
-import FormElements from "./pages/Forms/FormElements";
-import Blank from "./pages/Blank";
+import LineChart from "./pages/UiElements/LineChart";
+import BarChart from "./pages/UiElements/BarChart";
+import FormElements from "./pages/UiElements/FormElements";
+import Blank from "./pages/OtherPage/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
-import Home from "./pages/Dashboard/Home";
+import Home from "./pages/Home";
 
 import DosenAntrian from "./pages/Dosen/Antrian";
 import DosenProfile from "./pages/Dosen/Profile";
@@ -34,25 +33,10 @@ import MahasiswaDaftarDosenAntrian from "./pages/Mahasiswa/Dosen/Antrian";
 import RiwayatAntrianMahasiswa from "./pages/Mahasiswa/RiwayatAntrian";
 import KalenderMahasiswa from "./pages/Mahasiswa/Kalender";
 import TutorialMahasiswa from "./pages/Mahasiswa/Tutorial";
-import { useEffect } from "react";
-import { isSessionExpired } from "./components/auth/Session";
 import { OnlineProvider } from "./utils/OnlineContext";
+import AppContent from "../src/components/auth/Session";
 
-function AppContent() {
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    const expired = isSessionExpired();
-
-    if (expired) {
-      localStorage.removeItem("user");
-      localStorage.removeItem("loginTime");
-      navigate("/login");
-    }
-  }, [navigate]);
-
-  return null;
-}
 
 export default function App() {
 
@@ -90,7 +74,6 @@ export default function App() {
 
               <Route path="/blank" element={<Blank />} />
               <Route path="/form-elements" element={<FormElements />} />
-              <Route path="/basic-tables" element={<BasicTables />} />
               <Route path="/alerts" element={<Alerts />} />
               <Route path="/avatars" element={<Avatars />} />
               <Route path="/badge" element={<Badges />} />

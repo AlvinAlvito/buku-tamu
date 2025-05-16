@@ -7,12 +7,33 @@ exports.register = async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    await db.execute(
+    // Insert user
+    const [result] = await db.execute(
       "INSERT INTO users (name, nim, email, password, role) VALUES (?, ?, ?, ?, ?)",
       [name, nim, email, hashedPassword, role]
     );
+
+    console.log("User insert result:", result);
+
+    const userId = result.insertId;
+    console.log("New user ID:", userId);
+    console.log("Role received:", role);
+
+    // Cek dan insert ke tb_ketersediaan jika role dosen
+    if (role === "dosen") {
+      console.log("Inserting into tb_ketersediaan...");
+
+      await db.execute(
+        "INSERT INTO tb_ketersediaan (user_id, lokasi_kampus, status_ketersediaan, link_maps, gedung_ruangan) VALUES (?, ?, ?, ?, ?)",
+        [userId, null, null, null, '-']
+      );
+
+      console.log("Insert into tb_ketersediaan sukses");
+    }
+
     res.status(201).json({ message: "User registered successfully." });
   } catch (err) {
+    console.error("Error during registration:", err);
     res.status(500).json({ error: err.message });
   }
 };

@@ -14,20 +14,19 @@ export default function InformasiKetersediaan() {
     lng: 98.678513
   };
   const gmapsUrl = `https://www.google.com/maps?q=${coordinate.lat},${coordinate.lng}`;
-  // const gmapsImage = `https://maps.googleapis.com/maps/api/staticmap?center=${coordinate.lat},${coordinate.lng}&zoom=15&size=600x300&markers=color:red%7C${coordinate.lat},${coordinate.lng}&key=YOUR_GOOGLE_MAPS_API_KEY`; // ganti dengan API key
 
   const { isOpen, openModal, closeModal } = useModal();
   const [form, setForm] = useState({
-    lokasi: "",
+    lokasi: "",       // string ✅
     gedung: "",
     jadwal: "",
+    maps: "",
     status: true,
   });
+  const [ketersediaanId, setKetersediaanId] = useState<string | null>(null);
+const [user, setUser] = useState<any | null>(null);
 
-  const [user, setUser] = useState<any>(null);
 
-
-  // Ambil data user dari localStorage
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -37,92 +36,66 @@ export default function InformasiKetersediaan() {
 
   // Ambil data ketersediaan berdasarkan user.id saat komponen pertama kali mount
   useEffect(() => {
-    if (user?.id) {
-      fetch(`http://localhost:3000/api/ketersediaan/${user.id}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data) {
-            setForm({
-              lokasi: data.lokasi_kampus,
-              gedung: data.gedung_ruangan,
-              jadwal: data.jadwal_libur,
-              status: data.status_ketersediaan,
-            });
-          }
+    if (!user?.id) return;
+    fetch(`http://localhost:3000/api/ketersediaan/${user.id}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (!d) return;
+        setKetersediaanId(d.id);
+        setForm({
+          lokasi: d.lokasi_kampus ?? "",
+          gedung: d.gedung_ruangan ?? "",
+          jadwal: d.jadwal_libur ?? "",
+          maps: d.link_maps ?? "",
+          status: d.status_ketersediaan === "Tersedia",
         });
-    }
+      })
+      .catch(console.error);
   }, [user]);
 
   // Handle perubahan form
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setForm((prevForm) => ({
-      ...prevForm,
-      [name]: value,
-    }));
-  };
-  const handleSelectChange = (selectedOption: any) => {
-    setForm((prevForm) => ({
-      ...prevForm,
-      lokasi: selectedOption?.value || "",
-    }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   // Handle proses penyimpanan data (create/update)
   const handleSave = () => {
-    console.log("Form data yang akan dikirim:", form); // Debugging form data
+    if (!ketersediaanId) {
+      console.error("ID ketersediaan tidak ditemukan.");
+      return;
+    }
 
-    // Gunakan PUT untuk update karena Anda ingin memperbarui data yang sudah ada
-    const method = "PUT";
-
-    fetch(`http://localhost:3000/api/ketersediaan/${user?.id}`, {
-      method: method,
-      headers: {
-        "Content-Type": "application/json",
-      },
+    fetch(`http://localhost:3000/api/ketersediaan/${ketersediaanId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         lokasi_kampus: form.lokasi,
         gedung_ruangan: form.gedung,
         jadwal_libur: form.jadwal,
-        status_ketersediaan: form.status,
+        link_maps: form.maps,
+        status_ketersediaan: form.status ? "Tersedia" : "Tidak Tersedia",
       }),
     })
-      .then((res) => {
-        console.log("Response Status:", res.status); // Debugging status response
-        if (!res.ok) {
-          throw new Error('Gagal mengupdate data');
-        }
-        return res.json();
+      .then(async (r) => {
+        if (!r.ok) throw new Error(await r.text());
+        return r.json();
       })
-      .then((data) => {
-        console.log("Response Data:", data); // Debugging response data
-        if (data.success) {
-          console.log("Data berhasil diperbarui"); // Log saat berhasil
-          closeModal(); // Menutup modal setelah berhasil
-        } else {
-          console.log("Terjadi kesalahan saat memperbarui data.", data); // Log kesalahan jika tidak berhasil
-        }
+      .then(() => {
+        closeModal();
       })
-      .catch((error) => {
-        console.error("Terjadi kesalahan pada server:", error); // Log error pada server
-      });
+      .catch((err) => console.error("Gagal menyimpan:", err));
   };
 
-
-  // Menyembunyikan alert setelah beberapa detik
-
-
-  const options = [
+  const kampusOptions = [
     { value: "Kampus 1 UINSU Sutomo", label: "Kampus 1 UINSU Sutomo" },
     { value: "Kampus 2 UINSU Pancing", label: "Kampus 2 UINSU Pancing" },
     { value: "Kampus 3 UINSU Helvetia", label: "Kampus 3 UINSU Helvetia" },
     { value: "Kampus 4 UINSU Tuntungan", label: "Kampus 4 UINSU Tuntungan" },
-    { value: "Lainnya", label: "Lainnya" }    
+    { value: "Lainnya", label: "Lainnya" }
   ];
   return (
     <>
-
-
       <div className="p-5 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start lg:justify-between">
           <div>
@@ -205,7 +178,7 @@ export default function InformasiKetersediaan() {
           </div>
           <div>
             <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-              Titik Kordinat
+              Lokasi Goggle Maps
             </p>
             <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
               <a href={gmapsUrl} target="_blank" rel="noopener noreferrer" className="block rounded-xl overflow-hidden border border-gray-300 dark:border-gray-700">
@@ -248,12 +221,14 @@ export default function InformasiKetersediaan() {
                 <div>
                   <Label>Pilih Lokasi Kampus</Label>
                   <Select
-                    options={options}
-                    placeholder="Pilih Kampus UINSU"
-                    onChange={handleSelectChange}
-                    className="dark:bg-dark-900"
+                    options={kampusOptions}
+                    placeholder="Pilih lokasi kampus"
                     value={form.lokasi}
+                    onChange={(value: string) =>
+                      setForm((prev) => ({ ...prev, lokasi: value }))
+                    }
                   />
+
 
                 </div>
 
@@ -291,9 +266,9 @@ export default function InformasiKetersediaan() {
 
                   </div>
                 </div>
-                 <div>
+                <div>
                   <Label>Masukan Titik Kordinat Link Goggle Maps</Label>
-                  <Input name="kordinat" type="text" onChange={handleChange} />
+                  <Input name="maps" value={form.maps} type="text" onChange={handleChange} />
                 </div>
 
               </div>

@@ -5,7 +5,7 @@ import React, {
     useRef,
     useState,
 } from "react";
-import { initSocket, getSocket, disconnectSocket } from "./socket";
+import { initSocket, disconnectSocket } from "./socket";
 
 type OnlineCounts = { mahasiswa: number; dosen: number };
 type OnlineContextType = { online: OnlineCounts };
@@ -53,9 +53,6 @@ export function OnlineProvider({ children }: { children: React.ReactNode }) {
         };
     }, []);
 
-
-
-
     useEffect(() => {
         if (!token) {
             // console.warn("❌ No token available for socket connection");
@@ -102,8 +99,6 @@ export function OnlineProvider({ children }: { children: React.ReactNode }) {
         </OnlineContext.Provider>
     );
 }
-
-
 export function useOnline() {
     const context = useContext(OnlineContext);
     if (!context)

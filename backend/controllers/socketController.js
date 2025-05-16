@@ -19,7 +19,7 @@ function handleDisconnect(socket, io) {
 
   delete socketRoleMap[socket.id];
   io.emit("online-counts", onlineUsers);
-  console.log("⛔", role, "disconnected:", onlineUsers);
+  console.log("⛔", userId, "disconnected:", onlineUsers);
 }
 
 function handleSocketConnection(socket, io) {
@@ -34,18 +34,17 @@ function handleSocketConnection(socket, io) {
   activeUsers.get(userId).add(socket.id);
   socketRoleMap[socket.id] = { userId, role };
 
-  console.log("✅", role, "connected:", onlineUsers);
+  console.log("✅", userId, "connected:", onlineUsers);
   io.emit("online-counts", onlineUsers);
 
   socket.on("manual-logout", () => {
-    handleDisconnect(socket, io);
     socket.disconnect(true);
-    console.log("👋 Manual logout by", role);
+    console.log("👋 Manual logout by", userId);
   });
 
   socket.on("disconnect", () => {
     handleDisconnect(socket, io);
-    console.log("⛔", role, "disconnected:", onlineUsers);
+    console.log("⛔", userId, "disconnected:", onlineUsers);
   });
 }
 

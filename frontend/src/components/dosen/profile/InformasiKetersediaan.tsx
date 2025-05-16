@@ -14,7 +14,7 @@ export default function InformasiKetersediaan() {
     lng: 98.678513
   };
   const gmapsUrl = `https://www.google.com/maps?q=${coordinate.lat},${coordinate.lng}`;
-  const gmapsImage = `https://maps.googleapis.com/maps/api/staticmap?center=${coordinate.lat},${coordinate.lng}&zoom=15&size=600x300&markers=color:red%7C${coordinate.lat},${coordinate.lng}&key=YOUR_GOOGLE_MAPS_API_KEY`; // ganti dengan API key
+  // const gmapsImage = `https://maps.googleapis.com/maps/api/staticmap?center=${coordinate.lat},${coordinate.lng}&zoom=15&size=600x300&markers=color:red%7C${coordinate.lat},${coordinate.lng}&key=YOUR_GOOGLE_MAPS_API_KEY`; // ganti dengan API key
 
   const { isOpen, openModal, closeModal } = useModal();
   const [form, setForm] = useState({

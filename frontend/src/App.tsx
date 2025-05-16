@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import Login from "./pages/AuthPages/Login";
 import Logout from "./pages/AuthPages/Logout";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -35,76 +35,80 @@ import RiwayatAntrianMahasiswa from "./pages/Mahasiswa/RiwayatAntrian";
 import KalenderMahasiswa from "./pages/Mahasiswa/Kalender";
 import TutorialMahasiswa from "./pages/Mahasiswa/Tutorial";
 import { useEffect } from "react";
-import { initSocket } from "./utils/socket";
+import { isSessionExpired } from "./components/auth/Session";
+import { OnlineProvider } from "./utils/OnlineContext";
 
+function AppContent() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const expired = isSessionExpired();
+
+    if (expired) {
+      localStorage.removeItem("user");
+      localStorage.removeItem("loginTime");
+      navigate("/login");
+    }
+  }, [navigate]);
+
+  return null;
+}
 
 export default function App() {
-   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const socket = initSocket(token);
 
-      socket.on("connect", () => {
-        console.log("✅ Socket connected.");
-        socket.emit("user-join");
-      });
 
-      socket.on("online-counts", (data) => {
-        console.log("📡 Online counts:", data);
-      });
-
-      socket.on("disconnect", () => {
-        console.log("⛔ Socket disconnected.");
-      });
-    }
-  }, []);
   return (
     <>
+
       <Router>
-        <ScrollToTop />
-        <Routes>
-          {/* Dashboard Layout - hanya untuk yang sudah login */}
-          <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-            <Route index path="/" element={<Home />} />
+        <OnlineProvider key={localStorage.getItem("token")}>
 
-            {/* Dosen Page */}
-            <Route path="/dosen" element={<DosenDashboard />} />
-            <Route path="/dosen/profile" element={<DosenProfile />} />
-            <Route path="/dosen/antrian" element={<DosenAntrian />} />
-            <Route path="/dosen/daftar-dosen" element={<DaftarDosen />} />
-            <Route path="/dosen/riwayat-antrian" element={<RiwayatAntrianDosen />} />
-            <Route path="/dosen/kalender" element={<KalenderDosen />} />
-            <Route path="/dosen/tutorial" element={<TutorialDosen />} />
+          <ScrollToTop />
+          <AppContent />
+          <Routes>
+            {/* Dashboard Layout - hanya untuk yang sudah login */}
+            <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+              <Route index path="/" element={<Home />} />
 
-            {/* Mahasiswa Page */}
-            <Route path="/mahasiswa" element={<MahasiswaDashboard />} />
-            <Route path="/mahasiswa/profile" element={<MahasiswaProfile />} />
-            <Route path="/mahasiswa/daftar-dosen" element={<MahasiswaDaftarDosen />} />
-            <Route path="/mahasiswa/daftar-dosen/antrian" element={<MahasiswaDaftarDosenAntrian />} />
-            <Route path="/mahasiswa/riwayat-antrian" element={<RiwayatAntrianMahasiswa />} />
-            <Route path="/mahasiswa/kalender" element={<KalenderMahasiswa />} />
-            <Route path="/mahasiswa/tutorial" element={<TutorialMahasiswa />} />
+              {/* Dosen Page */}
+              <Route path="/dosen" element={<DosenDashboard />} />
+              <Route path="/dosen/profile" element={<DosenProfile />} />
+              <Route path="/dosen/antrian" element={<DosenAntrian />} />
+              <Route path="/dosen/daftar-dosen" element={<DaftarDosen />} />
+              <Route path="/dosen/riwayat-antrian" element={<RiwayatAntrianDosen />} />
+              <Route path="/dosen/kalender" element={<KalenderDosen />} />
+              <Route path="/dosen/tutorial" element={<TutorialDosen />} />
 
-            <Route path="/blank" element={<Blank />} />
-            <Route path="/form-elements" element={<FormElements />} />
-            <Route path="/basic-tables" element={<BasicTables />} />
-            <Route path="/alerts" element={<Alerts />} />
-            <Route path="/avatars" element={<Avatars />} />
-            <Route path="/badge" element={<Badges />} />
-            <Route path="/buttons" element={<Buttons />} />
-            <Route path="/images" element={<Images />} />
-            <Route path="/videos" element={<Videos />} />
-            <Route path="/line-chart" element={<LineChart />} />
-            <Route path="/bar-chart" element={<BarChart />} />
-          </Route>
+              {/* Mahasiswa Page */}
+              <Route path="/mahasiswa" element={<MahasiswaDashboard />} />
+              <Route path="/mahasiswa/profile" element={<MahasiswaProfile />} />
+              <Route path="/mahasiswa/daftar-dosen" element={<MahasiswaDaftarDosen />} />
+              <Route path="/mahasiswa/daftar-dosen/antrian" element={<MahasiswaDaftarDosenAntrian />} />
+              <Route path="/mahasiswa/riwayat-antrian" element={<RiwayatAntrianMahasiswa />} />
+              <Route path="/mahasiswa/kalender" element={<KalenderMahasiswa />} />
+              <Route path="/mahasiswa/tutorial" element={<TutorialMahasiswa />} />
 
-          {/* Auth Layout */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/logout" element={<Logout />} />
+              <Route path="/blank" element={<Blank />} />
+              <Route path="/form-elements" element={<FormElements />} />
+              <Route path="/basic-tables" element={<BasicTables />} />
+              <Route path="/alerts" element={<Alerts />} />
+              <Route path="/avatars" element={<Avatars />} />
+              <Route path="/badge" element={<Badges />} />
+              <Route path="/buttons" element={<Buttons />} />
+              <Route path="/images" element={<Images />} />
+              <Route path="/videos" element={<Videos />} />
+              <Route path="/line-chart" element={<LineChart />} />
+              <Route path="/bar-chart" element={<BarChart />} />
+            </Route>
 
-          {/* Fallback Route */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+            {/* Auth Layout */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/logout" element={<Logout />} />
+
+            {/* Fallback Route */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </OnlineProvider>
       </Router>
 
     </>

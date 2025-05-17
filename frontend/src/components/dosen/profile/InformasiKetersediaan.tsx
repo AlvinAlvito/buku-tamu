@@ -66,7 +66,7 @@ const [user, setUser] = useState<any | null>(null);
       return;
     }
 
-    fetch(`http://localhost:3000/api/ketersediaan/${ketersediaanId}`, {
+    fetch(`/api/ketersediaan/${ketersediaanId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

@@ -28,7 +28,7 @@ export default function DaftarDosen() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/daftar-dosen");
+        const res = await fetch("/api/daftar-dosen");
         const result = await res.json();
         setData(result);
         setLoading(false);
@@ -193,7 +193,7 @@ export default function DaftarDosen() {
             </div>
 
             <div className="mt-4 gap-2 w-full">
-              <Link to={`/mahasiswa/daftar-dosen/${dosen.id}`}>
+              <Link to={`/mahasiswa/daftar-dosen/antrian/${dosen.id}`}>
                 <Button size="sm" variant="success" className="w-full">
                   Lihat Profil
                 </Button>

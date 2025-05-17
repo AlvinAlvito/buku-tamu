@@ -1,7 +1,8 @@
 
+import { useParams } from "react-router";
 import Badge from "../../ui/badge/Badge";
+import { useEffect, useState } from "react";
 export default function InformasiKetersediaan() {
-
 
   const coordinate = {
     lat: -3.597031,
@@ -9,7 +10,41 @@ export default function InformasiKetersediaan() {
   };
   const gmapsUrl = `https://www.google.com/maps?q=${coordinate.lat},${coordinate.lng}`;
   // const gmapsImage = `https://maps.googleapis.com/maps/api/staticmap?center=${coordinate.lat},${coordinate.lng}&zoom=15&size=600x300&markers=color:red%7C${coordinate.lat},${coordinate.lng}&key=YOUR_GOOGLE_MAPS_API_KEY`; // ganti dengan API key
+  interface Dosen {
+    id: number;
+    user_id: number;
+    name: string;
+    nim: string;
+    foto_profil: string | null;
+    lokasi_kampus: string;
+    gedung_ruangan: string;
+    link_maps: string;
+    jadwal_libur: string;
+    status_ketersediaan: "Tersedia" | "Tidak Tersedia";
+    created_at: string;
+    updated_at: string;
+  }
 
+  const { id } = useParams<{ id: string }>();
+  const [dosen, setDosen] = useState<Dosen | null>(null);
+
+  useEffect(() => {
+    const fetchDosen = async () => {
+      try {
+        const res = await fetch(`/api/daftar-dosen/${id}`);
+        const result = await res.json();
+        setDosen(result);
+      } catch (error) {
+        console.error("Gagal memuat profil dosen:", error);
+      }
+    };
+
+    if (id) {
+      fetchDosen();
+    }
+  }, [id]);
+
+  if (!dosen) return <p>Memuat data dosen...</p>;
   return (
     <>
 
@@ -27,7 +62,7 @@ export default function InformasiKetersediaan() {
                   Lokasi Kampus
                 </p>
                 <p className="text-xl font-medium text-gray-800 dark:text-white/90">
-                  Kampus 1 UINSU Sutomo
+                  {dosen.lokasi_kampus}
                 </p>
               </div>
 
@@ -36,7 +71,7 @@ export default function InformasiKetersediaan() {
                   Gedung/Ruangan
                 </p>
                 <p className="text-xl font-medium text-gray-800 dark:text-white/90">
-                  Gedung A Ruang 101
+                  {dosen.gedung_ruangan}
                 </p>
               </div>
 
@@ -45,7 +80,7 @@ export default function InformasiKetersediaan() {
                   Jadwal Libur
                 </p>
                 <p className="text-xl font-medium text-gray-800 dark:text-white/90">
-                  Sabtu
+                  {dosen.jadwal_libur}
                 </p>
               </div>
 
@@ -54,12 +89,17 @@ export default function InformasiKetersediaan() {
                   Status Ketersediaan
                 </p>
                 <p className="text-xl font-medium text-gray-800 dark:text-white/90">
-
-                  <Badge variant="light" color="success">
-                    Tersedia
-                  </Badge>
-
+                  {dosen.status_ketersediaan === "Tersedia" ? (
+                    <Badge variant="light" color="success">
+                      Tersedia
+                    </Badge>
+                  ) : (
+                    <Badge variant="light" color="error">
+                      Tidak Tersedia
+                    </Badge>
+                  )}
                 </p>
+
               </div>
 
             </div>

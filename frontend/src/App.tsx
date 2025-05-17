@@ -67,7 +67,7 @@ export default function App() {
               <Route path="/mahasiswa" element={<MahasiswaDashboard />} />
               <Route path="/mahasiswa/profile" element={<MahasiswaProfile />} />
               <Route path="/mahasiswa/daftar-dosen" element={<MahasiswaDaftarDosen />} />
-              <Route path="/mahasiswa/daftar-dosen/antrian" element={<MahasiswaDaftarDosenAntrian />} />
+              <Route path="/mahasiswa/daftar-dosen/antrian/:id" element={<MahasiswaDaftarDosenAntrian />} />
               <Route path="/mahasiswa/riwayat-antrian" element={<RiwayatAntrianMahasiswa />} />
               <Route path="/mahasiswa/kalender" element={<KalenderMahasiswa />} />
               <Route path="/mahasiswa/tutorial" element={<TutorialMahasiswa />} />

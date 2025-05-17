@@ -33,50 +33,33 @@ exports.getAllDaftarDosen = async (req, res) => {
   }
 };
 
-
-// GET satu dosen berdasarkan ID
-exports.getDaftarDosenById = async (req, res) => {
-  const dosenId = req.params.id;
-
+// Misal dalam route update dosen
+exports.updateAllDaftarDosen = async (req, res) => {
+  const { id, status } = req.body;
   try {
-    const [rows] = await db.query(
-      `SELECT 
-         k.id, 
-         k.user_id, 
-         u.name, 
-         u.nim,
-         u.email,
-         u.role,
-         u.facebook,
-         u.twitter,
-         u.linkedin,
-         u.instagram,
-         u.whatsapp,
-         u.bio,
-         u.foto_profil,     
-         k.lokasi_kampus, 
-         k.gedung_ruangan, 
-         k.link_maps, 
-         k.jadwal_libur, 
-         k.status_ketersediaan, 
-         k.created_at, 
-         k.updated_at
-       FROM tb_ketersediaan k
-       JOIN users u ON k.user_id = u.id
-       WHERE k.id = ?`,
-      [dosenId]
-    );
+    await db.query("UPDATE tb_ketersediaan SET status_ketersediaan = ? WHERE id = ?", [status, id]);
 
-    if (rows.length === 0) {
-      return res.status(404).json({ message: "Dosen tidak ditemukan." });
-    }
+    // Dapatkan data terbaru setelah update
+    const [rows] = await db.query(`
+      SELECT k.id, k.user_id, u.name, u.nim, u.foto_profil,
+             k.lokasi_kampus, k.gedung_ruangan, k.link_maps,
+             k.jadwal_libur, k.status_ketersediaan
+      FROM tb_ketersediaan k
+      JOIN users u ON k.user_id = u.id
+    `);
 
-    res.json(rows[0]); // hanya satu objek
+    // Emit ke semua client
+    console.log(`Emit updateDaftarDosen dengan ${rows.length} data`);  // Tambah log ini
+    req.io.emit("updateDaftarDosen", rows);
+
+    res.json({ message: "Status berhasil diubah." });
   } catch (error) {
-    console.error("Error getDaftarDosenById:", error);
-    res.status(500).json({ message: "Terjadi kesalahan pada server." });
+    console.error("Error update status dosen:", error);
+    res.status(500).json({ message: "Terjadi kesalahan saat mengupdate." });
   }
 };
+
+
 exports.getDaftarDosenById = async (req, res) => {
   const dosenId = req.params.id;
 

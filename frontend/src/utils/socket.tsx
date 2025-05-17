@@ -19,9 +19,12 @@ export function initSocket(token: string): Socket {
 }
 
 export const disconnectSocket = () => {
-  if (socket) {
+  if (socket && socket.connected) {
     socket.disconnect();
     socket = null;
+  } else {
+    console.warn("Socket belum terhubung, tidak bisa disconnect.");
   }
 };
+
 export const getSocket = (): Socket | null => socket;

@@ -20,6 +20,10 @@ const io = socketIo(server, {
 
 app.use(cors());
 app.use(express.json());
+app.use((req, res, next) => {
+  req.io = io; // <= ini penting
+  next();
+});
 app.use("/api/auth", authRoutes);
 app.use("/api", ketersediaanRoutes);
 app.use("/api", profilRoutes);

@@ -22,15 +22,12 @@ exports.getKetersediaanByUserId = async (req, res) => {
 };
 
 // UPDATE ketersediaan by ID termasuk field link_maps
-exports.updateKetersediaan = (req, res) => {
-  console.log("MASUK CONTROLLER UPDATE"); // 👈 log ini
+exports.updateKetersediaan = async (req, res) => {
+  console.log("MASUK CONTROLLER UPDATE");
 
   const { id } = req.params;
   const { lokasi_kampus, gedung_ruangan, jadwal_libur, status_ketersediaan, link_maps } = req.body;
 
-  console.log("BODY:", req.body);
-  console.log("PARAMS:", req.params);
-  
   if (!lokasi_kampus || !gedung_ruangan || !jadwal_libur || status_ketersediaan === undefined) {
     return res.status(400).json({ error: "Semua field harus diisi." });
   }
@@ -40,9 +37,9 @@ exports.updateKetersediaan = (req, res) => {
     SET lokasi_kampus = ?, gedung_ruangan = ?, jadwal_libur = ?, status_ketersediaan = ?, link_maps = ?
     WHERE id = ?`;
 
-  db.query(query, [lokasi_kampus, gedung_ruangan, jadwal_libur, status_ketersediaan, link_maps, id], (err, results) => {
+  db.query(query, [lokasi_kampus, gedung_ruangan, jadwal_libur, status_ketersediaan, link_maps, id], async (err, results) => {
     if (err) {
-      console.error("Query error:", err); // 👈 log error
+      console.error("Query error:", err);
       return res.status(500).json({ error: "Gagal memperbarui data." });
     }
 
@@ -50,9 +47,32 @@ exports.updateKetersediaan = (req, res) => {
       return res.status(404).json({ error: "Data tidak ditemukan." });
     }
 
-    console.log("UPDATE BERHASIL"); // 👈 log sukses
+    console.log("UPDATE BERHASIL");
+
+    // Ambil data terbaru setelah update
+    try {
+      const [rows] = await db.promise().query(`
+        SELECT k.id, k.user_id, u.name, u.nim, u.foto_profil,
+               k.lokasi_kampus, k.gedung_ruangan, k.link_maps,
+               k.jadwal_libur, k.status_ketersediaan
+        FROM tb_ketersediaan k
+        JOIN users u ON k.user_id = u.id
+      `);
+
+      // Emit event socket update ke semua client
+      if (!req.io) {
+        console.warn("req.io tidak tersedia, emit event dibatalkan");
+      } else {
+        req.io.emit("updateDaftarDosen", rows);
+        console.log(`Emit updateDaftarDosen dengan ${rows.length} data`);
+      }
+    } catch (error) {
+      console.error("Error ambil data setelah update:", error);
+    }
+
     return res.json({ success: true });
   });
 };
+
 
 

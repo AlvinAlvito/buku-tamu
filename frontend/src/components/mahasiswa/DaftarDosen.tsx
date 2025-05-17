@@ -3,6 +3,7 @@ import Badge from "../ui/badge/Badge";
 import { Link } from "react-router";
 import Button from "../ui/button/Button";
 import { useEffect, useState } from "react";
+import { initSocket, disconnectSocket } from "../../utils/socket";
 
 interface Dosen {
   id: number;
@@ -22,7 +23,6 @@ export default function DaftarDosen() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-
   const itemsPerPage = 6;
 
   useEffect(() => {
@@ -31,21 +31,45 @@ export default function DaftarDosen() {
         const res = await fetch("/api/daftar-dosen");
         const result = await res.json();
         setData(result);
-        setLoading(false);
       } catch (err) {
         console.error("Gagal fetch data dosen:", err);
+      } finally {
         setLoading(false);
       }
     };
+
     fetchData();
+
+    const token = localStorage.getItem("token") || "";
+    const socket = initSocket(token);
+
+    const onUpdateDaftarDosen = (updatedData: Dosen[]) => {
+      console.log("Update dari socket diterima:", updatedData);
+      setData(JSON.parse(JSON.stringify(updatedData))); // Paksa re-render
+    };
+
+    socket.on("connect", () => {
+      console.log("Socket connected dengan id:", socket.id);
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("Socket connection error:", err);
+    });
+
+    socket.on("updateDaftarDosen", onUpdateDaftarDosen);
+
+    return () => {
+      socket.off("updateDaftarDosen", onUpdateDaftarDosen);
+      disconnectSocket();
+    };
   }, []);
 
-  // Filter berdasarkan nama
+  // Filter data dosen sesuai search
   const filteredData = data.filter((dosen) =>
     dosen.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Hitung data yang ditampilkan
+  // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);

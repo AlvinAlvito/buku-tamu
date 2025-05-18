@@ -1,18 +1,89 @@
+import { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import { ChevronLeftIcon } from "../../icons";
-import { Link } from "react-router";
 import Alert from "../ui/alert/Alert";
+
 export default function BuatJanji() {
   const { isOpen, openModal, closeModal } = useModal();
-  const handleSave = () => {
-    // Handle save logic here
-    console.log("Saving changes...");
-    closeModal();
+  const { id } = useParams();
+  const [tanggal, setTanggal] = useState("");
+  const [keperluan, setKeperluan] = useState("Meminta Ttd Sempro");
+
+
+  const fetchDosenId = async (ketersediaanId: string): Promise<number> => {
+    const res = await fetch("/api/ketersediaan");
+    if (!res.ok) throw new Error("Gagal ambil data ketersediaan");
+    const data = await res.json(); // data array ketersediaan
+
+    // cari object dengan id === ketersediaanId
+    const item = data.find((k: any) => String(k.id) === ketersediaanId);
+    if (!item) throw new Error("Data ketersediaan tidak ditemukan");
+
+    return item.user_id; // ini id dosen
   };
+
+
+
+  const handleSave = async () => {
+    try {
+      const userString = localStorage.getItem("user");
+      const user = userString ? JSON.parse(userString) : null;
+      const mahasiswaId = user?.id;
+      if (!mahasiswaId) {
+        console.error("Mahasiswa belum login!");
+        return;
+      }
+
+      // ambil dosen_id dari antrian
+      const dosenId = await fetchDosenId(id!);
+
+      // ambil ketersediaan dosen dari user_id (dosenId)
+      const ketersediaanRes = await fetch(`/api/ketersediaan/${dosenId}`);
+      if (!ketersediaanRes.ok) throw new Error("Gagal mengambil data ketersediaan");
+
+
+      const data = {
+        mahasiswa_id: mahasiswaId,
+        dosen_id: dosenId,
+        alasan: keperluan,
+        status: "menunggu",
+        waktu_pendaftaran: tanggal,
+      };
+
+      const response = await fetch("/api/tambah-antrian", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Gagal menyimpan: ${text}`);
+      }
+
+      const result = await response.json();
+      console.log("Berhasil:", result);
+      closeModal();
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Terjadi kesalahan:", error.message);
+      } else {
+        console.error("Terjadi kesalahan yang tidak diketahui:", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const now = new Date();
+    const isoString = now.toISOString();
+    const localDateTime = isoString.slice(0, 16); // contoh: "2025-05-18T13:45"
+    setTanggal(localDateTime);
+  }, []);
   return (
     <>
       <div className="p-5 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
@@ -42,16 +113,17 @@ export default function BuatJanji() {
             </svg>
             Buat Janji Temu
           </button>
-          
         </div>
+
         <div className="flex flex-col gap-4 my-3">
           <Alert
             variant="warning"
             title="Peringatan"
-            message="Anda sudah ditambahkan kedalam antrian dosen. Tetaplah berada diarea sekitar dosen sambil menunggu dosen memanggil anda. Tetaplah Siaga sampai notifikasi panggilan berbunyi."
+            message="Anda sudah ditambahkan ke dalam antrian dosen. Tetaplah berada di area sekitar dosen sambil menunggu dosen memanggil anda. Tetaplah siaga sampai notifikasi panggilan berbunyi."
           />
         </div>
       </div>
+
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
         <div className="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
@@ -62,29 +134,40 @@ export default function BuatJanji() {
               Jelaskan Keperluan Anda Agar Dosen Bisa Mengetahuinya
             </p>
           </div>
+
           <form className="flex flex-col">
             <div className="px-2 overflow-y-auto custom-scrollbar">
               <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                 <div>
-                  <Label>Waktu pendaftaran</Label>
-                  <Input type="date" value="" />
+                  <Label>Waktu Pendaftaran</Label>
+                  <Input
+                    type="datetime-local"
+                    value={tanggal}
+                    readOnly
+                    className="cursor-not-allowed bg-gray-100"
+                  />
                 </div>
-
                 <div>
                   <Label>Keperluan</Label>
-                  <Input type="text" value="Meminta Ttd Sempro" />
+                  <Input type="text" value={keperluan} onChange={(e) => setKeperluan(e.target.value)} />
                 </div>
-
-
               </div>
             </div>
+
             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
               <Button size="sm" variant="outline" onClick={closeModal}>
                 Tutup
               </Button>
-              <Button size="sm" onClick={handleSave}>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleSave();
+                }}
+              >
                 Simpan
-              </Button>
+              </button>
+
             </div>
           </form>
         </div>

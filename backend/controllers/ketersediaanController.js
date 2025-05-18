@@ -22,6 +22,25 @@ exports.getKetersediaanByUserId = async (req, res) => {
   }
 };
 
+exports.getAllKetersediaan = async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT *, link_maps FROM tb_ketersediaan`
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Data tidak ditemukan." });
+    }
+
+    // Kirim seluruh data (bukan cuma rows[0])
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Terjadi kesalahan pada server." });
+  }
+};
+
+
 // UPDATE ketersediaan by ID termasuk field link_maps
 exports.updateKetersediaan = async (req, res) => {
   console.log("MASUK CONTROLLER UPDATE");

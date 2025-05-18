@@ -1,30 +1,34 @@
-const db = require('../db'); // Pastikan ini export dari mysql2/promise
+const db = require("../db"); // Pastikan ini export dari mysql2/promise
 
 exports.insertAntrian = async (req, res) => {
   try {
     const { mahasiswa_id, dosen_id, alasan } = req.body;
 
     if (!mahasiswa_id || !dosen_id || !alasan) {
-      return res.status(400).json({ message: 'Semua field wajib diisi.' });
+      return res.status(400).json({ message: "Semua field wajib diisi." });
     }
 
     // Cek user roles
     const [users] = await db.execute(
-      'SELECT id, role FROM users WHERE id IN (?, ?)',
+      "SELECT id, role FROM users WHERE id IN (?, ?)",
       [mahasiswa_id, dosen_id]
     );
 
     if (users.length !== 2) {
-      return res.status(400).json({ message: 'ID mahasiswa atau dosen tidak ditemukan.' });
+      return res
+        .status(400)
+        .json({ message: "ID mahasiswa atau dosen tidak ditemukan." });
     }
 
     const roles = {};
-    users.forEach(user => {
+    users.forEach((user) => {
       roles[user.id] = user.role;
     });
 
-    if (roles[mahasiswa_id] !== 'mahasiswa' || roles[dosen_id] !== 'dosen') {
-      return res.status(400).json({ message: 'Peran mahasiswa/dosen tidak valid.' });
+    if (roles[mahasiswa_id] !== "mahasiswa" || roles[dosen_id] !== "dosen") {
+      return res
+        .status(400)
+        .json({ message: "Peran mahasiswa/dosen tidak valid." });
     }
 
     // Cek antrian aktif
@@ -35,7 +39,11 @@ exports.insertAntrian = async (req, res) => {
     );
 
     if (dupeResults.length > 0) {
-      return res.status(409).json({ message: 'Anda sudah memiliki antrian aktif dengan dosen ini.' });
+      return res
+        .status(409)
+        .json({
+          message: "Anda sudah memiliki antrian aktif dengan dosen ini.",
+        });
     }
 
     // Insert antrian baru
@@ -46,19 +54,45 @@ exports.insertAntrian = async (req, res) => {
     );
 
     return res.status(201).json({
-      message: 'Antrian berhasil diajukan.',
+      message: "Antrian berhasil diajukan.",
       data: {
         id: insertResult.insertId,
         mahasiswa_id,
         dosen_id,
         alasan,
-        status: 'menunggu',
-        waktu_pendaftaran: new Date().toISOString().slice(0, 19).replace('T', ' ')
-      }
+        status: "menunggu",
+        waktu_pendaftaran: new Date()
+          .toISOString()
+          .slice(0, 19)
+          .replace("T", " "),
+      },
     });
-
   } catch (error) {
-    console.error('Error tidak terduga:', error);
-    return res.status(500).json({ message: 'Terjadi kesalahan pada server.' });
+    console.error("Error tidak terduga:", error);
+    return res.status(500).json({ message: "Terjadi kesalahan pada server." });
   }
 };
+
+// antrianController.js
+exports.getAntrianDosenById = async (req, res) => {
+  const dosenId = req.params.id; // Ambil dari URL
+
+  try {
+    const [rows] = await db.execute(
+      `SELECT 
+         a.*, 
+         u.name AS mahasiswa_name, 
+         u.foto_profil AS mahasiswa_foto, 
+         u.role AS mahasiswa_role
+       FROM tb_antrian a
+       JOIN users u ON a.mahasiswa_id = u.id
+       WHERE a.dosen_id = ?
+       ORDER BY a.waktu_pendaftaran DESC`,
+      [dosenId]
+    );
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ message: 'Gagal mengambil data antrian', error });
+  }
+};
+

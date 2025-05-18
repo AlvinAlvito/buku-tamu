@@ -2,29 +2,30 @@ import { io, Socket } from "socket.io-client";
 
 let socket: Socket | null = null;
 
-export function initSocket(token: string): Socket {
-  if (socket) return socket; // reuse jika sudah ada
+export const initSocket = (token: string): Socket => {
+  if (!socket) {
+    socket = io("http://localhost:3000", {
+      auth: {
+        token,
+      },
+    });
 
-  socket = io("http://localhost:3000", {
-    auth: { token },
-    transports: ["websocket"],
-  });
+    socket.on("connect", () => {
+      console.log("✅ Socket connected with ID:", socket?.id);
+    });
 
-  socket.on("disconnect", () => {
-    console.log("Socket disconnected");
-    socket = null;
-  });
-
+    socket.on("connect_error", (err) => {
+      console.error("❌ Socket connection error:", err);
+    });
+  }
   return socket;
-}
+};
 
 export const disconnectSocket = () => {
-  if (socket && socket.connected) {
+  if (socket) {
     socket.disconnect();
     socket = null;
-  } else {
-    console.warn("Socket belum terhubung, tidak bisa disconnect.");
   }
 };
 
-export const getSocket = (): Socket | null => socket;
+export const getSocket = () => socket;

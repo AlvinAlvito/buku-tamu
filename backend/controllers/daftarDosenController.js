@@ -50,7 +50,6 @@ exports.updateAllDaftarDosen = async (req, res) => {
 
     // Emit ke semua client
     console.log(`Emit updateDaftarDosen dengan ${rows.length} data`);  // Tambah log ini
-    req.io.emit("updateDaftarDosen", rows);
 
     res.json({ message: "Status berhasil diubah." });
   } catch (error) {

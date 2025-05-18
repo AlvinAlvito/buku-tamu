@@ -2,39 +2,46 @@ const express = require("express");
 const cors = require("cors");
 const http = require("http");
 const socketIo = require("socket.io");
-require("dotenv").config();
-
+const { init, getIO } = require("./socket/socket");
 const authRoutes = require("./routes/auth");
 const ketersediaanRoutes = require("./routes/ketersediaanRoutes");
 const profilRoutes = require("./routes/profilRoutes");
 const daftarDosenRoutes = require("./routes/daftarDosenRoutes");
+const antrianRoutes = require("./routes/antrianRoutes");
 
 const { handleSocketConnection } = require("./controllers/socketController");
 const authMiddleware = require("./middlewares/authMiddleware");
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server, {
-  cors: { origin: "*" },
+
+const io = init(server); 
+io.on("connection", (socket) => {
+  console.log("Client connected:", socket.id);
+  handleSocketConnection(socket, io);
 });
+
+app.use((req, res, next) => {
+  req.io = io; 
+  next();
+});
+
 
 app.use(cors());
 app.use(express.json());
 app.use((req, res, next) => {
-  req.io = io; // <= ini penting
+  req.io = io; 
   next();
 });
 app.use("/api/auth", authRoutes);
 app.use("/api", ketersediaanRoutes);
 app.use("/api", profilRoutes);
 app.use("/api", daftarDosenRoutes);
+app.use("/api", antrianRoutes);
 
-// Middleware untuk memverifikasi token di Socket.IO
 io.use(authMiddleware);
 
-io.on("connection", (socket) => {
-  handleSocketConnection(socket, io);
-});
+
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {

@@ -37,6 +37,10 @@ function handleSocketConnection(socket, io) {
   console.log("✅", userId, "connected:", onlineUsers);
   io.emit("online-counts", onlineUsers);
 
+  // Emit daftar dosen saat user berhasil connect
+  socket.emit("updateDaftarDosen", [{ test: "test data" }]);
+  // Kalau mau, kamu bisa fetch data asli daftar dosen dari DB lalu emit di sini
+
   socket.on("manual-logout", () => {
     socket.disconnect(true);
     console.log("👋 Manual logout by", userId);
@@ -47,5 +51,6 @@ function handleSocketConnection(socket, io) {
     console.log("⛔", userId, "disconnected:", onlineUsers);
   });
 }
+
 
 module.exports = { handleSocketConnection, handleDisconnect };

@@ -116,11 +116,11 @@ export default function BuatJanji() {
         </div>
 
         <div className="flex flex-col gap-4 my-3">
-          <Alert
+          {/* <Alert
             variant="warning"
             title="Peringatan"
             message="Anda sudah ditambahkan ke dalam antrian dosen. Tetaplah berada di area sekitar dosen sambil menunggu dosen memanggil anda. Tetaplah siaga sampai notifikasi panggilan berbunyi."
-          />
+          /> */}
         </div>
       </div>
 

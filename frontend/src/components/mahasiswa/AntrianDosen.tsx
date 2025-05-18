@@ -1,132 +1,98 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "../ui/table";
 import Badge from "../ui/badge/Badge";
-
-
-// Define the TypeScript interface for the table rows
-interface Product {
-  id: number; // Unique identifier for each product
-  name: string; // Product name
-  kategori: string; // Number of kategori (e.g., "1 Variant", "2 kategori")
-  tujuan: string; // tujuan of the product
-  waktu: string; // waktu of the product (as a string with currency symbol)
-  // status: string; // Status of the product
-  image: string; // URL or path to the product image
-  status: "Proses" | "Menunggu" | "Dibatalkan" | "Selesai"; // Status of the product
-}
-
-// Define the table data using the interface
-const tableData: Product[] = [
-  {
-    id: 1,
-    name: "Riski Maulana",
-    kategori: "Mahasiswa",
-    tujuan: "Ingin Meminta TTD Sempro",
-    waktu: "5 Menit yang lalu",
-    status: "Proses",
-    image: "/images/user/user-01.jpg", // Replace with actual image URL
-  },
-  {
-    id: 2,
-    name: "Zikri Pinem",
-    kategori: "Mahasiswa",
-    tujuan: "Bimbingan Terakhir kali",
-    waktu: "10 Menit yang lalu",
-    status: "Menunggu",
-    image: "/images/user/user-02.jpg", // Replace with actual image URL
-  },
-  {
-    id: 3,
-    name: "Dimas Yudistira",
-    kategori: "Mahasiswa",
-    tujuan: "Meminta Ttd Sempro",
-    waktu: "15 Menit yang lalu",
-    status: "Menunggu",
-    image: "/images/user/user-03.jpg", // Replace with actual image URL
-  },
-  {
-    id: 4,
-    name: "Alex Yudistira",
-    kategori: "Mahasiswa",
-    tujuan: "Daftar Ulang",
-    waktu: "18 Menit yang lalu",
-    status: "Menunggu",
-    image: "/images/user/user-04.jpg", // Replace with actual image URL
-  },
-  {
-    id: 5,
-    name: "Alvin Alvito",
-    kategori: "Mahasiswa",
-    tujuan: "Bimbingan dan Kumpul Tugas",
-    waktu: "19 Menit yang lalu",
-    status: "Dibatalkan",
-    image: "/images/user/user-05.jpg", // Replace with actual image URL
-  },
-
-];
+import { useEffect, useState } from "react";
+type Antrian = {
+  id: number;
+  mahasiswa_id: number;
+  dosen_id: number;
+  waktu_pendaftaran: string;
+  alasan: string;
+  status: "menunggu" | "proses" | "selesai" | "dibatalkan";
+  mahasiswa_name: string;
+  mahasiswa_foto: string;
+  mahasiswa_role: string;
+};
 
 export default function AntrianDosen() {
-  return (
+  const [antrianData, setAntrianData] = useState<Antrian[]>([]);
 
+  const dosenId = 16;
+
+  useEffect(() => {
+    fetch(`/api/antrian-dosen/${dosenId}`)
+      .then((res) => res.json())
+      .then((data) => setAntrianData(data))
+      .catch((err) => console.error("Fetch error:", err));
+  }, [dosenId]);
+
+
+
+  return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
-      
       <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Antrian Tamu Dosen Saat ini
+            Antrian Tamu Anda Saat ini
           </h3>
         </div>
-
-        <div className="flex items-center gap-3">
-
-
-        </div>
       </div>
-       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
-        {tableData.map((product) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
+        {antrianData.length === 0 && (
+          <p className="text-gray-500 dark:text-gray-400 col-span-full text-center">
+            Tidak ada antrian saat ini.
+          </p>
+        )}
+
+        {antrianData.map((item) => (
           <div
-            key={product.id}
+            key={item.id}
             className="bg-white dark:bg-gray-900 rounded-2xl shadow p-6 flex flex-col justify-between"
           >
             <div className="flex items-center gap-4 mb-4">
               <img
-                src={product.image}
-                alt={product.name}
-                className="w-14 h-14 rounded-3xl object-cover"
+                src={item.mahasiswa_foto || "/images/user/user-01.jpg"}
+                alt={item.mahasiswa_name}
+                className="w-14 h-14 rounded-xl object-cover"
               />
               <div>
                 <p className="font-medium text-gray-800 dark:text-white/90">
-                  {product.name}
+                  {item.mahasiswa_name}
                 </p>
                 <p className="text-gray-500 text-sm dark:text-gray-400">
-                  {product.kategori}
+                  {item.mahasiswa_role}
                 </p>
               </div>
             </div>
 
             <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-              <p><span className="font-medium text-gray-700 dark:text-white">Waktu  <br /></span> {product.waktu}</p>
-              <p><span className="font-medium text-gray-700 dark:text-white">Tujuan <br /></span> {product.tujuan}</p>
               <p>
-                <span className="font-medium text-gray-700 dark:text-white">Status </span>{" "}
+                <span className="font-medium text-gray-700 dark:text-white">
+                  Waktu <br />
+                </span>{" "}
+                {new Date(item.waktu_pendaftaran).toLocaleString()}
+              </p>
+              <p>
+                <span className="font-medium text-gray-700 dark:text-white">
+                  Tujuan <br />
+                </span>{" "}
+                {item.alasan}
+              </p>
+              <p>
+                <span className="font-medium text-gray-700 dark:text-white">
+                  Status
+                </span>{" "}
                 <Badge
                   size="sm"
                   color={
-                    product.status === "Proses"
+                    item.status === "proses"
                       ? "success"
-                      : product.status === "Menunggu"
-                        ? "warning"
-                        : product.status === "Dibatalkan"
-                          ? "error"
-                          : "primary"
+                      : item.status === "menunggu"
+                      ? "warning"
+                      : item.status === "dibatalkan"
+                      ? "error"
+                      : "primary"
                   }
                 >
-                  {product.status}
+                  {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
                 </Badge>
               </p>
             </div>
@@ -134,7 +100,8 @@ export default function AntrianDosen() {
           </div>
         ))}
       </div>
-    </div>
 
+
+    </div>
   );
 }

@@ -8,6 +8,7 @@ const ketersediaanRoutes = require("./routes/ketersediaanRoutes");
 const profilRoutes = require("./routes/profilRoutes");
 const daftarDosenRoutes = require("./routes/daftarDosenRoutes");
 const antrianRoutes = require("./routes/antrianRoutes");
+const riwayatRoutes = require("./routes/riwayatRoutes");
 
 const { handleSocketConnection } = require("./controllers/socketController");
 const authMiddleware = require("./middlewares/authMiddleware");
@@ -38,6 +39,7 @@ app.use("/api", ketersediaanRoutes);
 app.use("/api", profilRoutes);
 app.use("/api", daftarDosenRoutes);
 app.use("/api", antrianRoutes);
+app.use("/api", riwayatRoutes);
 
 io.use(authMiddleware);
 

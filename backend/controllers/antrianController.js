@@ -75,7 +75,7 @@ exports.insertAntrian = async (req, res) => {
 
 // antrianController.js
 exports.getAntrianDosenById = async (req, res) => {
-  const dosenId = req.params.id; // Ambil dari URL
+  const dosenId = req.params.id; 
 
   try {
     const [rows] = await db.execute(

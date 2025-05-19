@@ -3,7 +3,7 @@ import Button from "../../components/ui/button/Button";
 import { useEffect, useState } from "react";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
-import { TimerIcon } from "lucide-react";
+import { UserCheck, TimerIcon, Megaphone, CheckCircle, Trash2 } from "lucide-react";
 
 type Antrian = {
   id: number;
@@ -23,7 +23,8 @@ export default function AntrianDosen() {
   const [antrianData, setAntrianData] = useState<Antrian[]>([]);
   const [selectedAntrian, setSelectedAntrian] = useState<Antrian | null>(null);
 
-  const dosenId = 16;
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const dosenId = user?.id || null;
 
   useEffect(() => {
     fetch(`/api/antrian-dosen/${dosenId}`)
@@ -36,7 +37,7 @@ export default function AntrianDosen() {
     let timer: ReturnType<typeof setInterval>;
 
     if (isOpen) {
-      setCountdown(60); 
+      setCountdown(60);
       timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
@@ -74,77 +75,96 @@ export default function AntrianDosen() {
           </p>
         )}
 
-        {antrianData.map((item) => (
-          <div
-            key={item.id}
-            className="bg-white dark:bg-gray-900 rounded-2xl shadow p-6 flex flex-col justify-between"
-          >
-            <div className="flex items-center gap-4 mb-4">
-              <img
-                src={item.mahasiswa_foto || "/images/user/user-01.jpg"}
-                alt={item.mahasiswa_name}
-                className="w-14 h-14 rounded-xl object-cover"
-              />
-              <div>
-                <p className="font-medium text-gray-800 dark:text-white/90">
-                  {item.mahasiswa_name}
+        {antrianData
+          .filter(item => item.status === "menunggu" || item.status === "proses")
+          .map(item => (
+            <div
+              key={item.id}
+              className="bg-white dark:bg-gray-900 rounded-2xl shadow p-6 flex flex-col justify-between"
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <img
+                  src={item.mahasiswa_foto || "/images/user/user-01.jpg"}
+                  alt={item.mahasiswa_name}
+                  className="w-14 h-14 rounded-xl object-cover"
+                />
+                <div>
+                  <p className="font-medium text-gray-800 dark:text-white/90">
+                    {item.mahasiswa_name}
+                  </p>
+                  <p className="text-gray-500 text-sm dark:text-gray-400">
+                    {item.mahasiswa_role}
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                <p>
+                  <span className="font-medium text-gray-700 dark:text-white">
+                    Waktu <br />
+                  </span>{" "}
+                  {new Date(item.waktu_pendaftaran).toLocaleString()}
                 </p>
-                <p className="text-gray-500 text-sm dark:text-gray-400">
-                  {item.mahasiswa_role}
+                <p>
+                  <span className="font-medium text-gray-700 dark:text-white">
+                    Tujuan <br />
+                  </span>{" "}
+                  {item.alasan}
+                </p>
+                <p>
+                  <span className="font-medium text-gray-700 dark:text-white">
+                    Status
+                  </span>{" "}
+                  <Badge
+                    size="sm"
+                    color={
+                      item.status === "proses"
+                        ? "success"
+                        : item.status === "menunggu"
+                          ? "warning"
+                          : item.status === "dibatalkan"
+                            ? "error"
+                            : "primary"
+                    }
+                  >
+                    {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                  </Badge>
                 </p>
               </div>
-            </div>
 
-            <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-              <p>
-                <span className="font-medium text-gray-700 dark:text-white">
-                  Waktu <br />
-                </span>{" "}
-                {new Date(item.waktu_pendaftaran).toLocaleString()}
-              </p>
-              <p>
-                <span className="font-medium text-gray-700 dark:text-white">
-                  Tujuan <br />
-                </span>{" "}
-                {item.alasan}
-              </p>
-              <p>
-                <span className="font-medium text-gray-700 dark:text-white">
-                  Status
-                </span>{" "}
-                <Badge
+              <div className="mt-4 grid grid-cols-3 gap-2 w-full">
+                <Button
+                  onClick={() => handlePanggil(item)}
                   size="sm"
-                  color={
-                    item.status === "proses"
-                      ? "success"
-                      : item.status === "menunggu"
-                      ? "warning"
-                      : item.status === "dibatalkan"
-                      ? "error"
-                      : "primary"
-                  }
+                  variant={item.status === "menunggu" ? "primary" : "outline"}
+                  className="w-full flex items-center gap-2 justify-center"
+                  disabled={item.status !== "menunggu"}
                 >
-                  {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
-                </Badge>
-              </p>
-            </div>
+                  <Megaphone size={16} />
+                  Panggil
+                </Button>
 
-            <div className="mt-4 grid grid-cols-2 gap-2 w-full">
-              <Button
-                onClick={() => handlePanggil(item)}
-                size="sm"
-                variant={item.status === "menunggu" ? "primary" : "outline"}
-                className="w-full"
-                disabled={item.status !== "menunggu"}
-              >
-                Panggil
-              </Button>
-              <Button size="sm" variant="success" className="w-full">
-                Selesai
-              </Button>
+                <Button
+                  size="sm"
+                  variant="success"
+                  className="w-full flex items-center gap-2 justify-center"
+                >
+                  <CheckCircle size={16} />
+                  Selesai
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="danger"
+                  className="w-full flex items-center gap-2 justify-center"
+                >
+                  <Trash2 size={16} />
+                  Hapus
+                </Button>
+
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
 
       {/* Modal */}
@@ -175,7 +195,7 @@ export default function AntrianDosen() {
 
             <div className="w-full flex mt-3 justify-end">
               <Button size="sm" variant="success" className="w-full md:w-auto">
-                Mahasiswa Sudah Hadir
+                <UserCheck size={16} /> Mahasiswa Sudah Hadir
               </Button>
             </div>
           </div>

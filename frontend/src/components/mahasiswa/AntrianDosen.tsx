@@ -1,3 +1,4 @@
+import { useParams } from "react-router";
 import Badge from "../ui/badge/Badge";
 import { useEffect, useState } from "react";
 type Antrian = {
@@ -14,24 +15,45 @@ type Antrian = {
 
 export default function AntrianDosen() {
   const [antrianData, setAntrianData] = useState<Antrian[]>([]);
-
-  const dosenId = 16;
+  const [dosenId, setDosenId] = useState<number | null>(null);
+  const { id } = useParams(); 
 
   useEffect(() => {
-    fetch(`/api/antrian-dosen/${dosenId}`)
-      .then((res) => res.json())
-      .then((data) => setAntrianData(data))
-      .catch((err) => console.error("Fetch error:", err));
+    const fetchDosenId = async () => {
+      try {
+        const res = await fetch("/api/ketersediaan/");
+        const data = await res.json();
+
+        const ketersediaan = data.find((item: any) => item.id === parseInt(id!));
+        if (ketersediaan) {
+          setDosenId(ketersediaan.user_id);
+        } else {
+          console.error("Data ketersediaan tidak ditemukan");
+        }
+      } catch (err) {
+        console.error("Gagal fetch ketersediaan:", err);
+      }
+    };
+
+    if (id) {
+      fetchDosenId();
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (dosenId !== null) {
+      fetch(`/api/antrian-dosen/${dosenId}`)
+        .then((res) => res.json())
+        .then((data) => setAntrianData(data))
+        .catch((err) => console.error("Fetch error:", err));
+    }
   }, [dosenId]);
-
-
-
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
       <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Antrian Tamu Anda Saat ini
+            Antrian Tamu Dosen
           </h3>
         </div>
       </div>

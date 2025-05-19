@@ -13,6 +13,8 @@ export default function BuatJanji() {
   const { id } = useParams();
   const [tanggal, setTanggal] = useState("");
   const [keperluan, setKeperluan] = useState("Meminta Ttd Sempro");
+  const [showAlert, setShowAlert] = useState(false);
+
 
 
   const fetchDosenId = async (ketersediaanId: string): Promise<number> => {
@@ -39,13 +41,10 @@ export default function BuatJanji() {
         return;
       }
 
-      // ambil dosen_id dari antrian
       const dosenId = await fetchDosenId(id!);
 
-      // ambil ketersediaan dosen dari user_id (dosenId)
       const ketersediaanRes = await fetch(`/api/ketersediaan/${dosenId}`);
       if (!ketersediaanRes.ok) throw new Error("Gagal mengambil data ketersediaan");
-
 
       const data = {
         mahasiswa_id: mahasiswaId,
@@ -68,6 +67,9 @@ export default function BuatJanji() {
 
       const result = await response.json();
       console.log("Berhasil:", result);
+
+      setShowAlert(true);
+
       closeModal();
     } catch (error) {
       if (error instanceof Error) {
@@ -77,6 +79,7 @@ export default function BuatJanji() {
       }
     }
   };
+
 
   useEffect(() => {
     const now = new Date();
@@ -116,11 +119,14 @@ export default function BuatJanji() {
         </div>
 
         <div className="flex flex-col gap-4 my-3">
-          {/* <Alert
-            variant="warning"
-            title="Peringatan"
-            message="Anda sudah ditambahkan ke dalam antrian dosen. Tetaplah berada di area sekitar dosen sambil menunggu dosen memanggil anda. Tetaplah siaga sampai notifikasi panggilan berbunyi."
-          /> */}
+          {showAlert && (
+            <Alert
+              variant="warning"
+              title="Peringatan"
+              message="Anda sudah ditambahkan ke dalam antrian dosen. Tetaplah berada di area sekitar dosen sambil menunggu dosen memanggil anda. Tetaplah siaga sampai notifikasi panggilan berbunyi."
+            />
+          )}
+
         </div>
       </div>
 
@@ -158,15 +164,17 @@ export default function BuatJanji() {
               <Button size="sm" variant="outline" onClick={closeModal}>
                 Tutup
               </Button>
-              <button
-                type="button"
+              <Button
+                variant="primary"
+                size="sm"
                 onClick={(e) => {
                   e.preventDefault();
                   handleSave();
                 }}
               >
                 Simpan
-              </button>
+              </Button>
+
 
             </div>
           </form>

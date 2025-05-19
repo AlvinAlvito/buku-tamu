@@ -15,21 +15,16 @@ export default function BuatJanji() {
   const [keperluan, setKeperluan] = useState("Meminta Ttd Sempro");
   const [showAlert, setShowAlert] = useState(false);
 
-
-
   const fetchDosenId = async (ketersediaanId: string): Promise<number> => {
     const res = await fetch("/api/ketersediaan");
     if (!res.ok) throw new Error("Gagal ambil data ketersediaan");
-    const data = await res.json(); // data array ketersediaan
+    const data = await res.json(); 
 
-    // cari object dengan id === ketersediaanId
     const item = data.find((k: any) => String(k.id) === ketersediaanId);
     if (!item) throw new Error("Data ketersediaan tidak ditemukan");
 
-    return item.user_id; // ini id dosen
+    return item.user_id; 
   };
-
-
 
   const handleSave = async () => {
     try {
@@ -64,7 +59,6 @@ export default function BuatJanji() {
         const text = await response.text();
         throw new Error(`Gagal menyimpan: ${text}`);
       }
-
       const result = await response.json();
       console.log("Berhasil:", result);
 
@@ -83,10 +77,24 @@ export default function BuatJanji() {
 
   useEffect(() => {
     const now = new Date();
-    const isoString = now.toISOString();
-    const localDateTime = isoString.slice(0, 16); // contoh: "2025-05-18T13:45"
+
+    // Konversi manual ke waktu Asia/Jakarta (GMT+7)
+    const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+    const jakartaTime = new Date(utc + 7 * 60 * 60000);
+
+    // Format ke yyyy-MM-ddTHH:mm:ss
+    const yyyy = jakartaTime.getFullYear();
+    const MM = String(jakartaTime.getMonth() + 1).padStart(2, '0');
+    const dd = String(jakartaTime.getDate()).padStart(2, '0');
+    const hh = String(jakartaTime.getHours()).padStart(2, '0');
+    const mm = String(jakartaTime.getMinutes()).padStart(2, '0');
+    const ss = String(jakartaTime.getSeconds()).padStart(2, '0');
+
+    const localDateTime = `${yyyy}-${MM}-${dd}T${hh}:${mm}:${ss}`;
     setTanggal(localDateTime);
   }, []);
+
+
   return (
     <>
       <div className="p-5 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
@@ -150,8 +158,11 @@ export default function BuatJanji() {
                     type="datetime-local"
                     value={tanggal}
                     readOnly
+                    step={1}
                     className="cursor-not-allowed bg-gray-100"
                   />
+
+
                 </div>
                 <div>
                   <Label>Keperluan</Label>

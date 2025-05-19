@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
 import { UserCheck, TimerIcon, Megaphone, CheckCircle, Trash2 } from "lucide-react";
+import { toast } from "react-toastify";
 
 type Antrian = {
   id: number;
@@ -16,7 +17,6 @@ type Antrian = {
   mahasiswa_foto: string;
   mahasiswa_role: string;
 };
-
 export default function AntrianDosen() {
   const { isOpen, openModal, closeModal } = useModal();
   const [countdown, setCountdown] = useState(60);
@@ -26,11 +26,17 @@ export default function AntrianDosen() {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const dosenId = user?.id || null;
 
-  useEffect(() => {
+  const fetchAntrian = () => {
     fetch(`/api/antrian-dosen/${dosenId}`)
       .then((res) => res.json())
       .then((data) => setAntrianData(data))
       .catch((err) => console.error("Fetch error:", err));
+  };
+
+  useEffect(() => {
+    if (dosenId) {
+      fetchAntrian();
+    }
   }, [dosenId]);
 
   useEffect(() => {
@@ -53,11 +59,62 @@ export default function AntrianDosen() {
     return () => clearInterval(timer);
   }, [isOpen, closeModal]);
 
-  // Fungsi memanggil mahasiswa: buka modal & set selected data
-  function handlePanggil(antrian: Antrian) {
+  const handlePanggil = (antrian: Antrian) => {
     setSelectedAntrian(antrian);
     openModal();
-  }
+  };
+
+  const handleSudahHadir = async () => {
+    if (!selectedAntrian) return;
+
+    try {
+      const response = await fetch(`/api/update-status-pemanggilan/${selectedAntrian.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success("Status mahasiswa diperbarui menjadi 'Proses'");
+        closeModal();
+        fetchAntrian();
+      } else {
+        toast.error(data.message || "Gagal memperbarui status.");
+      }
+    } catch (error) {
+      console.error("Error saat update status:", error);
+      toast.error("Terjadi kesalahan. Silakan coba lagi.");
+    }
+  };
+
+    const handleSudahSelesai = async () => {
+    if (!selectedAntrian) return;
+
+    try {
+      const response = await fetch(`/api/update-status-pemanggilan-selesai/${selectedAntrian.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success("Status mahasiswa diperbarui menjadi 'Selesai'");
+        closeModal();
+        fetchAntrian();
+      } else {
+        toast.error(data.message || "Gagal memperbarui status.");
+      }
+    } catch (error) {
+      console.error("Error saat update status:", error);
+      toast.error("Terjadi kesalahan. Silakan coba lagi.");
+    }
+  };
 
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
@@ -146,6 +203,7 @@ export default function AntrianDosen() {
 
                 <Button
                   size="sm"
+                  onClick={handleSudahSelesai}
                   variant="success"
                   className="w-full flex items-center gap-2 justify-center"
                 >
@@ -194,9 +252,15 @@ export default function AntrianDosen() {
             </div>
 
             <div className="w-full flex mt-3 justify-end">
-              <Button size="sm" variant="success" className="w-full md:w-auto">
+              <Button
+                size="sm"
+                variant="success"
+                className="w-full md:w-auto"
+                onClick={handleSudahHadir}
+              >
                 <UserCheck size={16} /> Mahasiswa Sudah Hadir
               </Button>
+
             </div>
           </div>
         </div>

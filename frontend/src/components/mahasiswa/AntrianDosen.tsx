@@ -16,7 +16,7 @@ type Antrian = {
 export default function AntrianDosen() {
   const [antrianData, setAntrianData] = useState<Antrian[]>([]);
   const [dosenId, setDosenId] = useState<number | null>(null);
-  const { id } = useParams(); 
+  const { id } = useParams();
 
   useEffect(() => {
     const fetchDosenId = async () => {
@@ -48,15 +48,39 @@ export default function AntrianDosen() {
         .catch((err) => console.error("Fetch error:", err));
     }
   }, [dosenId]);
+  const handleRefresh = async () => {
+    if (dosenId === null) return;
+
+    try {
+      const res = await fetch(`/api/antrian-dosen/${dosenId}`);
+      if (!res.ok) throw new Error("Gagal fetch antrian dosen");
+      const data = await res.json();
+      setAntrianData(data);
+    } catch (err) {
+      console.error("Error saat refresh:", err);
+    }
+  };
+  useEffect(() => {
+    if (dosenId !== null) {
+      handleRefresh(); // Memuat data pertama kali
+    }
+  }, [dosenId]);
+
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
-      <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Antrian Tamu Dosen
-          </h3>
-        </div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+          Antrian Tamu Dosen
+        </h3>
+
+        <button
+          onClick={handleRefresh}
+          className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
+        >
+          Refresh
+        </button>
       </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
         {antrianData.length === 0 && (
           <p className="text-gray-500 dark:text-gray-400 col-span-full text-center">
@@ -108,10 +132,10 @@ export default function AntrianDosen() {
                     item.status === "proses"
                       ? "success"
                       : item.status === "menunggu"
-                      ? "warning"
-                      : item.status === "dibatalkan"
-                      ? "error"
-                      : "primary"
+                        ? "warning"
+                        : item.status === "dibatalkan"
+                          ? "error"
+                          : "primary"
                   }
                 >
                   {item.status.charAt(0).toUpperCase() + item.status.slice(1)}

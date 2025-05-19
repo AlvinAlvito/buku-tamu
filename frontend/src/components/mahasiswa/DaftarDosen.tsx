@@ -4,6 +4,7 @@ import { Link } from "react-router";
 import Button from "../ui/button/Button";
 import { useEffect, useState } from "react";
 import { initSocket, disconnectSocket } from "../../utils/socket";
+import { RotateCcw, ExternalLink   } from "lucide-react";
 
 interface Dosen {
   id: number;
@@ -123,7 +124,7 @@ export default function DaftarDosen() {
 
         <div className="flex items-center gap-3">
           <button onClick={handleRefresh} className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
-            Refresh
+             <RotateCcw className="w-4 h-4" /> Refresh
           </button>
           <div className=" lg:block">
             <form>
@@ -214,7 +215,7 @@ export default function DaftarDosen() {
             <div className="mt-4 gap-2 w-full">
               <Link to={`/mahasiswa/daftar-dosen/antrian/${dosen.id}`}>
                 <Button size="sm" variant="success" className="w-full">
-                  Lihat Profil
+                  <ExternalLink className="w-4 h-4" /> Lihat Profil
                 </Button>
               </Link>
             </div>

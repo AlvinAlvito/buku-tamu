@@ -1,4 +1,4 @@
-const db = require("../db"); // Pastikan ini export dari mysql2/promise
+const db = require("../db"); 
 
 exports.insertAntrian = async (req, res) => {
   try {
@@ -96,3 +96,40 @@ exports.getAntrianDosenById = async (req, res) => {
   }
 };
 
+
+exports.updateStatusPemanggilan = async (req, res) => {
+  const { antrianId } = req.params;
+
+  try {
+    const [result] = await db.execute(
+      `UPDATE tb_antrian SET status = 'Proses' WHERE id = ?`,
+      [antrianId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Data antrian tidak ditemukan' });
+    }
+
+    res.json({ message: 'Status berhasil diperbarui menjadi Proses' });
+  } catch (error) {
+    res.status(500).json({ message: 'Gagal memperbarui status', error });
+  }
+};
+exports.updateStatusPemanggilanSelesai = async (req, res) => {
+  const { antrianId } = req.params;
+
+  try {
+    const [result] = await db.execute(
+      `UPDATE tb_antrian SET status = 'selesai' WHERE id = ?`,
+      [antrianId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Data antrian tidak ditemukan' });
+    }
+
+    res.json({ message: 'Status berhasil diperbarui menjadi selesai' });
+  } catch (error) {
+    res.status(500).json({ message: 'Gagal memperbarui status', error });
+  }
+};

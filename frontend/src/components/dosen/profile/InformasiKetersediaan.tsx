@@ -13,19 +13,47 @@ export default function InformasiKetersediaan() {
     lat: -3.597031,
     lng: 98.678513
   };
-  const gmapsUrl = `https://www.google.com/maps?q=${coordinate.lat},${coordinate.lng}`;
+  const getEmbedUrl = (url: string | undefined): string => {
+    const defaultLocation = "3.600840,98.681326";
+
+
+    if (!url || url.trim() === "") {
+      return `https://www.google.com/maps?q=${defaultLocation}&hl=es;z=14&output=embed`;
+    }
+
+    try {
+      const urlObj = new URL(url);
+
+      if (urlObj.hostname.includes("google.com") && urlObj.pathname.includes("/maps")) {
+        const q = urlObj.searchParams.get("q");
+        if (q) {
+          return `https://www.google.com/maps?q=${encodeURIComponent(q)}&hl=es;z=14&output=embed`;
+        } else {
+          return `https://www.google.com/maps?q=${encodeURIComponent(url)}&hl=es;z=14&output=embed`;
+        }
+      }
+    } catch {
+      // Kalau url bukan URL valid, anggap itu koordinat langsung
+      return `https://www.google.com/maps?q=${encodeURIComponent(url)}&hl=es;z=14&output=embed`;
+    }
+
+    // fallback
+    return `https://www.google.com/maps?q=${defaultLocation}&hl=es;z=14&output=embed`;
+  };
+
 
   const { isOpen, openModal, closeModal } = useModal();
   const [form, setForm] = useState({
-    lokasi: "",       // string ✅
+    lokasi: "",
     gedung: "",
     jadwal: "",
     maps: "",
     status: true,
+    waktu_mulai: "",
+    waktu_selesai: "",
   });
   const [ketersediaanId, setKetersediaanId] = useState<string | null>(null);
-const [user, setUser] = useState<any | null>(null);
-
+  const [user, setUser] = useState<any | null>(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -34,7 +62,6 @@ const [user, setUser] = useState<any | null>(null);
     }
   }, []);
 
-  // Ambil data ketersediaan berdasarkan user.id saat komponen pertama kali mount
   useEffect(() => {
     if (!user?.id) return;
     fetch(`http://localhost:3000/api/ketersediaan/${user.id}`)
@@ -48,18 +75,21 @@ const [user, setUser] = useState<any | null>(null);
           jadwal: d.jadwal_libur ?? "",
           maps: d.link_maps ?? "",
           status: d.status_ketersediaan === "Tersedia",
+          waktu_mulai: d.waktu_mulai ?? "",
+          waktu_selesai: d.waktu_selesai ?? "",
         });
       })
       .catch(console.error);
   }, [user]);
 
-  // Handle perubahan form
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
-  // Handle proses penyimpanan data (create/update)
   const handleSave = () => {
     if (!ketersediaanId) {
       console.error("ID ketersediaan tidak ditemukan.");
@@ -75,6 +105,8 @@ const [user, setUser] = useState<any | null>(null);
         jadwal_libur: form.jadwal,
         link_maps: form.maps,
         status_ketersediaan: form.status ? "Tersedia" : "Tidak Tersedia",
+        waktu_mulai: form.waktu_mulai,
+        waktu_selesai: form.waktu_selesai,
       }),
     })
       .then(async (r) => {
@@ -169,37 +201,54 @@ const [user, setUser] = useState<any | null>(null);
                       Tidak Tersedia
                     </Badge>
                   )}
-
                 </p>
               </div>
 
+              <div className="grid grid-cols-1 gap-1">
+                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                  Waktu Tersedia
+                </p>
+                <p className="text-xl font-medium text-gray-800 dark:text-white/90">
+                  {form.waktu_mulai && form.waktu_selesai
+                    ? `${form.waktu_mulai.slice(0, 5)} - ${form.waktu_selesai.slice(0, 5)}`
+                    : "-"}
+                </p>
+
+              </div>
+
             </div>
+
 
           </div>
           <div>
             <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
               Lokasi Goggle Maps
             </p>
-            <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-              <a href={gmapsUrl} target="_blank" rel="noopener noreferrer" className="block rounded-xl overflow-hidden border border-gray-300 dark:border-gray-700">
-                <iframe
-                  width="100%"
-                  height="200"
-                  loading="lazy"
-                  allowFullScreen
-                  className="rounded-xl"
-                  // src={`https://www.google.com/maps?q=${coordinate.lat},${coordinate.lng}&hl=es;z=14&output=embed`}
-                  src={`https://www.google.com/maps?q=-3.597031,98.678513&hl=es;z=14&output=embed`}
-                ></iframe>
-              </a>
+            <div className="relative rounded-xl overflow-hidden border border-gray-300 dark:border-gray-700" style={{ height: 200 }}>
+              <iframe
+                width="100%"
+                height="200"
+                loading="lazy"
+                allowFullScreen
+                className="rounded-xl pointer-events-none" 
+                src={getEmbedUrl(form.maps)}
+              ></iframe>
 
-              <div className="px-4 py-2 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-white/90">
-                Koordinat: <span className="font-medium">{coordinate.lat}, {coordinate.lng}</span>
-              </div>
+              <a
+                href={form.maps || "https://www.google.com/maps?q=3.5952,98.6722"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="absolute inset-0 z-10"
+                style={{ cursor: "pointer" }}
+              ></a>
             </div>
+            <div className="px-4 py-2 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-white/90">
+            Koordinat: <span className="font-medium">{coordinate.lat}, {coordinate.lng}</span>
           </div>
 
+          </div>
 
+          
 
 
         </div>
@@ -218,6 +267,7 @@ const [user, setUser] = useState<any | null>(null);
           <form className="flex flex-col">
             <div className="px-2 overflow-y-auto custom-scrollbar">
               <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+
                 <div>
                   <Label>Pilih Lokasi Kampus</Label>
                   <Select
@@ -228,10 +278,7 @@ const [user, setUser] = useState<any | null>(null);
                       setForm((prev) => ({ ...prev, lokasi: value }))
                     }
                   />
-
-
                 </div>
-
 
                 <div>
                   <Label>Gedung/Ruangan</Label>
@@ -248,7 +295,7 @@ const [user, setUser] = useState<any | null>(null);
                   <div className="flex items-center gap-3">
                     <Switch
                       label=""
-                      defaultChecked={form.status}
+                      checked={form.status}
                       onChange={(checked) =>
                         setForm((prev) => ({ ...prev, status: checked }))
                       }
@@ -263,27 +310,49 @@ const [user, setUser] = useState<any | null>(null);
                         Tidak Tersedia
                       </Badge>
                     )}
-
                   </div>
                 </div>
+
                 <div>
-                  <Label>Masukan Titik Kordinat Link Goggle Maps</Label>
+                  <Label>Masukan Titik Kordinat Link Google Maps</Label>
                   <Input name="maps" value={form.maps} type="text" onChange={handleChange} />
+                </div>
+
+                <div>
+                  <Label>Waktu Mulai</Label>
+                  <Input
+                    name="waktu_mulai"
+                    type="time"
+                    value={form.waktu_mulai || ""}
+                    onChangeTime24={(val) => setForm(prev => ({ ...prev, waktu_mulai: val }))}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div>
+                  <Label>Waktu Selesai</Label>
+                  <Input
+                    name="waktu_selesai"
+                    type="time"
+                    value={form.waktu_selesai || ""}
+                    onChangeTime24={(val) => setForm(prev => ({ ...prev, waktu_selesai: val }))}
+                    onChange={handleChange}
+                  />
                 </div>
 
               </div>
             </div>
+
             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
               <Button size="sm" variant="outline" onClick={closeModal}>
                 Tutup
               </Button>
               <Button size="sm" onClick={handleSave}>
-
-
                 Simpan
               </Button>
             </div>
           </form>
+
         </div>
       </Modal>
     </>

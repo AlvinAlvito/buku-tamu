@@ -1,5 +1,4 @@
-import type React from "react";
-import type { FC } from "react";
+import React, { FC } from "react";
 
 interface InputProps {
   type?: "text" | "number" | "email" | "password" | "date" | "time" | string;
@@ -8,6 +7,8 @@ interface InputProps {
   placeholder?: string;
   value?: string | number;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  // Tambahan: khusus untuk waktu 24 jam terformat
+  onChangeTime24?: (value: string) => void;
   className?: string;
   min?: string;
   max?: string;
@@ -26,6 +27,7 @@ const Input: FC<InputProps> = ({
   placeholder,
   value,
   onChange,
+  onChangeTime24,
   className = "",
   min,
   max,
@@ -48,6 +50,17 @@ const Input: FC<InputProps> = ({
     inputClasses += ` bg-transparent text-gray-800 border-gray-300 focus:border-brand-300 focus:ring-brand-500/20 dark:border-gray-700 dark:text-white/90  dark:focus:border-brand-800`;
   }
 
+  // Handler khusus untuk type="time" supaya format 24 jam terjaga
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value; // biasanya format sudah HH:mm
+    if (onChangeTime24) {
+      onChangeTime24(val);
+    }
+    if (onChange) {
+      onChange(e);
+    }
+  };
+
   return (
     <div className="relative">
       <input
@@ -56,7 +69,7 @@ const Input: FC<InputProps> = ({
         name={name}
         placeholder={placeholder}
         value={value}
-        onChange={onChange}
+        onChange={type === "time" ? handleTimeChange : onChange}
         min={min}
         max={max}
         readOnly={readOnly}
@@ -68,11 +81,7 @@ const Input: FC<InputProps> = ({
       {hint && (
         <p
           className={`mt-1.5 text-xs ${
-            error
-              ? "text-error-500"
-              : success
-              ? "text-success-500"
-              : "text-gray-500"
+            error ? "text-error-500" : success ? "text-success-500" : "text-gray-500"
           }`}
         >
           {hint}

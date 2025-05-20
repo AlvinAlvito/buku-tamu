@@ -1,170 +1,125 @@
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHeader,
-    TableRow,
-  } from "../ui/table";
-  import Badge from "../ui/badge/Badge";
-import { Link } from "react-router";
-  
-  // Define the TypeScript interface for the table rows
-  interface Product {
-    id: number; // Unique identifier for each product
-    name: string; // Product name
-    kategori: string; // Number of kategori (e.g., "1 Variant", "2 kategori")
-    nip: string; // nip of the product
-    lokasi: string; // lokasi of the product (as a string with currency symbol)
-    image: string; // URL or path to the product image
-    status: "Tersedia" |  "Tidak Tersedia"; // Status of the product
-  }
 
-  // Define the table data using the interface
-  const tableData: Product[] = [
-    {
-      id: 1,
-      name: "Armansyah M.Kom",
-      kategori: "Dosen",
-      nip: "1090292003",
-      lokasi: "Kampus 4 Tuntungan, ruangan prodi ilmu komputer",
-      status: "Tersedia",
-      image: "/images/user/user-01.jpg",
-    },
-    {
-      id: 2,
-      name: "Abdul Hasibuan M.Kom",
-      kategori: "Dosen",
-      nip: "2090292003",
-      lokasi: "Kampus 4 Tuntungan, ruangan prodi ilmu komputer",
-      status: "Tersedia",
-      image: "/images/user/user-02.jpg",
-    },
-    {
-      id: 3,
-      name: "Ucok Syahban M.Ag",
-      kategori: "Dosen",
-      nip: "2090292003",
-      lokasi: "Kampus 2 Sutomo, ruangan aula gedung hanif",
-      status: "Tersedia",
-      image: "/images/user/user-02.jpg",
-    },
-    {
-      id: 3,
-      name: "Ucok Syahban M.Ag",
-      kategori: "Dosen",
-      nip: "2030292003",
-      lokasi: "Kampus 2 Sutomo, ruangan aula gedung hanif",
-      status: "Tersedia",
-      image: "/images/user/user-03.jpg",
-    },
-    {
-      id: 4,
-      name: "Udin Petot M.M",
-      kategori: "Dosen",
-      nip: "2190292003",
-      lokasi: "Kampus 2 Sutomo, ruangan rapat 1",
-      status: "Tersedia",
-      image: "/images/user/user-04.jpg",
-    },
-    {
-      id: 5,
-      name: "Sentot Prabuwijaya S.T M.Ag",
-      kategori: "Dosen",
-      nip: "2990292003",
-      lokasi: "Kampus 1 Pancing, Gedung Biro",
-      status: "Tersedia",
-      image: "/images/user/user-05.jpg",
-    },
-    {
-      id: 6,
-      name: "Habib Zidan M.Pd",
-      kategori: "Dosen",
-      nip: "2990292003",
-      lokasi: "-",
-      status: "Tidak Tersedia",
-      image: "/images/user/user-06.jpg",
-    },
-    {
-      id: 7,
-      name: "Siti Nurbayah M.Pd",
-      kategori: "Dosen",
-      nip: "1990292003",
-      lokasi: "-",
-      status: "Tidak Tersedia",
-      image: "/images/user/user-07.jpg",
-    },
-    {
-      id: 8,
-      name: "Habib Riziq M.Pd",
-      kategori: "Dosen",
-      nip: "2440292003",
-      lokasi: "-",
-      status: "Tidak Tersedia",
-      image: "/images/user/user-08.jpg",
-    },
-    {
-      id: 9,
-      name: "Nurhasanah M.Ag",
-      kategori: "Dosen",
-      nip: "1110292003",
-      lokasi: "-",
-      status: "Tidak Tersedia",
-      image: "/images/user/user-09.jpg",
-    },
+import Badge from "../ui/badge/Badge";
+import { useEffect, useState } from "react";
+import { initSocket, disconnectSocket } from "../../utils/socket";
+import { RotateCcw, ExternalLink   } from "lucide-react";
 
-  
-  ];
-  
-  export default function RecentOrders() {
-    return (
-      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
-        <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-              Daftar Dosen & Pegawai 
-            </h3>
-          </div>
-  
-          <div className="flex items-center gap-3">
-            <button className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
-              <svg
-                className="stroke-current fill-white dark:fill-gray-800"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M2.29004 5.90393H17.7067"
-                  stroke=""
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M17.7075 14.0961H2.29085"
-                  stroke=""
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M12.0826 3.33331C13.5024 3.33331 14.6534 4.48431 14.6534 5.90414C14.6534 7.32398 13.5024 8.47498 12.0826 8.47498C10.6627 8.47498 9.51172 7.32398 9.51172 5.90415C9.51172 4.48432 10.6627 3.33331 12.0826 3.33331Z"
-                  fill=""
-                  stroke=""
-                  strokeWidth="1.5"
-                />
-                <path
-                  d="M7.91745 11.525C6.49762 11.525 5.34662 12.676 5.34662 14.0959C5.34661 15.5157 6.49762 16.6667 7.91745 16.6667C9.33728 16.6667 10.4883 15.5157 10.4883 14.0959C10.4883 12.676 9.33728 11.525 7.91745 11.525Z"
-                  fill=""
-                  stroke=""
-                  strokeWidth="1.5"
-                />
-              </svg>
-              Filter
-            </button>
-            <div className="hidden lg:block">
+interface Dosen {
+  id: number;
+  user_id: number;
+  name: string;
+  nim: string;
+  foto_profil: string | null;
+  lokasi_kampus: string;
+  gedung_ruangan: string;
+  link_maps: string;
+  jadwal_libur: string;
+  status_ketersediaan: "Tersedia" | "Tidak Tersedia";
+}
+
+export default function DaftarDosen() {
+  const [data, setData] = useState<Dosen[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const itemsPerPage = 6;
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/daftar-dosen");
+      const result = await res.json();
+      setData(result);
+    } catch (err) {
+      console.error("Gagal fetch data dosen:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+
+    fetchData();
+
+    const token = localStorage.getItem("token") || "";
+    const socket = initSocket(token);
+    console.log("Socket initialized:", socket);
+
+    socket.on("updateDaftarDosen", (updatedData: Dosen[]) => {
+      console.log("Data dari socket updateDaftarDosen diterima:", updatedData);
+      setData(updatedData);
+    });
+
+    const onUpdateDaftarDosen = (updatedData: Dosen[]) => {
+      console.log("Data dari socket updateDaftarDosen diterima:", updatedData);
+      setData(updatedData);
+    };
+
+    socket.on("connect", () => {
+      console.log("Socket connected dengan id:", socket.id);
+
+      socket.off("updateDaftarDosen");
+      socket.on("updateDaftarDosen", onUpdateDaftarDosen);
+    });
+
+
+    socket.on("connect_error", (err) => {
+      console.error("Socket connection error:", err);
+    });
+
+    console.log("Listener updateDaftarDosen attached");
+
+    return () => {
+      socket.off("updateDaftarDosen", onUpdateDaftarDosen);
+      disconnectSocket();
+    };
+  }, []);
+
+  const filteredData = data.filter((dosen) =>
+    (dosen.name ?? "").toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, data]);
+
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+  };
+
+  const handleRefresh = () => {
+    fetchData();
+  };
+
+  // useEffect(() => {
+  //   fetchData();
+  //   const interval = setInterval(() => {
+  //     fetchData();
+  //   }, 10000);
+  //   return () => clearInterval(interval);
+  // }, []);
+
+  if (loading) return <p>Memuat data dosen...</p>;
+
+  return (
+    <div className="overflow-hidden  rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
+      <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+            Daftar Dosen 
+          </h3>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button onClick={handleRefresh} className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
+             <RotateCcw className="w-4 h-4" /> Refresh
+          </button>
+          <div className=" lg:block">
             <form>
               <div className="relative">
                 <span className="absolute -translate-y-1/2 pointer-events-none left-4 top-1/2">
@@ -186,98 +141,109 @@ import { Link } from "react-router";
                 </span>
                 <input
                   type="text"
-                  placeholder="Cari Sesuatu..."
+                  placeholder="Cari nama dosen..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
                 />
 
               </div>
             </form>
           </div>
-          </div>
-        </div>
-        <div className="max-w-full overflow-x-auto">
-          <Table>
-            {/* Table Header */}
-            <TableHeader className="border-gray-100 dark:border-gray-800 border-y">
-              <TableRow>
-                <TableCell
-                  isHeader
-                  className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  Nama
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  Lokasi
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  NIP
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  Status
-                </TableCell>
-              </TableRow>
-            </TableHeader>
-  
-            {/* Table Body */}
-  
-            <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
-              {tableData.map((product) => (
-                <TableRow key={product.id} className="">
-                 <TableCell className="py-3">
-                    <Link to="/dosen/daftar-dosen" className="block hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md p-2 transition ">
-                      <div className="flex items-center gap-3">
-                        <div className="h-[50px] w-[50px] overflow-hidden rounded-md">
-                          <img
-                            src={product.image}
-                            className="h-[50px] w-[50px]"
-                            alt={product.name}
-                          />
-                        </div>
-                        <div>
-                          <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {product.name}
-                          </p>
-                          <span className="text-gray-500 text-theme-xs dark:text-gray-400">
-                            {product.kategori}
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                  </TableCell>
-
-                  <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                    {product.lokasi}
-                  </TableCell>
-                  <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                    {product.nip}
-                  </TableCell>
-                  <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                    <Badge
-                      size="sm"
-                      color={
-                        product.status === "Tersedia"
-                          ? "success"
-                          : "error"
-                      }
-                    >
-                      {product.status}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
         </div>
       </div>
-    );
-  }
-  
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {currentItems.map((dosen) => (
+          <div
+            key={dosen.id}
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow p-6 flex flex-col justify-between"
+          >
+            <div className="flex items-center gap-4 mb-4">
+              <img
+                src={dosen.foto_profil ? dosen.foto_profil : "/images/user/user-01.jpg"}
+                alt={dosen.name}
+                className="w-14 h-14 rounded-xl object-cover"
+              />
+              <div>
+                <p className="font-medium text-gray-800 dark:text-white/90">
+                  {dosen.name}
+                </p>
+                <p className="text-gray-500 text-sm dark:text-gray-400">
+                  NIP: {dosen.nim}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+              <p>
+                <span className="font-medium text-gray-700 dark:text-white">
+                  Lokasi Kampus: <br />
+                </span>
+                {dosen.lokasi_kampus}
+              </p>
+              <p>
+                <span className="font-medium text-gray-700 dark:text-white">
+                  Ruangan: <br />
+                </span>
+                {dosen.gedung_ruangan}
+              </p>
+              <p>
+                <span className="font-medium text-gray-700 dark:text-white">
+                  Status{" "}
+                </span>
+                <Badge
+                  size="sm"
+                  color={
+                    dosen.status_ketersediaan === "Tersedia"
+                      ? "success"
+                      : "error"
+                  }
+                >
+                  {dosen.status_ketersediaan}
+                </Badge>
+              </p>
+            </div>
+
+          
+          </div>
+        ))}
+      </div>
+
+      {/* Pagination */}
+      <div className="flex justify-center mt-6 gap-2">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="px-3 py-1 rounded border border-gray-300 dark:border-gray-700 disabled:opacity-50 dark:text-gray-200"
+        >
+          Prev
+        </button>
+
+        {[...Array(totalPages)].map((_, idx) => {
+          const pageNum = idx + 1;
+          return (
+            <button
+              key={pageNum}
+              onClick={() => handlePageChange(pageNum)}
+              className={`px-3 py-1 rounded border ${pageNum === currentPage
+                ? "bg-green-600 text-white border-green-600 dark:text-gray-200"
+                : "border-gray-300 dark:border-gray-700"
+                }`}
+            >
+              {pageNum}
+            </button>
+          );
+        })}
+
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="px-3 py-1 rounded border border-gray-300 dark:border-gray-700 disabled:opacity-50 dark:text-gray-200"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  );
+}

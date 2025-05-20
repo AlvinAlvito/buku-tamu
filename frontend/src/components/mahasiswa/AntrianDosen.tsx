@@ -88,7 +88,10 @@ export default function AntrianDosen() {
           </p>
         )}
 
-        {antrianData.map((item) => (
+        {antrianData
+          .filter(item => item.status === "menunggu" || item.status === "proses")
+          .sort((a, b) => new Date(a.waktu_pendaftaran).getTime() - new Date(b.waktu_pendaftaran).getTime()) 
+          .map(item => (
           <div
             key={item.id}
             className="bg-white dark:bg-gray-900 rounded-2xl shadow p-6 flex flex-col justify-between"

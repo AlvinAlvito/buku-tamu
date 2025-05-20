@@ -21,6 +21,8 @@ export default function InformasiKetersediaan() {
     link_maps: string;
     jadwal_libur: string;
     status_ketersediaan: "Tersedia" | "Tidak Tersedia";
+    waktu_mulai: string;
+    waktu_selesai: string;
     created_at: string;
     updated_at: string;
   }
@@ -98,6 +100,17 @@ export default function InformasiKetersediaan() {
                       Tidak Tersedia
                     </Badge>
                   )}
+                </p>
+
+              </div>
+               <div className="grid grid-cols-1 gap-1">
+                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                  Waktu Tersedia
+                </p>
+                <p className="text-xl font-medium text-gray-800 dark:text-white/90">
+                  {dosen.waktu_mulai && dosen.waktu_selesai
+                    ? `${dosen.waktu_mulai.slice(0, 5)} - ${dosen.waktu_selesai.slice(0, 5)}`
+                    : "-"}
                 </p>
 
               </div>

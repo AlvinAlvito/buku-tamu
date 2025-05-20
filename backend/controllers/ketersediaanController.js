@@ -52,20 +52,24 @@ exports.updateKetersediaan = async (req, res) => {
     jadwal_libur,
     status_ketersediaan,
     link_maps,
+    waktu_mulai,
+    waktu_selesai,
   } = req.body;
 
   if (
     !lokasi_kampus ||
     !gedung_ruangan ||
     !jadwal_libur ||
-    status_ketersediaan === undefined
+    status_ketersediaan === undefined ||
+    !waktu_mulai ||
+    !waktu_selesai
   ) {
     return res.status(400).json({ error: "Semua field harus diisi." });
   }
 
   const query = `
     UPDATE tb_ketersediaan
-    SET lokasi_kampus = ?, gedung_ruangan = ?, jadwal_libur = ?, status_ketersediaan = ?, link_maps = ?
+    SET lokasi_kampus = ?, gedung_ruangan = ?, jadwal_libur = ?, status_ketersediaan = ?, link_maps = ?, waktu_mulai = ?, waktu_selesai = ?
     WHERE id = ?`;
 
   db.query(
@@ -76,6 +80,8 @@ exports.updateKetersediaan = async (req, res) => {
       jadwal_libur,
       status_ketersediaan,
       link_maps,
+      waktu_mulai,
+      waktu_selesai,
       id,
     ],
     async (err, results) => {
@@ -93,12 +99,13 @@ exports.updateKetersediaan = async (req, res) => {
       // Ambil data terbaru setelah update
       try {
         const [rows] = await db.promise().query(`
-        SELECT k.id, k.user_id, u.name, u.nim, u.foto_profil,
-               k.lokasi_kampus, k.gedung_ruangan, k.link_maps,
-               k.jadwal_libur, k.status_ketersediaan
-        FROM tb_ketersediaan k
-        JOIN users u ON k.user_id = u.id
-      `);
+          SELECT k.id, k.user_id, u.name, u.nim, u.foto_profil,
+                 k.lokasi_kampus, k.gedung_ruangan, k.link_maps,
+                 k.jadwal_libur, k.status_ketersediaan,
+                 k.waktu_mulai, k.waktu_selesai
+          FROM tb_ketersediaan k
+          JOIN users u ON k.user_id = u.id
+        `);
         const io = getIO();
         
         if (!io) {
@@ -115,3 +122,4 @@ exports.updateKetersediaan = async (req, res) => {
     }
   );
 };
+

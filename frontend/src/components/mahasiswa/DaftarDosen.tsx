@@ -42,7 +42,6 @@ export default function DaftarDosen() {
 
     fetchData();
 
-    // Inisialisasi socket dengan token dari localStorage
     const token = localStorage.getItem("token") || "";
     const socket = initSocket(token);
     console.log("Socket initialized:", socket);
@@ -52,17 +51,14 @@ export default function DaftarDosen() {
       setData(updatedData);
     });
 
-    // Handler saat menerima updateDaftarDosen dari server
     const onUpdateDaftarDosen = (updatedData: Dosen[]) => {
       console.log("Data dari socket updateDaftarDosen diterima:", updatedData);
       setData(updatedData);
     };
 
-    // Event koneksi socket
     socket.on("connect", () => {
       console.log("Socket connected dengan id:", socket.id);
 
-      // Baru pasang listener di sini
       socket.off("updateDaftarDosen");
       socket.on("updateDaftarDosen", onUpdateDaftarDosen);
     });
@@ -74,7 +70,6 @@ export default function DaftarDosen() {
 
     console.log("Listener updateDaftarDosen attached");
 
-    // Cleanup: cabut listener dan disconnect socket saat komponen unmount
     return () => {
       socket.off("updateDaftarDosen", onUpdateDaftarDosen);
       disconnectSocket();
@@ -114,11 +109,11 @@ export default function DaftarDosen() {
   if (loading) return <p>Memuat data dosen...</p>;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
+    <div className="overflow-hidden  rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
       <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Daftar Dosen & Pegawai
+            Daftar Dosen
           </h3>
         </div>
 
@@ -240,7 +235,7 @@ export default function DaftarDosen() {
               key={pageNum}
               onClick={() => handlePageChange(pageNum)}
               className={`px-3 py-1 rounded border ${pageNum === currentPage
-                ? "bg-blue-500 text-white border-blue-500 dark:text-gray-200"
+                ? "bg-green-600 text-white border-green-600 dark:text-gray-200"
                 : "border-gray-300 dark:border-gray-700"
                 }`}
             >

@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 interface ButtonProps {
   children: ReactNode; // Button text or content
   size?: "sm" | "md"; // Button size
-  variant?: "primary" | "outline" | "success" | "danger"; // Button variant
+  variant?: "primary" | "outline" | "success" | "danger" | "warning";  // Button variant
   startIcon?: ReactNode; // Icon before the text
   endIcon?: ReactNode; // Icon after the text
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void; // ✅ Yang benar
@@ -33,6 +33,8 @@ const Button: React.FC<ButtonProps> = ({
       "bg-brand-500 text-white shadow-theme-xs hover:bg-brand-600 disabled:bg-brand-300",
     danger:
       "bg-red-500 text-white shadow-theme-xs hover:bg-red-600 disabled:bg-red-300",
+    warning:
+      "bg-yellow-600 text-white shadow-theme-xs hover:bg-yellow-700 disabled:bg-yellow-300",
     success:
       "bg-green-700 text-white shadow-theme-xs hover:bg-green-800 disabled:bg-green-300",
     outline:

@@ -88,7 +88,7 @@ export default function LoginForm() {
             </h1>
 
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Masukan NIM dan Password anda
+              Masukan NIM/NIP dan Password anda
             </p>
           </div>
           <div>
@@ -137,14 +137,14 @@ export default function LoginForm() {
                   </div>
                   <Link
                     to="/reset-password"
-                    className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
+                    className="text-sm text-green-500 hover:text-green-600 dark:text-green-400"
                   >
                     Lupa Password?
                   </Link>
                 </div>
                 <div>
                   {error && (
-                    <div className="p-2 text-sm text-red-600 bg-red-100 border border-red-300 rounded">
+                    <div className="p-2 my-2 text-sm text-red-600 bg-red-100 border border-red-300 rounded">
                       {error}
                     </div>
                   )}
@@ -153,7 +153,7 @@ export default function LoginForm() {
                     <div className="text-sm text-gray-500">Loading...</div>
                   )}
 
-                  <Button className="w-full" size="sm">
+                  <Button className="w-full bg-green-700 hover:bg-green-800" size="sm">
                     Masuk
                   </Button>
                 </div>

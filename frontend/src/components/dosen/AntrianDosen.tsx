@@ -3,7 +3,7 @@ import Button from "../../components/ui/button/Button";
 import { useEffect, useState } from "react";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
-import { UserCheck, TimerIcon, Megaphone, CheckCircle, Trash2 } from "lucide-react";
+import { UserCheck, TimerIcon, Megaphone, CheckCircle, Trash2, XCircle } from "lucide-react";
 import { toast } from "react-toastify";
 
 type Antrian = {
@@ -19,6 +19,7 @@ type Antrian = {
 };
 export default function AntrianDosen() {
   const { isOpen, openModal, closeModal } = useModal();
+  const [isSelesaiOpen, setIsSelesaiOpen] = useState(false);
   const [countdown, setCountdown] = useState(60);
   const [antrianData, setAntrianData] = useState<Antrian[]>([]);
   const [selectedAntrian, setSelectedAntrian] = useState<Antrian | null>(null);
@@ -64,6 +65,7 @@ export default function AntrianDosen() {
     openModal();
   };
 
+
   const handleSudahHadir = async () => {
     if (!selectedAntrian) return;
 
@@ -90,7 +92,13 @@ export default function AntrianDosen() {
     }
   };
 
-    const handleSudahSelesai = async () => {
+  const handleSelesai = (antrian: Antrian) => {
+    setSelectedAntrian(antrian);
+    setIsSelesaiOpen(true);
+  };
+
+
+  const handleSudahSelesai = async () => {
     if (!selectedAntrian) return;
 
     try {
@@ -105,7 +113,7 @@ export default function AntrianDosen() {
 
       if (response.ok) {
         toast.success("Status mahasiswa diperbarui menjadi 'Selesai'");
-        closeModal();
+        setIsSelesaiOpen(false);
         fetchAntrian();
       } else {
         toast.error(data.message || "Gagal memperbarui status.");
@@ -115,6 +123,7 @@ export default function AntrianDosen() {
       toast.error("Terjadi kesalahan. Silakan coba lagi.");
     }
   };
+
 
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
@@ -134,6 +143,7 @@ export default function AntrianDosen() {
 
         {antrianData
           .filter(item => item.status === "menunggu" || item.status === "proses")
+          .sort((a, b) => new Date(a.waktu_pendaftaran).getTime() - new Date(b.waktu_pendaftaran).getTime()) 
           .map(item => (
             <div
               key={item.id}
@@ -203,7 +213,7 @@ export default function AntrianDosen() {
 
                 <Button
                   size="sm"
-                  onClick={handleSudahSelesai}
+                  onClick={() => handleSelesai(item)}
                   variant="success"
                   className="w-full flex items-center gap-2 justify-center"
                 >
@@ -251,7 +261,17 @@ export default function AntrianDosen() {
               </span>
             </div>
 
-            <div className="w-full flex mt-3 justify-end">
+            <div className="w-full  grid grid-cols-2 gap-2 mt-3 justify-end">
+              
+              <Button
+                size="sm"
+                variant="warning"
+                className="w-full md:w-auto"
+                onClick={closeModal}
+              >
+                Batalkan
+              </Button>
+
               <Button
                 size="sm"
                 variant="success"
@@ -265,6 +285,48 @@ export default function AntrianDosen() {
           </div>
         </div>
       </Modal>
+
+      <Modal
+        isOpen={isSelesaiOpen}
+        onClose={() => setIsSelesaiOpen(false)}
+        className="max-w-lg m-4 animate-fade-in"
+      >
+        <div className="relative w-full p-6 lg:p-10 rounded-2xl bg-white dark:bg-gray-900 shadow-2xl border border-gray-200 dark:border-gray-700 transition-all">
+          <div className="flex flex-col items-center text-center space-y-4">
+            <UserCheck className="w-14 h-14 text-green-600 dark:text-green-400" />
+
+            <h4 className="text-2xl font-bold text-gray-800 dark:text-white">
+              Konfirmasi Selesai
+            </h4>
+
+            <p className="text-gray-600 dark:text-gray-300">
+              Apakah mahasiswa sudah hadir dan telah menyelesaikan sesi konsultasi?
+            </p>
+
+            <div className="w-full grid grid-cols-2 gap-4 pt-6">
+
+              <Button
+                size="sm"
+                variant="warning"
+                className="w-full flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-700"
+                onClick={() => setIsSelesaiOpen(false)}
+              >
+                <XCircle size={18} /> Batalkan
+              </Button>
+
+              <Button
+                size="sm"
+                variant="success"
+                className="w-full flex items-center justify-center gap-2"
+                onClick={handleSudahSelesai}
+              >
+                <UserCheck size={18} /> Tandai Selesai
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Modal>
+
     </div>
   );
 }

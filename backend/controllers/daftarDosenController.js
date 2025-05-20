@@ -5,23 +5,25 @@ exports.getAllDaftarDosen = async (req, res) => {
   const userId = req.params.userId;
 
   try {
-  const [rows] = await db.query(
-  `SELECT 
-     k.id, 
-     k.user_id, 
-     u.name, 
-     u.nim,     
-     u.foto_profil,     -- Tambahkan ini
-     k.lokasi_kampus, 
-     k.gedung_ruangan, 
-     k.link_maps, 
-     k.jadwal_libur, 
-     k.status_ketersediaan, 
-     k.created_at, 
-     k.updated_at
-   FROM tb_ketersediaan k
-   JOIN users u ON k.user_id = u.id`
-);
+    const [rows] = await db.query(
+      `SELECT 
+         k.id, 
+         k.user_id, 
+         u.name, 
+         u.nim,     
+         u.foto_profil,    
+         k.lokasi_kampus, 
+         k.gedung_ruangan, 
+         k.link_maps, 
+         k.jadwal_libur, 
+         k.status_ketersediaan, 
+         k.waktu_mulai,
+         k.waktu_selesai,
+         k.created_at, 
+         k.updated_at
+       FROM tb_ketersediaan k
+       JOIN users u ON k.user_id = u.id`
+    );
     if (rows.length === 0) {
       return res.status(404).json({ message: "Data tidak ditemukan." });
     }
@@ -43,7 +45,8 @@ exports.updateAllDaftarDosen = async (req, res) => {
     const [rows] = await db.query(`
       SELECT k.id, k.user_id, u.name, u.nim, u.foto_profil,
              k.lokasi_kampus, k.gedung_ruangan, k.link_maps,
-             k.jadwal_libur, k.status_ketersediaan
+             k.jadwal_libur, k.status_ketersediaan,
+             k.waktu_mulai, k.waktu_selesai
       FROM tb_ketersediaan k
       JOIN users u ON k.user_id = u.id
     `);
@@ -57,7 +60,6 @@ exports.updateAllDaftarDosen = async (req, res) => {
     res.status(500).json({ message: "Terjadi kesalahan saat mengupdate." });
   }
 };
-
 
 exports.getDaftarDosenById = async (req, res) => {
   const dosenId = req.params.id;
@@ -82,7 +84,9 @@ exports.getDaftarDosenById = async (req, res) => {
          k.gedung_ruangan, 
          k.link_maps, 
          k.jadwal_libur, 
-         k.status_ketersediaan, 
+         k.status_ketersediaan,
+         k.waktu_mulai,
+         k.waktu_selesai,
          k.created_at, 
          k.updated_at
        FROM tb_ketersediaan k
@@ -95,10 +99,9 @@ exports.getDaftarDosenById = async (req, res) => {
       return res.status(404).json({ message: "Dosen tidak ditemukan." });
     }
 
-    res.json(rows[0]); // hanya satu objek
+    res.json(rows[0]); 
   } catch (error) {
     console.error("Error getDaftarDosenById:", error);
     res.status(500).json({ message: "Terjadi kesalahan pada server." });
   }
 };
-

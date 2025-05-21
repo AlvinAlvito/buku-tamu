@@ -97,7 +97,7 @@ export default function NotificationDropdown() {
               <span className="block">
                 <span className="mb-1.5 block  text-theme-sm text-gray-500 dark:text-gray-400 space-x-1">
                   <span className="font-medium text-gray-800 dark:text-white/90">
-                    Riski Maulana
+                    Paris Alvito
                   </span>
                   <span> Tujuan Untuk</span>
                   <span className="font-medium text-gray-800 dark:text-white/90">
@@ -112,8 +112,6 @@ export default function NotificationDropdown() {
               </span>
             </DropdownItem>
           </li>
-
-          
 
           {/* Add more items as needed */}
         </ul>

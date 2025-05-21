@@ -2,6 +2,6 @@ const express = require("express");
 const router = express.Router();
 const riwayatController = require("../controllers/riwayatController");
 
-router.get("/antrian-dosen/:id", riwayatController.getLogRiwayatByDosenId);
+router.get("/riwayat", riwayatController.getLogRiwayatByUser);
 
 module.exports = router;

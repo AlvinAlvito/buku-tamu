@@ -9,14 +9,12 @@ const profilRoutes = require("./routes/profilRoutes");
 const daftarDosenRoutes = require("./routes/daftarDosenRoutes");
 const antrianRoutes = require("./routes/antrianRoutes");
 const riwayatRoutes = require("./routes/riwayatRoutes");
-
 const { handleSocketConnection } = require("./controllers/socketController");
 const authMiddleware = require("./middlewares/authMiddleware");
-
 const app = express();
 const server = http.createServer(app);
-
 const io = init(server); 
+
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
   handleSocketConnection(socket, io);
@@ -26,8 +24,6 @@ app.use((req, res, next) => {
   req.io = io; 
   next();
 });
-
-
 app.use(cors());
 app.use(express.json());
 app.use((req, res, next) => {
@@ -42,8 +38,6 @@ app.use("/api", antrianRoutes);
 app.use("/api", riwayatRoutes);
 
 io.use(authMiddleware);
-
-
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {

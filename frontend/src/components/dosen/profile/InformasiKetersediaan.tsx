@@ -236,9 +236,6 @@ export default function InformasiKetersediaan() {
 
           </div>
 
-
-
-
         </div>
       </div>
 

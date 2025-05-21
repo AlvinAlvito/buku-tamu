@@ -119,20 +119,40 @@ exports.updateStatusPemanggilanSelesai = async (req, res) => {
   const { antrianId } = req.params;
 
   try {
-    const [result] = await db.execute(
+    const [updateResult] = await db.execute(
       `UPDATE tb_antrian SET status = 'selesai' WHERE id = ?`,
       [antrianId]
     );
 
-    if (result.affectedRows === 0) {
+    if (updateResult.affectedRows === 0) {
       return res.status(404).json({ message: "Data antrian tidak ditemukan" });
     }
 
-    res.json({ message: "Status berhasil diperbarui menjadi selesai" });
+    const [antrianRows] = await db.execute(
+      `SELECT mahasiswa_id, dosen_id FROM tb_antrian WHERE id = ?`,
+      [antrianId]
+    );
+
+    if (antrianRows.length === 0) {
+      return res.status(404).json({ message: "Data antrian tidak ditemukan setelah update" });
+    }
+
+    const { mahasiswa_id, dosen_id } = antrianRows[0];
+
+    await db.execute(
+      `INSERT INTO tb_log_riwayat (antrian_id, mahasiswa_id, dosen_id, waktu_selesai, status)
+       VALUES (?, ?, ?, NOW(), 'selesai')`,
+      [antrianId, mahasiswa_id, dosen_id]
+    );
+
+    res.json({ message: "Status berhasil diperbarui dan log riwayat disimpan" });
+
   } catch (error) {
-    res.status(500).json({ message: "Gagal memperbarui status", error });
+    console.error("Error updateStatusPemanggilanSelesai:", error);
+    res.status(500).json({ message: "Gagal memperbarui status dan menyimpan log", error: error.message });
   }
 };
+
 exports.updateStatusBatalkanAntrian = async (req, res) => {
   const { antrianId } = req.params;
 

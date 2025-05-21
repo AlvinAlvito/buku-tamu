@@ -1,6 +1,6 @@
 
 import UserAktif from "../../components/dashboard/UserAktif";
-import MonthlySalesChart from "../../components/ecommerce/MonthlySalesChart";
+import GrafikAntrian from "../../components/mahasiswa/GrafikAntrian";
 import PageMeta from "../../components/common/PageMeta";
 import Dosen from "../../components/mahasiswa/DaftarDosen";
 
@@ -21,7 +21,7 @@ export default function Dashboard() {
           <Dosen />
         </div>
         <div className="col-span-12 xl:col-span-12">
-          <MonthlySalesChart />
+          <GrafikAntrian />
         </div>
       </div>
     </>

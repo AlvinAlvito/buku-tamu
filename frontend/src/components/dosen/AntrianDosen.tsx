@@ -3,7 +3,7 @@ import Button from "../../components/ui/button/Button";
 import { useEffect, useState } from "react";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
-import { UserCheck, TimerIcon, Megaphone, CheckCircle, Trash2, XCircle } from "lucide-react";
+import { UserCheck, TimerIcon, Megaphone, CheckCircle, Trash2, XCircle, UserX } from "lucide-react";
 import { toast } from "react-toastify";
 
 type Antrian = {
@@ -16,10 +16,14 @@ type Antrian = {
   mahasiswa_name: string;
   mahasiswa_foto: string;
   mahasiswa_role: string;
+  mahasiswa_nim: string;
+  mahasiswa_prodi: string;
+  mahasiswa_stambuk: string;
 };
 export default function AntrianDosen() {
   const { isOpen, openModal, closeModal } = useModal();
   const [isSelesaiOpen, setIsSelesaiOpen] = useState(false);
+  const [isBatalkanOpen, setIsBatalkanOpen] = useState(false);
   const [countdown, setCountdown] = useState(60);
   const [antrianData, setAntrianData] = useState<Antrian[]>([]);
   const [selectedAntrian, setSelectedAntrian] = useState<Antrian | null>(null);
@@ -96,6 +100,10 @@ export default function AntrianDosen() {
     setSelectedAntrian(antrian);
     setIsSelesaiOpen(true);
   };
+  const handleBatalkan = (antrian: Antrian) => {
+    setSelectedAntrian(antrian);
+    setIsBatalkanOpen(true);
+  };
 
 
   const handleSudahSelesai = async () => {
@@ -124,6 +132,47 @@ export default function AntrianDosen() {
     }
   };
 
+  const handleSudahDibatalkan = async () => {
+    if (!selectedAntrian) return;
+
+    try {
+      const response = await fetch(`/api/update-status-pemanggilan-batalkan/${selectedAntrian.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success("Status mahasiswa diperbarui menjadi 'Dibatalkan'");
+        setIsBatalkanOpen(false);
+        fetchAntrian();
+      } else {
+        toast.error(data.message || "Gagal memperbarui status.");
+      }
+    } catch (error) {
+      console.error("Error saat update status:", error);
+      toast.error("Terjadi kesalahan. Silakan coba lagi.");
+    }
+  };
+
+  function getTimeAgo(waktuPendaftaran: string): string {
+    const now = new Date();
+    const waktu = new Date(waktuPendaftaran);
+    const diffInMs = now.getTime() - waktu.getTime();
+    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+
+    if (diffInMinutes < 1) return "(baru saja)";
+    if (diffInMinutes < 60) return `(${diffInMinutes} menit yang lalu)`;
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `(${diffInHours} jam yang lalu)`;
+    const diffInDays = Math.floor(diffInHours / 24);
+    return `(${diffInDays} hari yang lalu)`;
+  }
+
+
 
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
@@ -143,35 +192,50 @@ export default function AntrianDosen() {
 
         {antrianData
           .filter(item => item.status === "menunggu" || item.status === "proses")
-          .sort((a, b) => new Date(a.waktu_pendaftaran).getTime() - new Date(b.waktu_pendaftaran).getTime()) 
-          .map(item => (
+          .sort((a, b) => new Date(a.waktu_pendaftaran).getTime() - new Date(b.waktu_pendaftaran).getTime())
+          .map((item, index) => (
             <div
               key={item.id}
               className="bg-white dark:bg-gray-900 rounded-2xl shadow p-6 flex flex-col justify-between"
             >
-              <div className="flex items-center gap-4 mb-4">
+              <div className="flex items-center justify-between gap-4 mb-4">
                 <img
                   src={item.mahasiswa_foto || "/images/user/user-01.jpg"}
                   alt={item.mahasiswa_name}
                   className="w-14 h-14 rounded-xl object-cover"
                 />
-                <div>
+
+                <div className="flex-1">
                   <p className="font-medium text-gray-800 dark:text-white/90">
                     {item.mahasiswa_name}
                   </p>
                   <p className="text-gray-500 text-sm dark:text-gray-400">
-                    {item.mahasiswa_role}
+                    {item.mahasiswa_nim} | {item.mahasiswa_prodi} {item.mahasiswa_stambuk}
                   </p>
                 </div>
+
+                <div
+                  className={`px-3 py-1 rounded-full text-sm font-semibold ${item.status === "menunggu"
+                      ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-white"
+                      : "bg-green-100 text-green-800 dark:bg-green-800 dark:text-white"
+                    }`}
+                >
+                  #{index + 1}
+                </div>
               </div>
+
 
               <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                 <p>
                   <span className="font-medium text-gray-700 dark:text-white">
-                    Waktu <br />
-                  </span>{" "}
-                  {new Date(item.waktu_pendaftaran).toLocaleString()}
+                    Waktu Pendaftaran <br />
+                  </span>
+                  {new Date(item.waktu_pendaftaran).toLocaleString()}{" "}
+                  <span className="text-sm text-gray-300">
+                    {getTimeAgo(item.waktu_pendaftaran)}
+                  </span>
                 </p>
+
                 <p>
                   <span className="font-medium text-gray-700 dark:text-white">
                     Tujuan <br />
@@ -201,14 +265,13 @@ export default function AntrianDosen() {
 
               <div className="mt-4 grid grid-cols-3 gap-2 w-full">
                 <Button
-                  onClick={() => handlePanggil(item)}
                   size="sm"
-                  variant={item.status === "menunggu" ? "primary" : "outline"}
+                  onClick={() => handleBatalkan(item)}
+                  variant="danger"
                   className="w-full flex items-center gap-2 justify-center"
-                  disabled={item.status !== "menunggu"}
                 >
-                  <Megaphone size={16} />
-                  Panggil
+                  <Trash2 size={16} />
+                  Hapus
                 </Button>
 
                 <Button
@@ -220,15 +283,18 @@ export default function AntrianDosen() {
                   <CheckCircle size={16} />
                   Selesai
                 </Button>
-
                 <Button
+                  onClick={() => handlePanggil(item)}
                   size="sm"
-                  variant="danger"
+                  variant={item.status === "menunggu" ? "primary" : "outline"}
                   className="w-full flex items-center gap-2 justify-center"
+                  disabled={item.status !== "menunggu"}
                 >
-                  <Trash2 size={16} />
-                  Hapus
+                  <Megaphone size={16} />
+                  Panggil
                 </Button>
+
+
 
               </div>
             </div>
@@ -262,7 +328,7 @@ export default function AntrianDosen() {
             </div>
 
             <div className="w-full  grid grid-cols-2 gap-2 mt-3 justify-end">
-              
+
               <Button
                 size="sm"
                 variant="warning"
@@ -300,7 +366,7 @@ export default function AntrianDosen() {
             </h4>
 
             <p className="text-gray-600 dark:text-gray-300">
-              Apakah mahasiswa sudah hadir dan telah menyelesaikan sesi konsultasi?
+              Apakah mahasiswa sudah hadir dan telah menyelesaikan proses bimbingan?
             </p>
 
             <div className="w-full grid grid-cols-2 gap-4 pt-6">
@@ -321,6 +387,47 @@ export default function AntrianDosen() {
                 onClick={handleSudahSelesai}
               >
                 <UserCheck size={18} /> Tandai Selesai
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={isBatalkanOpen}
+        onClose={() => setIsBatalkanOpen(false)}
+        className="max-w-lg m-4 animate-fade-in"
+      >
+        <div className="relative w-full p-6 lg:p-10 rounded-2xl bg-white dark:bg-gray-900 shadow-2xl border border-gray-200 dark:border-gray-700 transition-all">
+          <div className="flex flex-col items-center text-center space-y-4">
+            <UserX className="w-14 h-14 text-red-600 dark:text-red-400" />
+
+            <h4 className="text-2xl font-bold text-gray-800 dark:text-white">
+              Konfirmasi Hapus Dari Antrian
+            </h4>
+
+            <p className="text-gray-600 dark:text-gray-300">
+              Apakah anda yakin ingin menghapus mahasiswa ini dari antrian? Tidak ingin Memanggilnya ulang?
+            </p>
+
+            <div className="w-full grid grid-cols-2 gap-4 pt-6">
+
+              <Button
+                size="sm"
+                variant="warning"
+                className="w-full flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-700"
+                onClick={() => setIsBatalkanOpen(false)}
+              >
+                <XCircle size={18} /> Batalkan
+              </Button>
+
+              <Button
+                size="sm"
+                variant="danger"
+                className="w-full flex items-center justify-center gap-2"
+                onClick={handleSudahDibatalkan}
+              >
+                <UserX size={18} /> Hapus dari Antrian
               </Button>
             </div>
           </div>

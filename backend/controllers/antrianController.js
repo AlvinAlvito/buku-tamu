@@ -1,4 +1,4 @@
-const db = require("../db"); 
+const db = require("../db");
 
 exports.insertAntrian = async (req, res) => {
   try {
@@ -39,11 +39,9 @@ exports.insertAntrian = async (req, res) => {
     );
 
     if (dupeResults.length > 0) {
-      return res
-        .status(409)
-        .json({
-          message: "Anda sudah memiliki antrian aktif dengan dosen ini.",
-        });
+      return res.status(409).json({
+        message: "Anda sudah memiliki antrian aktif dengan dosen ini.",
+      });
     }
 
     // Insert antrian baru
@@ -75,7 +73,7 @@ exports.insertAntrian = async (req, res) => {
 
 // antrianController.js
 exports.getAntrianDosenById = async (req, res) => {
-  const dosenId = req.params.id; 
+  const dosenId = req.params.id;
 
   try {
     const [rows] = await db.execute(
@@ -83,7 +81,10 @@ exports.getAntrianDosenById = async (req, res) => {
          a.*, 
          u.name AS mahasiswa_name, 
          u.foto_profil AS mahasiswa_foto, 
-         u.role AS mahasiswa_role
+         u.role AS mahasiswa_role,
+         u.prodi AS mahasiswa_prodi,
+         u.nim AS mahasiswa_nim,
+         u.stambuk AS mahasiswa_stambuk
        FROM tb_antrian a
        JOIN users u ON a.mahasiswa_id = u.id
        WHERE a.dosen_id = ?
@@ -92,10 +93,9 @@ exports.getAntrianDosenById = async (req, res) => {
     );
     res.json(rows);
   } catch (error) {
-    res.status(500).json({ message: 'Gagal mengambil data antrian', error });
+    res.status(500).json({ message: "Gagal mengambil data antrian", error });
   }
 };
-
 
 exports.updateStatusPemanggilan = async (req, res) => {
   const { antrianId } = req.params;
@@ -107,12 +107,12 @@ exports.updateStatusPemanggilan = async (req, res) => {
     );
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Data antrian tidak ditemukan' });
+      return res.status(404).json({ message: "Data antrian tidak ditemukan" });
     }
 
-    res.json({ message: 'Status berhasil diperbarui menjadi Proses' });
+    res.json({ message: "Status berhasil diperbarui menjadi Proses" });
   } catch (error) {
-    res.status(500).json({ message: 'Gagal memperbarui status', error });
+    res.status(500).json({ message: "Gagal memperbarui status", error });
   }
 };
 exports.updateStatusPemanggilanSelesai = async (req, res) => {
@@ -125,11 +125,29 @@ exports.updateStatusPemanggilanSelesai = async (req, res) => {
     );
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Data antrian tidak ditemukan' });
+      return res.status(404).json({ message: "Data antrian tidak ditemukan" });
     }
 
-    res.json({ message: 'Status berhasil diperbarui menjadi selesai' });
+    res.json({ message: "Status berhasil diperbarui menjadi selesai" });
   } catch (error) {
-    res.status(500).json({ message: 'Gagal memperbarui status', error });
+    res.status(500).json({ message: "Gagal memperbarui status", error });
+  }
+};
+exports.updateStatusBatalkanAntrian = async (req, res) => {
+  const { antrianId } = req.params;
+
+  try {
+    const [result] = await db.execute(
+      `UPDATE tb_antrian SET status = 'dibatalkan' WHERE id = ?`,
+      [antrianId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Data antrian tidak ditemukan" });
+    }
+
+    res.json({ message: "Status berhasil diperbarui menjadi dibatalkan" });
+  } catch (error) {
+    res.status(500).json({ message: "Gagal memperbarui status", error });
   }
 };

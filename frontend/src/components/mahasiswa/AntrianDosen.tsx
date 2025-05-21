@@ -1,6 +1,10 @@
 import { useParams } from "react-router";
 import Badge from "../ui/badge/Badge";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { Trash2, UserX, XCircle } from "lucide-react";
+import Button from "../ui/button/Button";
+import { Modal } from "../ui/modal";
 type Antrian = {
   id: number;
   mahasiswa_id: number;
@@ -11,12 +15,26 @@ type Antrian = {
   mahasiswa_name: string;
   mahasiswa_foto: string;
   mahasiswa_role: string;
+  mahasiswa_nim: string;
+  mahasiswa_prodi: string;
+  mahasiswa_stambuk: string;
 };
 
 export default function AntrianDosen() {
   const [antrianData, setAntrianData] = useState<Antrian[]>([]);
+  const [isBatalkanOpen, setIsBatalkanOpen] = useState(false);
+  const [selectedAntrian, setSelectedAntrian] = useState<Antrian | null>(null);
   const [dosenId, setDosenId] = useState<number | null>(null);
   const { id } = useParams();
+  const [mahasiswaId, setMahasiswaId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    if (user && user.id) {
+      setMahasiswaId(user.id);
+    }
+  }, []);
+
 
   useEffect(() => {
     const fetchDosenId = async () => {
@@ -65,6 +83,51 @@ export default function AntrianDosen() {
       handleRefresh(); // Memuat data pertama kali
     }
   }, [dosenId]);
+  const handleBatalkan = (antrian: Antrian) => {
+    setSelectedAntrian(antrian);
+    setIsBatalkanOpen(true);
+  };
+  const handleSudahDibatalkan = async () => {
+    if (!selectedAntrian) return;
+
+    try {
+      const response = await fetch(`/api/update-status-pemanggilan-batalkan/${selectedAntrian.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success("Status mahasiswa diperbarui menjadi 'Dibatalkan'");
+        setIsBatalkanOpen(false);
+        handleRefresh();
+      }
+      else {
+        toast.error(data.message || "Gagal memperbarui status.");
+      }
+    } catch (error) {
+      console.error("Error saat update status:", error);
+      toast.error("Terjadi kesalahan. Silakan coba lagi.");
+    }
+  };
+  function getTimeAgo(waktuPendaftaran: string): string {
+    const now = new Date();
+    const waktu = new Date(waktuPendaftaran);
+    const diffInMs = now.getTime() - waktu.getTime();
+    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+
+    if (diffInMinutes < 1) return "(baru saja)";
+    if (diffInMinutes < 60) return `(${diffInMinutes} menit yang lalu)`;
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `(${diffInHours} jam yang lalu)`;
+    const diffInDays = Math.floor(diffInHours / 24);
+    return `(${diffInDays} hari yang lalu)`;
+  }
+
+
 
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
@@ -90,65 +153,133 @@ export default function AntrianDosen() {
 
         {antrianData
           .filter(item => item.status === "menunggu" || item.status === "proses")
-          .sort((a, b) => new Date(a.waktu_pendaftaran).getTime() - new Date(b.waktu_pendaftaran).getTime()) 
-          .map(item => (
-          <div
-            key={item.id}
-            className="bg-white dark:bg-gray-900 rounded-2xl shadow p-6 flex flex-col justify-between"
-          >
-            <div className="flex items-center gap-4 mb-4">
-              <img
-                src={item.mahasiswa_foto || "/images/user/user-01.jpg"}
-                alt={item.mahasiswa_name}
-                className="w-14 h-14 rounded-xl object-cover"
-              />
-              <div>
-                <p className="font-medium text-gray-800 dark:text-white/90">
-                  {item.mahasiswa_name}
+          .sort((a, b) => new Date(a.waktu_pendaftaran).getTime() - new Date(b.waktu_pendaftaran).getTime())
+          .map((item, index) => (
+            <div
+              key={item.id}
+              className="bg-white dark:bg-gray-900 rounded-2xl shadow p-6 flex flex-col "
+            >
+
+             <div className="flex items-center justify-between gap-4 mb-4">
+                <img
+                  src={item.mahasiswa_foto || "/images/user/user-01.jpg"}
+                  alt={item.mahasiswa_name}
+                  className="w-14 h-14 rounded-xl object-cover"
+                />
+
+                <div className="flex-1">
+                  <p className="font-medium text-gray-800 dark:text-white/90">
+                    {item.mahasiswa_name}
+                  </p>
+                  <p className="text-gray-500 text-sm dark:text-gray-400">
+                    {item.mahasiswa_nim} | {item.mahasiswa_prodi} {item.mahasiswa_stambuk}
+                  </p>
+                </div>
+
+                <div
+                  className={`px-3 py-1 rounded-full text-sm font-semibold ${item.status === "menunggu"
+                      ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-white"
+                      : "bg-green-100 text-green-800 dark:bg-green-800 dark:text-white"
+                    }`}
+                >
+                  #{index + 1}
+                </div>
+              </div>
+
+              <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                <p>
+                  <span className="font-medium text-gray-700 dark:text-white">
+                    Waktu Pendaftaran <br />
+                  </span>
+                  {new Date(item.waktu_pendaftaran).toLocaleString()}{" "}
+                  <span className="text-sm text-gray-300">
+                    {getTimeAgo(item.waktu_pendaftaran)}
+                  </span>
                 </p>
-                <p className="text-gray-500 text-sm dark:text-gray-400">
-                  {item.mahasiswa_role}
+                <p>
+                  <span className="font-medium text-gray-700 dark:text-white">
+                    Tujuan <br />
+                  </span>{" "}
+                  {item.alasan}
+                </p>
+                <p>
+                  <span className="font-medium text-gray-700 dark:text-white">
+                    Status
+                  </span>{" "}
+                  <Badge
+                    size="sm"
+                    color={
+                      item.status === "proses"
+                        ? "success"
+                        : item.status === "menunggu"
+                          ? "warning"
+                          : item.status === "dibatalkan"
+                            ? "error"
+                            : "primary"
+                    }
+                  >
+                    {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                  </Badge>
                 </p>
               </div>
-            </div>
+              {item.mahasiswa_id === mahasiswaId && (
+                <div className="mt-4 grid  gap-2 w-full">
+                  <Button
+                    size="sm"
+                    onClick={() => handleBatalkan(item)}
+                    variant="danger"
+                    className="w-full flex items-center gap-2 justify-center"
+                  >
+                    <Trash2 size={16} />
+                    Batalkan Antrian
+                  </Button>
+                </div>
+              )}
 
-            <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-              <p>
-                <span className="font-medium text-gray-700 dark:text-white">
-                  Waktu <br />
-                </span>{" "}
-                {new Date(item.waktu_pendaftaran).toLocaleString()}
-              </p>
-              <p>
-                <span className="font-medium text-gray-700 dark:text-white">
-                  Tujuan <br />
-                </span>{" "}
-                {item.alasan}
-              </p>
-              <p>
-                <span className="font-medium text-gray-700 dark:text-white">
-                  Status
-                </span>{" "}
-                <Badge
-                  size="sm"
-                  color={
-                    item.status === "proses"
-                      ? "success"
-                      : item.status === "menunggu"
-                        ? "warning"
-                        : item.status === "dibatalkan"
-                          ? "error"
-                          : "primary"
-                  }
-                >
-                  {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
-                </Badge>
-              </p>
             </div>
-
-          </div>
-        ))}
+          ))}
       </div>
+
+      <Modal
+        isOpen={isBatalkanOpen}
+        onClose={() => setIsBatalkanOpen(false)}
+        className="max-w-lg m-4 animate-fade-in"
+      >
+        <div className="relative w-full p-6 lg:p-10 rounded-2xl bg-white dark:bg-gray-900 shadow-2xl border border-gray-200 dark:border-gray-700 transition-all">
+          <div className="flex flex-col items-center text-center space-y-4">
+            <UserX className="w-14 h-14 text-red-600 dark:text-red-400" />
+
+            <h4 className="text-2xl font-bold text-gray-800 dark:text-white">
+              Konfirmasi Hapus Dari Antrian
+            </h4>
+
+            <p className="text-gray-600 dark:text-gray-300">
+              Apakah anda yakin ingin membatalkan antrian ?
+            </p>
+
+            <div className="w-full grid grid-cols-2 gap-4 pt-6">
+
+              <Button
+                size="sm"
+                variant="warning"
+                className="w-full flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-700"
+                onClick={() => setIsBatalkanOpen(false)}
+              >
+                <XCircle size={18} /> Batalkan
+              </Button>
+
+              <Button
+                size="sm"
+                variant="danger"
+                className="w-full flex items-center justify-center gap-2"
+                onClick={handleSudahDibatalkan}
+              >
+                <UserX size={18} /> Hapus dari Antrian
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Modal>
 
 
     </div>

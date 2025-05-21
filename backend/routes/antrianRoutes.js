@@ -6,5 +6,6 @@ router.post("/tambah-antrian", antrianController.insertAntrian);
 router.get("/antrian-dosen/:id", antrianController.getAntrianDosenById);
 router.put("/update-status-pemanggilan/:antrianId", antrianController.updateStatusPemanggilan);
 router.put("/update-status-pemanggilan-selesai/:antrianId", antrianController.updateStatusPemanggilanSelesai);
+router.put("/update-status-pemanggilan-batalkan/:antrianId", antrianController.updateStatusBatalkanAntrian);
 
 module.exports = router;

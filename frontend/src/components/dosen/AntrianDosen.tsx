@@ -3,7 +3,7 @@ import Button from "../../components/ui/button/Button";
 import { useEffect, useState } from "react";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
-import { UserCheck, TimerIcon, Megaphone, CheckCircle, Trash2, XCircle, UserX } from "lucide-react";
+import { UserCheck, TimerIcon, Megaphone, CheckCircle, Trash2, XCircle, UserX, RotateCcw } from "lucide-react";
 import { toast } from "react-toastify";
 
 type Antrian = {
@@ -172,6 +172,9 @@ export default function AntrianDosen() {
     return `(${diffInDays} hari yang lalu)`;
   }
 
+  const handleRefresh = () => {
+    fetchAntrian();
+  };
 
 
   return (
@@ -179,9 +182,12 @@ export default function AntrianDosen() {
       <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Antrian Tamu Anda Saat ini
+            Antrian Mahasiswa Anda Saat ini
           </h3>
         </div>
+        <button onClick={handleRefresh} className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
+          <RotateCcw className="w-4 h-4" /> Refresh
+        </button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
         {antrianData.length === 0 && (
@@ -216,8 +222,8 @@ export default function AntrianDosen() {
 
                 <div
                   className={`px-3 py-1 rounded-full text-sm font-semibold ${item.status === "menunggu"
-                      ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-white"
-                      : "bg-green-100 text-green-800 dark:bg-green-800 dark:text-white"
+                    ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-white"
+                    : "bg-green-100 text-green-800 dark:bg-green-800 dark:text-white"
                     }`}
                 >
                   #{index + 1}

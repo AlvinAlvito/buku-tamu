@@ -41,7 +41,7 @@ const navItemsMahasiswa: NavItem[] = [
 const navItemsDosen: NavItem[] = [
   { icon: <GridIcon />, name: "Dashboard", path: "/dosen" },
   { icon: <UserCircleIcon />, name: "Profile", path: "/dosen/profile" },
-  { icon: <PlugInIcon />, name: "Antrian Tamu", path: "/dosen/antrian" },
+  { icon: <PlugInIcon />, name: "Antrian", path: "/dosen/antrian" },
   { icon: <BoxCubeIcon />, name: "Daftar Dosen", path: "/dosen/daftar-dosen" },
   { icon: <PieChartIcon />, name: "Riwayat Antrian", path: "/dosen/riwayat-antrian" },
   { icon: <CalenderIcon />, name: "Kalender", path: "/dosen/kalender" },
@@ -277,7 +277,7 @@ const AppSidebar: React.FC = () => {
                 className="dark:hidden"
                 src="/images/logo/logo.png"
                 alt="Logo"
-                width={150}
+                width={220}
                 height={40}
               />
               <img

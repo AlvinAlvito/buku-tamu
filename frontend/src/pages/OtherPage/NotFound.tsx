@@ -5,9 +5,9 @@ import PageMeta from "../../components/common/PageMeta";
 export default function NotFound() {
   return (
     <>
-      <PageMeta
-        title="React.js 404 Dashboard | TailAdmin - React.js Admin Dashboard Template"
-        description="This is React.js 404 Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
+     <PageMeta
+        title="Bimbingan Akademik UINSU"
+        description="Adalah sebuah website & aplikasi Bimbingan Akademik milik UINSU "
       />
       <div className="relative flex flex-col items-center justify-center min-h-screen p-6 overflow-hidden z-1">
         <GridShape />
@@ -24,7 +24,7 @@ export default function NotFound() {
           />
 
           <p className="mt-10 mb-6 text-base text-gray-700 dark:text-gray-400 sm:text-lg">
-           Tidak ada Apa apa disini
+            Tidak ada Apa apa disini
           </p>
 
           <Link
@@ -35,9 +35,12 @@ export default function NotFound() {
           </Link>
         </div>
         {/* <!-- Footer --> */}
-        <p className="absolute text-sm text-center text-gray-500 -translate-x-1/2 bottom-6 left-1/2 dark:text-gray-400">
-          &copy; {new Date().getFullYear()} - UINSU
-        </p>
+        <Link
+          to="https://avinto.my.id" target="_blank">
+          <p className="absolute text-md text-center text-gray-500 -translate-x-1/2 bottom-6 left-1/2 dark:text-gray-400">
+            &copy; {new Date().getFullYear()} - <span className="font-semibold underline">Paris Alvito</span>
+          </p>
+        </Link>
       </div>
     </>
   );

@@ -1,25 +1,48 @@
+import { Link } from "react-router";
+import GridShape from "../../components/common/GridShape";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 
 export default function Blank() {
   return (
     <div>
-      <PageMeta
-        title="React.js Blank Dashboard | TailAdmin - Next.js Admin Dashboard Template"
-        description="This is React.js Blank Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
+     <PageMeta
+        title="Bimbingan Akademik UINSU"
+        description="Adalah sebuah website & aplikasi Bimbingan Akademik milik UINSU "
       />
       <PageBreadcrumb pageTitle="Blank Page" />
-      <div className="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/[0.03] xl:px-10 xl:py-12">
-        <div className="mx-auto w-full max-w-[630px] text-center">
-          <h3 className="mb-4 font-semibold text-gray-800 text-theme-xl dark:text-white/90 sm:text-2xl">
-            Card Title Here
-          </h3>
+     <div className="relative flex flex-col items-center justify-center min-h-screen p-6 overflow-hidden z-1">
+        <GridShape />
+        <div className="mx-auto w-full max-w-[242px] text-center sm:max-w-[472px]">
+          <h1 className="mb-8 font-bold text-gray-800 text-title-md dark:text-white/90 xl:text-title-2xl">
+            ERROR
+          </h1>
 
-          <p className="text-sm text-gray-500 dark:text-gray-400 sm:text-base">
-            Start putting content on grids or panels, you can also use different
-            combinations of grids.Please check out the dashboard and other pages
+          <img src="/images/error/404.svg" alt="404" className="dark:hidden" />
+          <img
+            src="/images/error/404-dark.svg"
+            alt="404"
+            className="hidden dark:block"
+          />
+
+          <p className="mt-10 mb-6 text-base text-gray-700 dark:text-gray-400 sm:text-lg">
+            Tidak ada Apa apa disini
           </p>
+
+          <Link
+            to="/"
+            className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 py-3.5 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
+          >
+            Kembali Ke Dashboard
+          </Link>
         </div>
+        {/* <!-- Footer --> */}
+        <Link
+          to="https://avinto.my.id" target="_blank">
+          <p className="absolute text-md text-center text-gray-500 -translate-x-1/2 bottom-6 left-1/2 dark:text-gray-400">
+            &copy; {new Date().getFullYear()} - <span className="font-semibold underline">Paris Alvito</span>
+          </p>
+        </Link>
       </div>
     </div>
   );

@@ -14,6 +14,7 @@ const authMiddleware = require("./middlewares/authMiddleware");
 const app = express();
 const server = http.createServer(app);
 const io = init(server); 
+const { mahasiswaSockets } = require('./socket/socketState');
 
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
@@ -38,6 +39,8 @@ app.use("/api", antrianRoutes);
 app.use("/api", riwayatRoutes);
 
 io.use(authMiddleware);
+
+
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {

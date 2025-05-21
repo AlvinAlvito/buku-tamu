@@ -1,5 +1,5 @@
 const db = require("../db");
-
+const { panggilMahasiswaSocket } = require("../controllers/socketController");
 exports.insertAntrian = async (req, res) => {
   try {
     const { mahasiswa_id, dosen_id, alasan } = req.body;
@@ -169,5 +169,36 @@ exports.updateStatusBatalkanAntrian = async (req, res) => {
     res.json({ message: "Status berhasil diperbarui menjadi dibatalkan" });
   } catch (error) {
     res.status(500).json({ message: "Gagal memperbarui status", error });
+  }
+};
+exports.panggilMahasiswa = async (req, res) => {
+  const { antrianId } = req.params;
+
+  if (!antrianId) {
+    return res.status(400).json({ message: "ID antrian tidak diberikan" });
+  }
+
+  try {
+    const [result] = await db.execute(
+      `UPDATE tb_antrian SET called_at = NOW() WHERE id = ? AND status = 'menunggu'`,
+      [antrianId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        message: "Data antrian tidak ditemukan atau status bukan 'menunggu'",
+      });
+    }
+
+    // Emit event socket ke mahasiswa yang antriannya dipanggil
+    panggilMahasiswaSocket(antrianId);
+
+    res.json({
+      message: "Mahasiswa berhasil dipanggil",
+      called_at: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("Error saat memanggil mahasiswa:", error);
+    res.status(500).json({ message: "Gagal memanggil mahasiswa", error });
   }
 };

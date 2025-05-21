@@ -5,6 +5,8 @@ import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
 import { UserCheck, TimerIcon, Megaphone, CheckCircle, Trash2, XCircle, UserX, RotateCcw } from "lucide-react";
 import { toast } from "react-toastify";
+import { io, Socket } from "socket.io-client";
+
 
 type Antrian = {
   id: number;
@@ -20,6 +22,7 @@ type Antrian = {
   mahasiswa_prodi: string;
   mahasiswa_stambuk: string;
 };
+
 export default function AntrianDosen() {
   const { isOpen, openModal, closeModal } = useModal();
   const [isSelesaiOpen, setIsSelesaiOpen] = useState(false);
@@ -27,9 +30,19 @@ export default function AntrianDosen() {
   const [countdown, setCountdown] = useState(60);
   const [antrianData, setAntrianData] = useState<Antrian[]>([]);
   const [selectedAntrian, setSelectedAntrian] = useState<Antrian | null>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const dosenId = user?.id || null;
+
+  useEffect(() => {
+    const newSocket = io("http://localhost:3000"); // ganti ke URL server socket kamu
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
 
   const fetchAntrian = () => {
     fetch(`/api/antrian-dosen/${dosenId}`)
@@ -64,10 +77,53 @@ export default function AntrianDosen() {
     return () => clearInterval(timer);
   }, [isOpen, closeModal]);
 
-  const handlePanggil = (antrian: Antrian) => {
-    setSelectedAntrian(antrian);
-    openModal();
+  const handlePanggil = async (antrian: Antrian) => {
+    try {
+      const response = await fetch(`/api/antrian/${antrian.id}/panggil`, {
+        method: "PUT",
+      });
+
+      const contentType = response.headers.get("content-type") || "";
+      let data = null;
+
+      if (contentType.includes("application/json")) {
+        data = await response.json();
+      }
+
+      if (!response.ok) {
+        throw new Error(data?.message || "Gagal memanggil mahasiswa");
+      }
+
+      setSelectedAntrian(antrian);
+      openModal();
+
+      console.log("Mahasiswa dipanggil pada:", data?.called_at);
+
+      // ✅ Emit event ke mahasiswa
+      if (socket) {
+        socket.emit("panggil_mahasiswa", {
+          mahasiswa_id: antrian.mahasiswa_id,
+          mahasiswa_nama: antrian.mahasiswa_name,
+          waktu: data?.called_at,
+        });
+
+      }
+
+
+      fetchAntrian();
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Error saat memanggil mahasiswa:", error);
+        alert(error.message);
+      } else {
+        console.error("Error saat memanggil mahasiswa:", error);
+        alert("Gagal memanggil mahasiswa");
+      }
+    }
   };
+
+
+
 
 
   const handleSudahHadir = async () => {
@@ -308,11 +364,7 @@ export default function AntrianDosen() {
       </div>
 
       {/* Modal */}
-      <Modal
-        isOpen={isOpen}
-        onClose={closeModal}
-        className="max-w-xl min-h-[400px] m-4"
-      >
+      <Modal isOpen={isOpen} onClose={closeModal} className="max-w-xl min-h-[400px] m-4">
         <div className="relative w-full p-6 lg:p-10 overflow-y-auto rounded-2xl bg-white shadow-xl dark:bg-gray-900 transition-all duration-300">
           <div className="flex flex-col items-center text-center">
             <TimerIcon className="w-12 h-12 text-primary mb-4 font-semibold text-gray-800 dark:text-white animate-pulse" />
@@ -320,39 +372,22 @@ export default function AntrianDosen() {
               Sedang Memanggil Mahasiswa
             </h4>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-              Notifikasi pemanggilan telah dikirim. Harap tunggu dalam waktu
-              berikut...
+              Notifikasi pemanggilan telah dikirim. Harap tunggu dalam waktu berikut...
             </p>
 
             <div className="flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-800 px-6 py-4 rounded-xl mb-6">
-              <span className="text-5xl font-bold text-gray-800 dark:text-white">
-                {countdown}
-              </span>
-              <span className="text-lg font-medium text-gray-600 dark:text-gray-300">
-                detik
-              </span>
+              <span className="text-5xl font-bold text-gray-800 dark:text-white">{countdown}</span>
+              <span className="text-lg font-medium text-gray-600 dark:text-gray-300">detik</span>
             </div>
 
-            <div className="w-full  grid grid-cols-2 gap-2 mt-3 justify-end">
-
-              <Button
-                size="sm"
-                variant="warning"
-                className="w-full md:w-auto"
-                onClick={closeModal}
-              >
+            <div className="w-full grid grid-cols-2 gap-2 mt-3 justify-end">
+              <Button size="sm" variant="warning" className="w-full md:w-auto" onClick={closeModal}>
                 Batalkan
               </Button>
 
-              <Button
-                size="sm"
-                variant="success"
-                className="w-full md:w-auto"
-                onClick={handleSudahHadir}
-              >
+              <Button size="sm" variant="success" className="w-full md:w-auto" onClick={handleSudahHadir}>
                 <UserCheck size={16} /> Mahasiswa Sudah Hadir
               </Button>
-
             </div>
           </div>
         </div>

@@ -8,6 +8,11 @@ import {
 import Badge from "../ui/badge/Badge";
 import { useEffect, useState } from "react";
 import Select from "../form/Select";
+import Button from "../ui/button/Button";
+import { Download } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+
 
 type RiwayatItem = {
   nama_mahasiswa: string;
@@ -89,6 +94,45 @@ export default function RiwayatAntrian() {
     setFilteredData(result);
   }, [filters, allData]);
 
+  const downloadPdf = (data: RiwayatItem[], filters: { bulan: string; tahun: string }) => {
+    const doc = new jsPDF();
+
+    // Tentukan judul berdasarkan filter
+    let title = "Riwayat Bimbingan Akademik Keseluruhan";
+    if (filters.tahun && filters.bulan) {
+      // Cari nama bulan dari bulanOptions
+      const bulanLabel = bulanOptions.find(b => b.value === filters.bulan)?.label || filters.bulan;
+      title = `Riwayat Bimbingan Akademik Tahun ${filters.tahun} Bulan ${bulanLabel}`;
+    } else if (filters.tahun) {
+      title = `Riwayat Bimbingan Akademik Tahun ${filters.tahun}`;
+    }
+
+    doc.text(title, 14, 20);
+
+    const tableColumn = ["Nama Mahasiswa", "NIM", "Prodi", "Tanggal Selesai", "Alasan", "Status"];
+    const tableRows = data.map(item => [
+      item.nama_mahasiswa,
+      item.nim_mahasiswa,
+      item.prodi_mahasiswa,
+      new Date(item.waktu_selesai).toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }),
+      item.alasan,
+      item.status,
+    ]);
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 30,
+    });
+
+    doc.save("riwayat-antrian.pdf");
+  };
+
+
 
 
   return (
@@ -111,9 +155,16 @@ export default function RiwayatAntrian() {
             placeholder="Pilih Tahun"
             onChange={(val) => setFilters(prev => ({ ...prev, tahun: val }))}
           />
-          <button className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
-            Unduh Riwayat
-          </button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="w-full flex items-center gap-2 justify-center"
+            onClick={() => downloadPdf(filteredData, filters)}
+          >
+            <Download size={16} />
+            Unduh
+          </Button>
+
         </div>
       </div>
       <div className="max-w-full overflow-x-auto">
@@ -121,13 +172,13 @@ export default function RiwayatAntrian() {
           <TableHeader className="border-gray-100 dark:border-gray-800 border-y">
             <TableRow>
               <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Nama
+                Nama Mahasiswa
               </TableCell>
               <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Waktu
+                Waktu Selesai
               </TableCell>
               <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Tujuan
+                Tujuan Bimbingan
               </TableCell>
               <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
                 Status

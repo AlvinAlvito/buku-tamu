@@ -122,10 +122,6 @@ export default function AntrianDosen() {
     }
   };
 
-
-
-
-
   const handleSudahHadir = async () => {
     if (!selectedAntrian) return;
 
@@ -232,6 +228,15 @@ export default function AntrianDosen() {
     fetchAntrian();
   };
 
+  function toTitleCase(str: string | undefined): string {
+    if (!str) return "";
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
+  }
+
 
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
@@ -260,19 +265,23 @@ export default function AntrianDosen() {
               key={item.id}
               className="bg-white dark:bg-gray-900 rounded-2xl shadow p-6 flex flex-col justify-between"
             >
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <img
-                  src={item.mahasiswa_foto || "/images/user/user-01.jpg"}
-                  alt={item.mahasiswa_name}
+              <div className="flex items-start justify-between gap-4 mb-4">
+               <img
+                  src={
+                    item.mahasiswa_foto
+                      ? `https://pmb.uinsu.ac.id/file/photo/${item.mahasiswa_foto}`
+                      : "/images/user/owner.jpg"
+                  }
+                  alt="User"
                   className="w-14 h-14 rounded-xl object-cover"
                 />
 
                 <div className="flex-1">
                   <p className="font-medium text-gray-800 dark:text-white/90">
-                    {item.mahasiswa_name}
+                    {toTitleCase(item.mahasiswa_name)}
                   </p>
                   <p className="text-gray-500 text-sm dark:text-gray-400">
-                    {item.mahasiswa_nim} | {item.mahasiswa_prodi} {item.mahasiswa_stambuk}
+                    {item.mahasiswa_nim} | {toTitleCase(item.mahasiswa_prodi)} ({item.mahasiswa_stambuk})
                   </p>
                 </div>
 

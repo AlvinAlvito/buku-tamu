@@ -109,7 +109,7 @@ export default function RiwayatAntrian() {
 
     doc.text(title, 14, 20);
 
-    const tableColumn = ["Nama Mahasiswa", "NIM", "Prodi", "Tanggal Selesai", "Alasan", "Status"];
+    const tableColumn = ["Nama Mahasiswa", "NIM", "Prodi", "Tanggal Bimbingan", "Alasan", "Status"];
     const tableRows = data.map(item => [
       item.nama_mahasiswa,
       item.nim_mahasiswa,
@@ -132,6 +132,14 @@ export default function RiwayatAntrian() {
     doc.save("riwayat-antrian.pdf");
   };
 
+  function toTitleCase(str: string | undefined): string {
+    if (!str) return "";
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
+  }
 
 
 
@@ -195,8 +203,8 @@ export default function RiwayatAntrian() {
                       <img
                         src={
                           item.foto_mahasiswa
-                            ? item.foto_mahasiswa
-                            : `https://ui-avatars.com/api/?name=${encodeURIComponent(item.nama_mahasiswa || "Mahasiswa")}`
+                            ? `https://pmb.uinsu.ac.id/file/photo/${item.foto_mahasiswa}`
+                            : "/images/user/owner.jpg"
                         }
                         alt={item.nama_mahasiswa || "Mahasiswa"}
                         className="h-[50px] w-[50px] object-cover"
@@ -204,10 +212,10 @@ export default function RiwayatAntrian() {
                     </div>
                     <div>
                       <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                        {item.nama_mahasiswa}
+                        {toTitleCase(item.nama_mahasiswa)}
                       </p>
                       <span className="text-gray-500 text-theme-xs dark:text-gray-400">
-                        {item.nim_mahasiswa} | {item.prodi_mahasiswa} ({item.stambuk_mahasiswa})
+                        {item.nim_mahasiswa} | {toTitleCase(item.prodi_mahasiswa)} ({item.stambuk_mahasiswa})
                       </span>
                     </div>
                   </div>

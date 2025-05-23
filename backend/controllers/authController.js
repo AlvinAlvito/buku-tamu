@@ -2,10 +2,69 @@ require("dotenv").config();
 const db = require("../db");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
+const bcrypt = require("bcryptjs");
+
+exports.register = async (req, res) => {
+  const { name, nim, email, password, role } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  try {
+    const [result] = await db.execute(
+      "INSERT INTO users (name, nim, email, password, role) VALUES (?, ?, ?, ?, ?)",
+      [name, nim, email, hashedPassword, role]
+    );
+
+    console.log("User insert result:", result);
+
+    const userId = result.insertId;
+    console.log("New user ID:", userId);
+    console.log("Role received:", role);
+
+    if (role === "dosen") {
+      console.log("Inserting into tb_ketersediaan...");
+
+      await db.execute(
+        "INSERT INTO tb_ketersediaan (user_id, lokasi_kampus, status_ketersediaan, link_maps, gedung_ruangan) VALUES (?, ?, ?, ?, ?)",
+        [userId, null, "Tidak Tersedia", null, "-"]
+      );
+
+      console.log("Insert into tb_ketersediaan sukses");
+    }
+
+    res.status(201).json({ message: "User registered successfully." });
+  } catch (err) {
+    console.error("Error during registration:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
 
 exports.login = async (req, res) => {
   const { nim, password } = req.body;
   try {
+    const [results] = await db.query("SELECT * FROM users WHERE nim = ?", [nim]);
+
+    if (results.length > 0) {
+      const dbUser = results[0];
+
+      const isPasswordValid = await bcrypt.compare(password, dbUser.password);
+
+      if (!isPasswordValid) {
+        return res.status(401).json({ message: "Password salah" });
+      }
+
+      const token = jwt.sign(
+        { id: dbUser.id, nim: dbUser.nim, role: dbUser.role },
+        process.env.JWT_SECRET,
+        { expiresIn: "1d" }
+      );
+
+      return res.status(200).json({
+        message: "Login berhasil (user lokal)",
+        user: dbUser,
+        token,
+      });
+    }
+
     const otentikasiResponse = await axios.post(
       "https://ws.uinsu.ac.id/portal/OtentikasiUser",
       new URLSearchParams({ username: nim, password }),
@@ -16,38 +75,12 @@ exports.login = async (req, res) => {
     );
 
     const authData = otentikasiResponse.data.OtentikasiUser?.[0];
-
     if (!authData || !authData.status) {
-      console.log("❌ Otentikasi gagal, data tidak valid:", authData);
-      return res
-        .status(401)
-        .json({ message: "Login gagal - data tidak valid" });
-    }   
+      return res.status(401).json({ message: "Login gagal - data tidak valid" });
+    }
+
     const user = authData.user;
     const hashPassword = authData.password;
-
-    if (!user) {
-      console.log("❌ Otentikasi berhasil tapi data user kosong");
-      return res.status(401).json({ message: "Login gagal" });
-    }
-
-    const [results] = await db.query("SELECT * FROM users WHERE nim = ?", [
-      nim,
-    ]);
-
-    if (results.length > 0) {
-      const dbUser = results[0];
-      const token = jwt.sign(
-        { id: dbUser.id, nim: dbUser.nim, role: dbUser.role },
-        process.env.JWT_SECRET,
-        { expiresIn: "1d" }
-      );
-      return res.status(200).json({
-        message: "Login berhasil",
-        user: dbUser,
-        token,
-      });
-    }
 
     const alumniResponse = await axios.post(
       "https://ws.uinsu.ac.id/portal/DataAlumni",
@@ -62,11 +95,8 @@ exports.login = async (req, res) => {
     );
 
     const alumniData = alumniResponse.data.DataAlumni?.[0];
-    if (
-      !alumniData ||
-      (alumniData.status !== true && alumniData.status !== "true")
-    ) {
-      console.log("❌ Data alumni tidak ditemukan:", alumniData);
+
+    if (!alumniData || (alumniData.status !== true && alumniData.status !== "true")) {
       return res.status(404).json({ message: "Data alumni tidak ditemukan" });
     }
 
@@ -84,7 +114,6 @@ exports.login = async (req, res) => {
     };
 
     const [insertResult] = await db.query("INSERT INTO users SET ?", newUser);
-    console.log("✅ User berhasil disimpan:", insertResult);
 
     const savedUser = {
       id: insertResult.insertId,
@@ -98,7 +127,7 @@ exports.login = async (req, res) => {
     );
 
     return res.status(200).json({
-      message: "Login berhasil & data disimpan",
+      message: "Login berhasil (API SIA) & data disimpan",
       user: savedUser,
       token,
     });

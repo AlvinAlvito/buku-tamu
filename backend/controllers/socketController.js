@@ -11,7 +11,7 @@ function handleDisconnect(socket, io) {
   const meta = socketRoleMap[socket.id];
   if (!meta) return;
 
-  const { userId, role } = meta;
+  const { userId, role, name } = meta;
   const userSockets = activeUsers.get(userId);
 
   if (userSockets) {
@@ -32,8 +32,9 @@ function handleDisconnect(socket, io) {
 
   delete socketRoleMap[socket.id];
   io.emit("online-counts", onlineUsers);
-  console.log("⛔", userId, "disconnected:", onlineUsers);
+  console.log(`⛔ ${userId} (${name}) disconnected:`, onlineUsers);
 }
+
 
 function handleSocketConnection(socket, io) {
   const { id: userId, role } = socket.user;

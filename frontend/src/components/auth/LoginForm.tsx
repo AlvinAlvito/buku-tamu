@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
@@ -17,6 +17,14 @@ export default function LoginForm() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // 🔒 Auto login jika token ada
+  useEffect(() => {
+    const savedToken = localStorage.getItem("token") || sessionStorage.getItem("token");
+    if (savedToken) {
+      console.log("Token ditemukan di storage");
+    }
+  }, []);
+  
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -44,6 +52,15 @@ export default function LoginForm() {
       if (!data.token || !data.user) {
         throw new Error("Response API tidak lengkap");
       }
+
+      // Ingat saya
+      if (isChecked) {
+        localStorage.setItem("token", data.token);
+      } else {
+        sessionStorage.setItem("token", data.token);
+      }
+
+
 
 
       localStorage.setItem("token", data.token);
@@ -77,7 +94,12 @@ export default function LoginForm() {
     }
 
 
+
   };
+
+
+
+
 
 
   return (

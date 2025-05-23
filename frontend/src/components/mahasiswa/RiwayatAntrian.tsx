@@ -36,6 +36,8 @@ export default function RiwayatAntrian() {
   const [allData, setAllData] = useState<RiwayatItem[]>([]);
   const [filteredData, setFilteredData] = useState<RiwayatItem[]>([]);
   const [filters, setFilters] = useState({ bulan: "", tahun: "" });
+    const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
 
   const bulanOptions = [
@@ -73,7 +75,7 @@ export default function RiwayatAntrian() {
         const res = await fetch(`/api/riwayat?id=${user.id}&role=${user.role}`);
         const data = await res.json();
         setAllData(data);
-        setFilteredData(data); // default tampil semua
+        setCurrentPage(1);
       } catch (error) {
         console.error("Gagal memuat data:", error);
       }
@@ -131,6 +133,16 @@ export default function RiwayatAntrian() {
     doc.save("riwayat-antrian.pdf");
   };
 
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage);
+
+  // Pagination handler
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+  };
+
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
       <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
@@ -183,7 +195,7 @@ export default function RiwayatAntrian() {
           </TableHeader>
 
           <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {filteredData.map((item, index) => (
+             {paginatedData.map((item, index) => (
               <TableRow key={index}>
                 <TableCell className="py-3">
                   <div className="flex items-center gap-3">
@@ -245,6 +257,40 @@ export default function RiwayatAntrian() {
           </TableBody>
 
         </Table>
+      </div>
+      {/* Pagination */}
+      <div className="flex justify-center mt-6 gap-2">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="px-3 py-1 rounded border border-gray-300 dark:border-gray-700 disabled:opacity-50 dark:text-gray-200"
+        >
+          Prev
+        </button>
+
+        {[...Array(totalPages)].map((_, idx) => {
+          const pageNum = idx + 1;
+          return (
+            <button
+              key={pageNum}
+              onClick={() => handlePageChange(pageNum)}
+              className={`px-3 py-1 rounded border ${pageNum === currentPage
+                ? "bg-green-600 text-white border-green-600 dark:text-gray-200"
+                : "border-gray-300 dark:border-gray-700"
+                }`}
+            >
+              {pageNum}
+            </button>
+          );
+        })}
+
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="px-3 py-1 rounded border border-gray-300 dark:border-gray-700 disabled:opacity-50 dark:text-gray-200"
+        >
+          Next
+        </button>
       </div>
     </div>
   );

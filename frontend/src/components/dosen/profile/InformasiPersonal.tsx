@@ -44,7 +44,7 @@ export default function InformasiPersonal() {
                 Posisi
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {user?.dosen}
+                {user?.role}
               </p>
             </div>
 

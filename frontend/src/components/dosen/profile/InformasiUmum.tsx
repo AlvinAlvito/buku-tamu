@@ -4,6 +4,7 @@ import Button from "../../ui/button/Button";
 import Input from "../../form/input/InputField";
 import Label from "../../form/Label";
 import { useEffect, useState } from "react";
+import { PhoneCall } from "lucide-react";
 
 export default function InformasiUmum() {
   const { isOpen, openModal, closeModal } = useModal();
@@ -45,24 +46,12 @@ export default function InformasiUmum() {
             </div>
             <div className="flex items-center order-2 gap-2 grow xl:order-3 xl:justify-end">
               <a
-                href={user?.facebook}
+                href={`https://wa.me/${user?.whatsapp ?? ""}`}
                 target="_blank"
-                rel="noopener"
+                rel="noopener noreferrer"
                 className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
               >
-                <svg
-                  className="fill-current"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M11.6666 11.2503H13.7499L14.5833 7.91699H11.6666V6.25033C11.6666 5.39251 11.6666 4.58366 13.3333 4.58366H14.5833V1.78374C14.3118 1.7477 13.2858 1.66699 12.2023 1.66699C9.94025 1.66699 8.33325 3.04771 8.33325 5.58342V7.91699H5.83325V11.2503H8.33325V18.3337H11.6666V11.2503Z"
-                    fill=""
-                  />
-                </svg>
+                <PhoneCall size={24}  />
               </a>
 
               <a
@@ -171,29 +160,32 @@ export default function InformasiUmum() {
 
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div>
-                    <Label>Facebook</Label>
+                    <Label>No Whatsapp</Label>
                     <Input
                       type="text"
-                      value={user?.facebook}
+                      value={user?.whatsapp}
+                      placeholder="08xxxxxxxx"
                     />
                   </div>
 
                   <div>
                     <Label>X.com</Label>
-                    <Input type="text" value={user?.twitter} />
+                    <Input type="text" placeholder="https://x.com/username" value={user?.twitter} />
+                    
                   </div>
 
                   <div>
                     <Label>Linkedin</Label>
                     <Input
                       type="text"
-                      value="https://www.linkedin.com/company/avinto"
+                      value={user?.linkedin}
+                      placeholder="https://x.com/linkedin" 
                     />
                   </div>
 
                   <div>
                     <Label>Instagram</Label>
-                    <Input type="text" value={user?.instagram} />
+                    <Input type="text" placeholder="https://x.com/instagram"  value={user?.instagram} />
                   </div>
                 </div>
               </div>

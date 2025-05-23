@@ -72,7 +72,7 @@ export default function App() {
               <Route path="/mahasiswa/riwayat-antrian" element={<RiwayatAntrianMahasiswa />} />
               <Route path="/mahasiswa/kalender" element={<KalenderMahasiswa />} />
               <Route path="/mahasiswa/tutorial" element={<TutorialMahasiswa />} />
-              <Route path="/mahasiswa/log-user" element={<LogUser />} />
+              <Route path="/mahasiswa/Iog-user" element={<LogUser />} />
 
               <Route path="/blank" element={<Blank />} />
               <Route path="/form-elements" element={<FormElements />} />

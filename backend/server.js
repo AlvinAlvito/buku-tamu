@@ -1,3 +1,4 @@
+require('dotenv').config(); 
 const express = require("express");
 const cors = require("cors");
 const http = require("http");
@@ -15,7 +16,8 @@ const app = express();
 const server = http.createServer(app);
 const io = init(server); 
 const { mahasiswaSockets } = require('./socket/socketState');
-
+app.use(cors());
+app.use(express.json());
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
   handleSocketConnection(socket, io);
@@ -25,12 +27,7 @@ app.use((req, res, next) => {
   req.io = io; 
   next();
 });
-app.use(cors());
-app.use(express.json());
-app.use((req, res, next) => {
-  req.io = io; 
-  next();
-});
+
 app.use("/api/auth", authRoutes);
 app.use("/api", ketersediaanRoutes);
 app.use("/api", profilRoutes);

@@ -22,54 +22,63 @@ export default function LoginForm() {
     setError("");
 
     try {
+      console.log("Mulai fetch login API");
+
       const response = await fetch("/api/auth/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nim, password }),
       });
-      const now = new Date().getTime();
+
+      console.log("Fetch selesai, status:", response.status);
+
+      const now = Date.now();
       const data = await response.json();
-      console.log("Response data:", data);
+      console.log("Response from login API:", data);
 
       if (!response.ok) {
-        throw new Error(data.message || "Login gagal");
+        throw new Error(data.message || data.error || "Login gagal");
       }
 
-      // Menyimpan data user dan token di localStorage
+      if (!data.token || !data.user) {
+        throw new Error("Response API tidak lengkap");
+      }
+
+
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("loginTime", now.toString());
-      localStorage.setItem("login-refresh", Date.now().toString());
+      localStorage.setItem("login-refresh", now.toString());
       window.dispatchEvent(new Event("token-change"));
 
-
       const socket = initSocket(data.token);
+      console.log("Response data:", data);
 
       socket.on("connect", () => {
         console.log("Connected to Socket.IO server");
-        socket.emit("user-join", data.user.role); // kirim role saat konek
+        socket.emit("user-join", data.user.role);
       });
 
       socket.on("connect_error", (err) => {
         console.error("Socket connection error:", err.message);
       });
 
-      // Arahkan user berdasarkan role setelah socket connect
-      const userRole = data.user.role;
-      if (userRole === "mahasiswa") {
+      // Redirect berdasarkan role
+      if (data.user.role === "mahasiswa") {
         navigate("/mahasiswa");
-      } else if (userRole === "dosen") {
+      } else if (data.user.role === "dosen") {
         navigate("/dosen");
       }
-
     } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
+
+
   };
+
+
   return (
     <div className="flex flex-col flex-1">
       <div className="w-full max-w-md pt-5 mx-auto">

@@ -97,6 +97,19 @@ export default function DaftarDosen() {
   const handleRefresh = () => {
     fetchData();
   };
+  useEffect(() => {
+  fetchData();
+
+  const retryTimeout = setTimeout(() => {
+    if (data.length === 0) {
+      console.log("Data kosong, mencoba ulang fetch...");
+      fetchData();
+    }
+  }, 1);
+
+  return () => clearTimeout(retryTimeout);
+}, []);
+
 
   // useEffect(() => {
   //   fetchData();

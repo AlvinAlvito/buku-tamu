@@ -1,8 +1,9 @@
+import { PhoneCall } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 
 export default function InformasiUmum() {
-  
+
 
 
   interface Dosen {
@@ -58,7 +59,7 @@ export default function InformasiUmum() {
             </div>
             <div className="order-3 xl:order-2">
               <h4 className="mb-2 text-lg font-semibold text-center text-gray-800 dark:text-white/90 xl:text-left">
-               {dosen.name}
+                {dosen.name}
               </h4>
               <div className="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left">
                 <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -72,24 +73,12 @@ export default function InformasiUmum() {
             </div>
             <div className="flex items-center order-2 gap-2 grow xl:order-3 xl:justify-end">
               <a
-                href={dosen.facebook ?? "#"}
+                href={`https://wa.me/${dosen.whatsapp ?? ""}`}
                 target="_blank"
-                rel="noopener"
+                rel="noopener noreferrer"
                 className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
               >
-                <svg
-                  className="fill-current"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M11.6666 11.2503H13.7499L14.5833 7.91699H11.6666V6.25033C11.6666 5.39251 11.6666 4.58366 13.3333 4.58366H14.5833V1.78374C14.3118 1.7477 13.2858 1.66699 12.2023 1.66699C9.94025 1.66699 8.33325 3.04771 8.33325 5.58342V7.91699H5.83325V11.2503H8.33325V18.3337H11.6666V11.2503Z"
-                    fill=""
-                  />
-                </svg>
+                <PhoneCall size={24}  />
               </a>
 
               <a
@@ -156,10 +145,10 @@ export default function InformasiUmum() {
               </a>
             </div>
           </div>
-         
+
         </div>
       </div>
-     
+
     </>
   );
 }

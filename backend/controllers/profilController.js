@@ -63,3 +63,20 @@ exports.updateProfil = (req, res) => {
     }
   );
 };
+
+exports.getAllUser = async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT name, nim, foto_profil, role, prodi, stambuk, created_at FROM users`
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Belum ada data pengguna." });
+    }
+
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Terjadi kesalahan pada server." });
+  }
+};

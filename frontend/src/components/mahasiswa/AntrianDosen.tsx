@@ -127,6 +127,14 @@ export default function AntrianDosen() {
     return `(${diffInDays} hari yang lalu)`;
   }
 
+  function toTitleCase(str: string | undefined): string {
+    if (!str) return "";
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
+  }
 
 
   return (
@@ -160,26 +168,30 @@ export default function AntrianDosen() {
               className="bg-white dark:bg-gray-900 rounded-2xl shadow p-6 flex flex-col "
             >
 
-             <div className="flex items-center justify-between gap-4 mb-4">
+              <div className="flex items-center justify-between gap-4 mb-4">
                 <img
-                  src={item.mahasiswa_foto || "/images/user/user-01.jpg"}
-                  alt={item.mahasiswa_name}
+                  src={
+                    item.mahasiswa_foto
+                      ? `https://pmb.uinsu.ac.id/file/photo/${item.mahasiswa_foto}`
+                      : "/images/user/owner.jpg"
+                  }
+                  alt="User"
                   className="w-14 h-14 rounded-xl object-cover"
                 />
 
                 <div className="flex-1">
                   <p className="font-medium text-gray-800 dark:text-white/90">
-                    {item.mahasiswa_name}
+                    {toTitleCase(item.mahasiswa_name)}
                   </p>
                   <p className="text-gray-500 text-sm dark:text-gray-400">
-                    {item.mahasiswa_nim} | {item.mahasiswa_prodi} {item.mahasiswa_stambuk}
+                    {item.mahasiswa_nim} | {toTitleCase(item.mahasiswa_prodi)} ({item.mahasiswa_stambuk})
                   </p>
                 </div>
 
                 <div
                   className={`px-3 py-1 rounded-full text-sm font-semibold ${item.status === "menunggu"
-                      ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-white"
-                      : "bg-green-100 text-green-800 dark:bg-green-800 dark:text-white"
+                    ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-white"
+                    : "bg-green-100 text-green-800 dark:bg-green-800 dark:text-white"
                     }`}
                 >
                   #{index + 1}

@@ -14,13 +14,22 @@ export default function InformasiPersonal() {
   };
 
   const [user, setUser] = useState<any>(null);
-  
-    useEffect(() => {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
-    }, []);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  function toTitleCase(str: string | undefined): string {
+    if (!str) return "";
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
+  }
   return (
     <div className="p-5 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]  lg:p-6">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
@@ -35,13 +44,13 @@ export default function InformasiPersonal() {
                 Nama
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {user?.name}
+                {toTitleCase(user?.name)}
               </p>
             </div>
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Posisi
+                Role
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                 {user?.role}
@@ -140,7 +149,7 @@ export default function InformasiPersonal() {
 
                   <div className="col-span-2">
                     <Label>Bio</Label>
-                    <Input type="text" value={user?.bio}/>
+                    <Input type="text" value={user?.bio} />
                   </div>
                 </div>
               </div>

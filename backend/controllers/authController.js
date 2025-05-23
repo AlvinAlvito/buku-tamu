@@ -5,11 +5,7 @@ const axios = require("axios");
 
 exports.login = async (req, res) => {
   const { nim, password } = req.body;
-  console.log("📥 Request login diterima:", { nim });
-
   try {
-    console.log("🔐 Memulai proses otentikasi...");
-
     const otentikasiResponse = await axios.post(
       "https://ws.uinsu.ac.id/portal/OtentikasiUser",
       new URLSearchParams({ username: nim, password }),
@@ -19,8 +15,6 @@ exports.login = async (req, res) => {
       }
     );
 
-    console.log("✅ Otentikasi sukses:", otentikasiResponse.data);
-
     const authData = otentikasiResponse.data.OtentikasiUser?.[0];
 
     if (!authData || !authData.status) {
@@ -28,8 +22,7 @@ exports.login = async (req, res) => {
       return res
         .status(401)
         .json({ message: "Login gagal - data tidak valid" });
-    }
-
+    }   
     const user = authData.user;
     const hashPassword = authData.password;
 
@@ -38,22 +31,17 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: "Login gagal" });
     }
 
-    console.log("🔍 Mengecek user di database lokal...");
     const [results] = await db.query("SELECT * FROM users WHERE nim = ?", [
       nim,
     ]);
-    console.log("📦 Hasil query database:", results);
 
     if (results.length > 0) {
       const dbUser = results[0];
-      console.log("✅ User ditemukan di database:", dbUser);
-
       const token = jwt.sign(
         { id: dbUser.id, nim: dbUser.nim, role: dbUser.role },
         process.env.JWT_SECRET,
         { expiresIn: "1d" }
       );
-
       return res.status(200).json({
         message: "Login berhasil",
         user: dbUser,
@@ -61,9 +49,6 @@ exports.login = async (req, res) => {
       });
     }
 
-    console.log(
-      "🆕 User tidak ditemukan di database, memanggil API DataAlumni..."
-    );
     const alumniResponse = await axios.post(
       "https://ws.uinsu.ac.id/portal/DataAlumni",
       new URLSearchParams({ nim_mhs: nim }),
@@ -76,9 +61,7 @@ exports.login = async (req, res) => {
       }
     );
 
-    console.log("✅ Response DataAlumni diterima:", alumniResponse.data);
     const alumniData = alumniResponse.data.DataAlumni?.[0];
-
     if (
       !alumniData ||
       (alumniData.status !== true && alumniData.status !== "true")
@@ -100,8 +83,6 @@ exports.login = async (req, res) => {
       whatsapp: alumniData.handphone || null,
     };
 
-    console.log("📝 Menyimpan user baru ke database:", newUser);
-
     const [insertResult] = await db.query("INSERT INTO users SET ?", newUser);
     console.log("✅ User berhasil disimpan:", insertResult);
 
@@ -115,8 +96,6 @@ exports.login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
-
-    console.log("🎉 Login dan penyimpanan sukses. Token dibuat.");
 
     return res.status(200).json({
       message: "Login berhasil & data disimpan",

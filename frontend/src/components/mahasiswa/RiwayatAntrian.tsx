@@ -36,7 +36,7 @@ export default function RiwayatAntrian() {
   const [allData, setAllData] = useState<RiwayatItem[]>([]);
   const [filteredData, setFilteredData] = useState<RiwayatItem[]>([]);
   const [filters, setFilters] = useState({ bulan: "", tahun: "" });
-    const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
 
@@ -111,7 +111,7 @@ export default function RiwayatAntrian() {
 
     doc.text(title, 14, 20);
 
-    const tableColumn = ["Nama Dosen", "NIP", "Tanggal Selesai", "Alasan", "Status"];
+    const tableColumn = ["Nama Dosen", "NIP", "Tanggal Bimbingan", "Waktu Bimbingan", "Alasan", "Status"];
     const tableRows = data.map(item => [
       item.nama_dosen,
       item.nim_dosen,
@@ -120,6 +120,12 @@ export default function RiwayatAntrian() {
         month: "long",
         year: "numeric",
       }),
+      new Date(item.waktu_selesai).toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      }) + " WIB",
       item.alasan,
       item.status,
     ]);
@@ -183,7 +189,10 @@ export default function RiwayatAntrian() {
                 Nama Dosen
               </TableCell>
               <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Waktu Selesai
+                Tanggal Bimbingan
+              </TableCell>
+              <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                Waktu Bimbingan
               </TableCell>
               <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
                 Tujuan Bimbingan
@@ -195,7 +204,7 @@ export default function RiwayatAntrian() {
           </TableHeader>
 
           <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
-             {paginatedData.map((item, index) => (
+            {paginatedData.map((item, index) => (
               <TableRow key={index}>
                 <TableCell className="py-3">
                   <div className="flex items-center gap-3">
@@ -215,7 +224,7 @@ export default function RiwayatAntrian() {
                         {item.nama_dosen}
                       </p>
                       <span className="text-gray-500 text-theme-xs dark:text-gray-400">
-                        NIP {item.nim_dosen} 
+                        NIP {item.nim_dosen}
                       </span>
                     </div>
                   </div>
@@ -230,6 +239,16 @@ export default function RiwayatAntrian() {
                     })
                     : "-"}
                 </TableCell>
+                <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+                  {item.waktu_selesai
+                    ? new Date(item.waktu_selesai).toLocaleTimeString("id-ID", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                    })
+                    : "-"} WIB
+                </TableCell>
+
 
                 <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
                   {item.alasan || "-"}

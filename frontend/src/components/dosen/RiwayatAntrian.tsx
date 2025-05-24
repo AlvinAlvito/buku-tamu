@@ -111,7 +111,7 @@ export default function RiwayatAntrian() {
 
     doc.text(title, 14, 20);
 
-    const tableColumn = ["Nama Mahasiswa", "NIM", "Prodi", "Tanggal Bimbingan", "Alasan", "Status"];
+    const tableColumn = ["Nama Mahasiswa", "NIM", "Prodi", "Tanggal Bimbingan", "Waktu Bimbingan", "Alasan", "Status"];
     const tableRows = data.map(item => [
       item.nama_mahasiswa,
       item.nim_mahasiswa,
@@ -121,6 +121,13 @@ export default function RiwayatAntrian() {
         month: "long",
         year: "numeric",
       }),
+      new Date(item.waktu_selesai).toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      }) + " WIB",
+
       item.alasan,
       item.status,
     ]);
@@ -193,7 +200,10 @@ export default function RiwayatAntrian() {
                 Nama Mahasiswa
               </TableCell>
               <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Waktu Selesai
+                Tanggal Bimbingan
+              </TableCell>
+              <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                Waktu Bimbingan
               </TableCell>
               <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
                 Tujuan Bimbingan
@@ -240,6 +250,16 @@ export default function RiwayatAntrian() {
                     })
                     : "-"}
                 </TableCell>
+                <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+                  {item.waktu_selesai
+                    ? new Date(item.waktu_selesai).toLocaleTimeString("id-ID", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                    })
+                    : "-"} WIB
+                </TableCell>
+
 
                 <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
                   {item.alasan || "-"}

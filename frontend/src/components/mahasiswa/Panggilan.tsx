@@ -110,12 +110,29 @@ export default function BuatJanji() {
   // Timer countdown modal
   useEffect(() => {
     let timer: ReturnType<typeof setInterval>;
+    let audio: HTMLAudioElement;
 
     if (isOpen) {
+      audio = new Audio("/ringtone.mp3");
+      audio.loop = true;
+
+      const playAudio = () => {
+        audio.play().catch((err) => {
+          console.warn("Autoplay gagal. Mungkin belum ada interaksi:", err);
+        });
+      };
+
+      playAudio();
+      if (navigator.vibrate) {
+        navigator.vibrate([400, 200, 400]);
+      }
+
       timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
+            audio.pause();       
+            navigator.vibrate(0);
             closeModal();
             return 0;
           }
@@ -124,8 +141,15 @@ export default function BuatJanji() {
       }, 1000);
     }
 
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(timer);
+      if (audio) {
+        audio.pause();
+      }
+      navigator.vibrate(0); 
+    };
   }, [isOpen, closeModal]);
+
 
   return (
     <>

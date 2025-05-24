@@ -15,7 +15,6 @@ const authMiddleware = require("./middlewares/authMiddleware");
 const app = express();
 const server = http.createServer(app);
 const io = init(server); 
-const { mahasiswaSockets } = require('./socket/socketState');
 app.use(cors());
 app.use(express.json());
 io.on("connection", (socket) => {
@@ -36,8 +35,6 @@ app.use("/api", antrianRoutes);
 app.use("/api", riwayatRoutes);
 
 io.use(authMiddleware);
-
-
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {

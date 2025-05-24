@@ -179,6 +179,22 @@ exports.panggilMahasiswa = async (req, res) => {
   }
 
   try {
+    // Ambil data antrian dan nama mahasiswa dari tabel users
+    const [rows] = await db.execute(
+      `SELECT a.id, a.mahasiswa_id, u.name AS mahasiswa_name
+       FROM tb_antrian a
+       JOIN users u ON a.mahasiswa_id = u.id
+       WHERE a.id = ? AND a.status = 'menunggu'`,
+      [antrianId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        message: "Data antrian tidak ditemukan atau status bukan 'menunggu'",
+      });
+    }
+
+    // Update called_at pada antrian
     const [result] = await db.execute(
       `UPDATE tb_antrian SET called_at = NOW() WHERE id = ? AND status = 'menunggu'`,
       [antrianId]
@@ -190,8 +206,11 @@ exports.panggilMahasiswa = async (req, res) => {
       });
     }
 
-    // Emit event socket ke mahasiswa yang antriannya dipanggil
-    panggilMahasiswaSocket(antrianId);
+    // Emit event socket ke mahasiswa terkait
+    panggilMahasiswaSocket(antrianId, {
+      mahasiswa_id: rows[0].mahasiswa_id,
+      mahasiswa_name: rows[0].mahasiswa_name,
+    });
 
     res.json({
       message: "Mahasiswa berhasil dipanggil",

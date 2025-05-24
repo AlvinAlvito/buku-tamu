@@ -77,7 +77,7 @@ export default function BuatJanji() {
 
     const handleConnect = () => {
       console.log("Socket connected, join antrianId:", antrianId);
-      sock.emit("joinAntrian", antrianId);
+      sock.emit("join_antrian", antrianId);
       console.log("🔼 joinAntrian dikirim");
     };
 

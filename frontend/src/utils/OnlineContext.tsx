@@ -21,13 +21,11 @@ export function OnlineProvider({ children }: { children: React.ReactNode }) {
     const joinedRef = useRef(false);
     const [token, setToken] = useState<string | null>(null);
 
-    // Ambil token awal (setelah render pertama)
     useEffect(() => {
         const storedToken = localStorage.getItem("token");
         setToken(storedToken);
     }, []);
 
-    // Dengarkan perubahan storage (untuk logout/login dari tab lain)
     useEffect(() => {
         const handleStorageChange = () => {
             const newToken = localStorage.getItem("token");
@@ -55,7 +53,6 @@ export function OnlineProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         if (!token) {
-            // console.warn("❌ No token available for socket connection");
             disconnectSocket();
             return;
         }

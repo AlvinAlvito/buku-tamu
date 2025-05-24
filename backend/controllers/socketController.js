@@ -1,11 +1,14 @@
-const { mahasiswaSockets } = require('../socket/socketState');
-const { getIO } = require('../socket/socket');
+const { mahasiswaSockets } = require("../socket/socketState");
+const { getIO } = require("../socket/socket");
 
 const activeUsers = new Map();
 const onlineUsers = { mahasiswa: 0, dosen: 0 };
 const socketRoleMap = {};
 // Di awal file manapun kamu pakai mahasiswaSockets
-console.log("🧪 Di file ini, isi awal mahasiswaSockets:", Array.from(mahasiswaSockets.entries()));
+console.log(
+  "🧪 Di file ini, isi awal mahasiswaSockets:",
+  Array.from(mahasiswaSockets.entries())
+);
 
 function handleDisconnect(socket, io) {
   const meta = socketRoleMap[socket.id];
@@ -35,7 +38,6 @@ function handleDisconnect(socket, io) {
   console.log(`⛔ ${userId} (${name}) disconnected:`, onlineUsers);
 }
 
-
 function handleSocketConnection(socket, io) {
   const { id: userId, role } = socket.user;
 
@@ -54,12 +56,20 @@ function handleSocketConnection(socket, io) {
   socket.emit("updateDaftarDosen", [{ test: "test data" }]);
 
   // Tangani event mahasiswa join antrian
- socket.on("joinAntrian", (antrianId) => {
-  mahasiswaSockets.set(antrianId, socket.id);
-  console.log(`Socket ${socket.id} join antrianId ${antrianId}`);
-  console.log("🧪 mahasiswaSockets sekarang:", Array.from(mahasiswaSockets.entries()));
-});
+  socket.on("join_antrian", (antrianId) => {
+    const key = String(antrianId); // ✅ pastikan key adalah string
+    let set = mahasiswaSockets.get(key);
+    if (!set) {
+      set = new Set();
+      mahasiswaSockets.set(key, set);
+    }
+    set.add(socket.id);
 
+    console.log(`✅ Socket ${socket.id} JOIN antrianId ${key}`);
+    console.log("📦 mahasiswaSockets TERKINI:", [
+      ...mahasiswaSockets.entries(),
+    ]);
+  });
 
   socket.on("manual-logout", () => {
     socket.disconnect(true);
@@ -70,31 +80,59 @@ function handleSocketConnection(socket, io) {
     handleDisconnect(socket, io);
     console.log("⛔", userId, "disconnected:", onlineUsers);
   });
+
+  for (const [antrianId, socketSet] of mahasiswaSockets.entries()) {
+    if (socketSet.has(socket.id)) {
+      socketSet.delete(socket.id);
+      if (socketSet.size === 0) {
+        mahasiswaSockets.delete(antrianId);
+      }
+    }
+  }
 }
 
 // Fungsi helper untuk emit event panggilan ke mahasiswa by antrianId
 function panggilMahasiswaSocket(antrianId, antrianData) {
-  const socketId = mahasiswaSockets.get(antrianId);
-  const io = getIO();
+  const io = getIO(); // pastikan ambil instance io
 
-  console.log("📦 mahasiswaSockets.get(", antrianId, ") =", socketId);
-  const allSocketIds = Array.from(io.sockets.sockets.keys());
-  console.log("🔍 Semua socket aktif:", allSocketIds);
+  const key = String(antrianId); // ✅ selalu pakai string
+  const socketSet = mahasiswaSockets.get(key);
 
-  if (!socketId || !io.sockets.sockets.has(socketId)) {
-    console.log(`❌ Socket mahasiswa untuk antrianId ${antrianId} tidak ditemukan atau tidak aktif`);
+  console.log("🧪 Cek mahasiswaSockets antrianId:", key);
+  console.log("📦 Isi mahasiswaSockets sekarang:", new Map([...mahasiswaSockets]));
+
+  if (!socketSet || socketSet.size === 0) {
+    console.log(`❌ Tidak ada mahasiswa di antrianId ${key}`);
     return;
   }
 
-  io.to(socketId).emit("panggil_mahasiswa", {
-    mahasiswa_id: antrianData.mahasiswa_id,
-    mahasiswa_nama: antrianData.mahasiswa_name,
-    message: "Anda dipanggil oleh dosen",
-    countdown: 60,
-    waktu: new Date().toISOString(), // misal waktu sekarang, bisa diubah sesuai data
-  });
+  const allActiveSocketIds = Array.from(io.sockets.sockets.keys());
+  console.log("🔍 Semua socket aktif:", allActiveSocketIds);
+  console.log(`🎯 Socket untuk antrianId ${key}:`, Array.from(socketSet));
 
-  console.log(`📣 Emit panggilan ke socket ${socketId} untuk antrianId ${antrianId}`);
+  let emitted = false;
+
+  for (const socketId of socketSet) {
+    if (io.sockets.sockets.has(socketId)) {
+      io.to(socketId).emit("panggil_mahasiswa", {
+        mahasiswa_id: antrianData.mahasiswa_id,
+        mahasiswa_nama: antrianData.mahasiswa_name,
+        message: "Anda dipanggil oleh dosen",
+        countdown: 60,
+        waktu: new Date().toISOString(),
+      });
+
+      console.log(`📣 Emit panggilan ke socket ${socketId} untuk antrianId ${key}`);
+      emitted = true;
+    } else {
+      console.log(`⚠️ Socket ${socketId} tidak aktif. Dihapus dari antrianId ${key}`);
+      socketSet.delete(socketId); // bersihkan jika mati
+    }
+  }
+
+  if (!emitted) {
+    console.log(`❌ Tidak ada socket aktif untuk antrianId ${key}`);
+  }
 }
 
 module.exports = {

@@ -5,7 +5,8 @@ import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
 import { UserCheck, TimerIcon, Megaphone, CheckCircle, Trash2, XCircle, UserX, RotateCcw } from "lucide-react";
 import { toast } from "react-toastify";
-import { io, Socket } from "socket.io-client";
+import { initSocket, getSocket, disconnectSocket } from "../../utils/socket";
+
 
 
 type Antrian = {
@@ -30,19 +31,22 @@ export default function AntrianDosen() {
   const [countdown, setCountdown] = useState(60);
   const [antrianData, setAntrianData] = useState<Antrian[]>([]);
   const [selectedAntrian, setSelectedAntrian] = useState<Antrian | null>(null);
-  const [socket, setSocket] = useState<Socket | null>(null);
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const dosenId = user?.id || null;
 
   useEffect(() => {
-    const newSocket = io("http://localhost:3000"); // ganti ke URL server socket kamu
-    setSocket(newSocket);
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    initSocket(token); // Tidak perlu setState untuk socket
 
     return () => {
-      newSocket.disconnect();
+      disconnectSocket();
     };
   }, []);
+
+
 
   const fetchAntrian = () => {
     fetch(`/api/antrian-dosen/${dosenId}`)
@@ -100,13 +104,14 @@ export default function AntrianDosen() {
       console.log("Mahasiswa dipanggil pada:", data?.called_at);
 
       // ✅ Emit event ke mahasiswa
+      const socket = getSocket();
       if (socket) {
         socket.emit("panggil_mahasiswa", {
           mahasiswa_id: antrian.mahasiswa_id,
           mahasiswa_nama: antrian.mahasiswa_name,
+          antrian_id: antrian.id,
           waktu: data?.called_at,
         });
-
       }
 
 
@@ -266,7 +271,7 @@ export default function AntrianDosen() {
               className="bg-white dark:bg-gray-900 rounded-2xl shadow p-6 flex flex-col justify-between"
             >
               <div className="flex items-start justify-between gap-4 mb-4">
-               <img
+                <img
                   src={
                     item.mahasiswa_foto
                       ? `https://pmb.uinsu.ac.id/file/photo/${item.mahasiswa_foto}`

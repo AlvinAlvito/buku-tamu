@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom"; // untuk ambil param url
+import { useParams } from "react-router-dom"; 
 import { initSocket } from "../../utils/socket";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
 import { BellIcon } from "lucide-react";
 
 export default function BuatJanji() {
-  const { id } = useParams(); // ambil id ketersediaan dari URL
+  const { id } = useParams(); 
   const { isOpen, openModal, closeModal } = useModal();
 
   const [countdown, setCountdown] = useState(60);

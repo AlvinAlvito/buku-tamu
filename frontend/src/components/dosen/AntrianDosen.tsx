@@ -462,7 +462,7 @@ export default function AntrianDosen() {
             </h4>
 
             <p className="text-gray-600 dark:text-gray-300">
-              Apakah anda yakin ingin menghapus mahasiswa ini dari antrian? Tidak ingin Memanggilnya ulang?
+              Apakah anda yakin ingin menghapus mahasiswa ini dari antrian? Tidak ingin Memanggilnya ulang atau mencoba panggil Mahasiswa Lain dulu?
             </p>
 
             <div className="w-full grid grid-cols-2 gap-4 pt-6">
@@ -473,7 +473,7 @@ export default function AntrianDosen() {
                 className="w-full flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-700"
                 onClick={() => setIsBatalkanOpen(false)}
               >
-                <XCircle size={18} /> Batalkan
+                <XCircle size={18} /> Batalkan Hapus
               </Button>
 
               <Button

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, unstable_usePrompt } from "react-router-dom";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
@@ -14,16 +14,20 @@ export default function BuatJanji() {
   const [tanggal, setTanggal] = useState("");
   const [keperluan, setKeperluan] = useState("Meminta Ttd Sempro");
   const [showAlert, setShowAlert] = useState(false);
+  const [antrianData, setAntrianData] = useState<any[]>([]);
+  const [mahasiswaId, setMahasiswaId] = useState<number | null>(null);
+  const [dosenId, setDosenId] = useState<number | null>(null);
+
 
   const fetchDosenId = async (ketersediaanId: string): Promise<number> => {
     const res = await fetch("/api/ketersediaan");
     if (!res.ok) throw new Error("Gagal ambil data ketersediaan");
-    const data = await res.json(); 
+    const data = await res.json();
 
     const item = data.find((k: any) => String(k.id) === ketersediaanId);
     if (!item) throw new Error("Data ketersediaan tidak ditemukan");
 
-    return item.user_id; 
+    return item.user_id;
   };
 
   const handleSave = async () => {
@@ -59,12 +63,16 @@ export default function BuatJanji() {
         const text = await response.text();
         throw new Error(`Gagal menyimpan: ${text}`);
       }
+
       const result = await response.json();
       console.log("Berhasil:", result);
 
       setShowAlert(true);
-
       closeModal();
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       if (error instanceof Error) {
         console.error("Terjadi kesalahan:", error.message);
@@ -73,6 +81,7 @@ export default function BuatJanji() {
       }
     }
   };
+
 
 
   useEffect(() => {
@@ -94,6 +103,60 @@ export default function BuatJanji() {
     setTanggal(localDateTime);
   }, []);
 
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    if (user && user.id) {
+      setMahasiswaId(user.id);
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchDosenId = async () => {
+      try {
+        const res = await fetch("/api/ketersediaan/");
+        const data = await res.json();
+
+        const ketersediaan = data.find((item: any) => item.id === parseInt(id!));
+        if (ketersediaan) {
+          setDosenId(ketersediaan.user_id);
+        } else {
+          console.error("Data ketersediaan tidak ditemukan");
+        }
+      } catch (err) {
+        console.error("Gagal fetch ketersediaan:", err);
+      }
+    };
+
+    if (id) {
+      fetchDosenId();
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (dosenId !== null && mahasiswaId !== null) {
+      fetch(`/api/antrian-dosen/${dosenId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setAntrianData(data);
+
+          const antrianSaya = data.find(
+            (item: any) =>
+              item.mahasiswa_id === mahasiswaId && item.status === "menunggu"
+          );
+
+          if (antrianSaya) {
+            setShowAlert(true);
+          }
+        })
+        .catch((err) => console.error("Fetch error:", err));
+    }
+  }, [dosenId, mahasiswaId]);
+
+  // ✅ Cegah navigasi ke halaman lain
+  unstable_usePrompt({
+    message: "JANGAN KELUAR DARI HALAMAN INI! NANTI DOSEN GA BISA MEMANGGIL KAMU! DISINI AJA YA SAMPAI DIPANGGIL :) ",
+    when: showAlert
+  });
 
   return (
     <>
@@ -130,8 +193,8 @@ export default function BuatJanji() {
           {showAlert && (
             <Alert
               variant="warning"
-              title="Peringatan"
-              message="Anda sudah ditambahkan ke dalam antrian dosen. Tetaplah berada di area sekitar dosen sambil menunggu dosen memanggil anda. Tetaplah siaga sampai notifikasi panggilan berbunyi."
+              title="Peringatan! Jangan Keluar Dari Halaman Ini & Pastikan Perangkat Anda Selalu Terkoneksi! "
+              message="Anda sudah ditambahkan kedalam antrian. Tetaplah berada di area sekitar dosen sambil menunggu dosen memanggil anda notifikasi panggilan berbunyi."
             />
           )}
 

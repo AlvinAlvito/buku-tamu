@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom"; 
+import { useParams } from "react-router-dom";
 import { initSocket } from "../../utils/socket";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
 import { BellIcon } from "lucide-react";
 
 export default function BuatJanji() {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const { isOpen, openModal, closeModal } = useModal();
 
   const [countdown, setCountdown] = useState(60);
@@ -37,29 +37,34 @@ export default function BuatJanji() {
     }
   }, [id]);
 
-  // Ambil data antrian berdasarkan dosenId
   useEffect(() => {
-    if (dosenId === null) return;
-
-    const fetchAntrian = async () => {
+    // Ambil antrian milik mahasiswa sendiri berdasarkan dosenId
+    const fetchAntrianSaya = async () => {
       try {
         const res = await fetch(`/api/antrian-dosen/${dosenId}`);
         if (!res.ok) throw new Error("Gagal fetch antrian dosen");
-        const data = await res.json();
 
-        // Asumsi data berupa array, ambil id antrian pertama
-        if (data.length > 0) {
-          setAntrianId(data[0].id); // simpan id antrian
+        const data = await res.json();
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+        const antrianSaya = data.find(
+          (item: any) => item.mahasiswa_id === user.id && item.status === "menunggu"
+        );
+
+        if (antrianSaya) {
+          setAntrianId(antrianSaya.id);
         } else {
-          console.warn("Data antrian kosong");
+          console.warn("Mahasiswa belum daftar antrian atau sudah selesai");
           setAntrianId(null);
         }
       } catch (err) {
-        console.error("Fetch error:", err);
+        console.error("Fetch antrian error:", err);
       }
     };
 
-    fetchAntrian();
+    if (dosenId !== null) {
+      fetchAntrianSaya();
+    }
   }, [dosenId]);
 
   // Init socket dan join antrian berdasarkan antrianId

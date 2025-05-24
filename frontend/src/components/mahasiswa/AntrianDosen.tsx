@@ -2,7 +2,7 @@ import { useParams } from "react-router";
 import Badge from "../ui/badge/Badge";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { Trash2, UserX, XCircle } from "lucide-react";
+import { RotateCcw, Trash2, UserX, XCircle } from "lucide-react";
 import Button from "../ui/button/Button";
 import { Modal } from "../ui/modal";
 type Antrian = {
@@ -78,9 +78,20 @@ export default function AntrianDosen() {
       console.error("Error saat refresh:", err);
     }
   };
+
+  useEffect(() => {
+    handleRefresh();
+
+    const interval = setInterval(() => {
+      handleRefresh();
+    }, 60 * 1000); 
+
+    return () => clearInterval(interval);
+  }, [dosenId]);
+
   useEffect(() => {
     if (dosenId !== null) {
-      handleRefresh(); // Memuat data pertama kali
+      handleRefresh();
     }
   }, [dosenId]);
   const handleBatalkan = (antrian: Antrian) => {
@@ -148,7 +159,7 @@ export default function AntrianDosen() {
           onClick={handleRefresh}
           className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
         >
-          Refresh
+          <RotateCcw className="w-4 h-4" /> Refresh
         </button>
       </div>
 

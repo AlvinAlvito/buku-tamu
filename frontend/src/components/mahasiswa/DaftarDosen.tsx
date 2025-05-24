@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import Button from "../ui/button/Button";
 import { useEffect, useState } from "react";
 import { initSocket, disconnectSocket } from "../../utils/socket";
-import { RotateCcw, ExternalLink   } from "lucide-react";
+import { RotateCcw, ExternalLink } from "lucide-react";
 
 interface Dosen {
   id: number;
@@ -98,17 +98,17 @@ export default function DaftarDosen() {
     fetchData();
   };
   useEffect(() => {
-  fetchData();
+    fetchData();
 
-  const retryTimeout = setTimeout(() => {
-    if (data.length === 0) {
-      console.log("Data kosong, mencoba ulang fetch...");
-      fetchData();
-    }
-  }, 1);
+    const retryTimeout = setTimeout(() => {
+      if (data.length === 0) {
+        console.log("Data kosong, mencoba ulang fetch...");
+        fetchData();
+      }
+    }, 1);
 
-  return () => clearTimeout(retryTimeout);
-}, []);
+    return () => clearTimeout(retryTimeout);
+  }, []);
 
 
   // useEffect(() => {
@@ -132,7 +132,7 @@ export default function DaftarDosen() {
 
         <div className="flex items-center gap-3">
           <button onClick={handleRefresh} className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
-             <RotateCcw className="w-4 h-4" /> Refresh
+            <RotateCcw className="w-4 h-4" /> Refresh
           </button>
           <div className=" lg:block">
             <form>

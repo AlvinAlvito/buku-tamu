@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import AntrianDosen from "../../components/dosen/AntrianDosen";
 import Alert from "../../components/ui/alert/Alert";
 
 export default function BasicTables() {
   const [showAlert, setShowAlert] = useState(true);
+  useEffect(() => {
+      const timer = setTimeout(() => {
+        setShowAlert(false);
+      }, 2 * 60 * 1000);
+  
+      return () => clearTimeout(timer);
+    }, []);
   return (
     <>
 

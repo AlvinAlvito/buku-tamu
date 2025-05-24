@@ -233,6 +233,14 @@ export default function AntrianDosen() {
     fetchAntrian();
   };
 
+  useEffect(() => {
+    handleRefresh();
+    const interval = setInterval(() => {
+      handleRefresh();
+    }, 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   function toTitleCase(str: string | undefined): string {
     if (!str) return "";
     return str

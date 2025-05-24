@@ -133,7 +133,9 @@ export default function BuatJanji() {
   }, [id]);
 
   useEffect(() => {
-    if (dosenId !== null && mahasiswaId !== null) {
+    if (dosenId === null || mahasiswaId === null) return;
+
+    const fetchData = () => {
       fetch(`/api/antrian-dosen/${dosenId}`)
         .then((res) => res.json())
         .then((data) => {
@@ -146,11 +148,22 @@ export default function BuatJanji() {
 
           if (antrianSaya) {
             setShowAlert(true);
+          } else {
+            setShowAlert(false);
           }
         })
         .catch((err) => console.error("Fetch error:", err));
-    }
+    };
+
+    fetchData(); // Panggil sekali pas mount & saat dosenId/mahasiswaId berubah
+
+    const interval = setInterval(() => {
+      fetchData();
+    }, 60000); // 60000 ms = 1 menit
+
+    return () => clearInterval(interval); // Bersihkan interval saat unmount / dependency berubah
   }, [dosenId, mahasiswaId]);
+
 
   // ✅ Cegah navigasi ke halaman lain
   unstable_usePrompt({

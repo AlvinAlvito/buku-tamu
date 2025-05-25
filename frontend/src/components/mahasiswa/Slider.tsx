@@ -1,7 +1,7 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay, EffectFade } from "swiper/modules";
 import Button from "../ui/button/Button";
-import { ExternalLink, PlaneTakeoff } from "lucide-react";
+import {  PlaneTakeoff } from "lucide-react";
 import { Link } from "react-router";
 
 const slides = [

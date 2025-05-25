@@ -3,6 +3,7 @@ import GrafikAntrian from "../../components/dosen/GrafikAntrian";
 import PageMeta from "../../components/common/PageMeta";
 import InformasiKetersediaan from "../../components/dosen/profile/InformasiKetersediaan";
 import Slider from "../../components/dosen/Slider";
+import AntrianDosen from "../../components/dosen/AntrianDosen";
 
 export default function Dashboard() {
   return (
@@ -29,6 +30,11 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+        <div className="col-span-12 xl:col-span-12">
+          <AntrianDosen />
+        </div>
+
+
       </div>
     </>
   );

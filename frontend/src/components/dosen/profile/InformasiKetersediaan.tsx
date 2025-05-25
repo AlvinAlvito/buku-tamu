@@ -246,7 +246,7 @@ export default function InformasiKetersediaan() {
               Edit Informasi Ketersediaan
             </h4>
             <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-              Perbaharui Informasi Ketersediaan anda dengan tepat, agar dapat mudah ditemukan oleh Mahasiswa anda
+              Update Informasi Ketersediaan anda agar Mahasiswa bisa menemukan anda
             </p>
           </div>
           <form className="flex flex-col">

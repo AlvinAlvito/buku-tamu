@@ -71,9 +71,16 @@ export default function DaftarDosen() {
 
 
 
-  const filteredData = data.filter((dosen) =>
+  const sortedData = [...data].sort((a, b) => {
+    if (a.status_ketersediaan === "Tersedia" && b.status_ketersediaan !== "Tersedia") return -1;
+    if (a.status_ketersediaan !== "Tersedia" && b.status_ketersediaan === "Tersedia") return 1;
+    return 0;
+  });
+
+  const filteredData = sortedData.filter((dosen) =>
     (dosen.name ?? "").toLowerCase().includes(searchTerm.toLowerCase())
   );
+
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, data]);
@@ -135,13 +142,13 @@ export default function DaftarDosen() {
 
   return (
     <div className="overflow-hidden  rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
-       {showAlert && (
-            <Alert
-              variant="warning"
-              title="Peringatan"
-              message={`Tunggu hingga ${countdown} detik lagi sebelum merefresh`}
-            />
-          )}
+      {showAlert && (
+        <Alert
+          variant="warning"
+          title="Peringatan"
+          message={`Tunggu hingga ${countdown} detik lagi sebelum merefresh`}
+        />
+      )}
       <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
@@ -153,7 +160,7 @@ export default function DaftarDosen() {
           <button onClick={handleRefresh} className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
             <RotateCcw className="w-4 h-4" /> Refresh
           </button>
-         
+
           <div className=" lg:block">
             <form>
               <div className="relative">

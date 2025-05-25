@@ -64,7 +64,7 @@ export default function Slider() {
                                 <p className="text-gray-100 text-base md:text-md mt-2 drop-shadow-sm max-w-xl">
                                     {slide.description}
                                 </p>
-                                <Link className="mt-4" to={`/mahasiswa${slide.link}`}>
+                                <Link className="mt-4" to={`/dosen${slide.link}`}>
                                     <Button size="sm" variant="outline" className="w-full">
                                         <ExternalLink className="w-4 h-4" /> Kunjung Tutorial
                                     </Button>

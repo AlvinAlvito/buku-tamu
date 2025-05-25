@@ -139,7 +139,7 @@ export default function InformasiKetersediaan() {
               <Button
                 size="sm"
                 onClick={openModal}
-                variant="primary"
+                variant="outline"
                 className=" flex items-center gap-2 justify-center"
               >
                 <PenBoxIcon size={16} />

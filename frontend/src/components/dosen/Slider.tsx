@@ -6,23 +6,35 @@ import { Link } from "react-router";
 
 const slides = [
     {
-        image: "https://asset.kompas.com/crops/ZP0RicKY7Jeq7ytNnFxyL0URiWI=/98x0:942x563/750x500/data/photo/2020/02/06/5e3b934a16c7e.jpg",
-        title: "Inovasi Teknologi",
-        description: "Temukan solusi masa depan dengan teknologi terbaru.",
+        image: "https://wallpapercat.com/w/full/b/d/2/293739-2048x1365-desktop-hd-paris-background-image.jpg",
+        title: "Apa Itu Aplikasi SI-BIMA UINSU?",
+        description: "Sistem Informasi Bimbingan Akademik adalah sebuah aplikasi untuk mengelola proses Bimbingan Akademik. Dengan adanya SI-BIMA ini, maka proses Bimbingan Akademik akan lebih mudah dan terstruktur bagi Mahsiswa & Dosen UIN Sumatera Utara.",
         link: "/tutorial"
     },
     {
-        image: "https://png.pngtree.com/thumb_back/fh260/background/20230407/pngtree-cityscape-with-the-eiffel-tower-in-paris-photo-image_2288903.jpg",
-        title: "Pendidikan Modern",
-        description: "Pendidikan berbasis digital untuk generasi masa depan.",
-        link: "/inovasi"
+        image: "https://c4.wallpaperflare.com/wallpaper/218/185/82/eiffel-tower-nature-paris-wallpaper-preview.jpg",
+        title: "Tips Untuk Dosen",
+        description: "Jika Mahasiswa belum datang juga saat dipanggil, Lewatkan saja dulu & Panggil Mahasiswa yang lain. Mungkin dia sedang ketoilet.. Hapus Antrian Mahasiswa jika diperlukan saja.",
+        link: "/tutorial"
     },
     {
-        image: "https://media.istockphoto.com/id/1185953092/id/foto/daya-tarik-utama-paris-dan-seluruh-eropa-adalah-menara-eiffel-di-bawah-sinar-matahari-terbenam.jpg?s=612x612&w=0&k=20&c=jdhhnTt_XGcv5x69rR8bv3tEbB-QsXMGeu3-5Za9TRk=",
-        title: "Alam yang Indah",
-        description: "Menikmati keindahan alam secara visual.",
-        link: "/inovasi"
+        image: "https://statik.tempo.co/data/2023/12/14/id_1263069/1263069_720.jpg",
+        title: "Tentang Aplikasi SI-BIMA UINSU",
+        description: "SI-BIMA UINSU Saat ini berada di Versi 1.0. Akan ada perbaikan & pengembangan aplikasi kedepannya. Mari Kita Tunggu Update & Upgrade terbaru dari SI-BIMA UINSU..",
+        link: "/tutorial"
     },
+    {
+        image: "https://i.pinimg.com/736x/83/a6/66/83a6667103a915a1414090ae942a90be.jpg",
+        title: "Fitur SI-BIMA UINSU",
+        description: "Coba & Gunakan Semua Fitur SI-BIMA UINSU, Mulai dari Informasi Ketersediaan Dosen, Daftar Dosen, Antrian Online, Riwayat Antrian, Kalender, Tema Dark & Light Mode, dan lainnya.",
+        link: "/tutorial"
+    },
+    {
+        image: "https://media.istockphoto.com/id/689383558/photo/tower-near-park-in-paris.jpg?s=612x612&w=0&k=20&c=n5fBGoxmUnbL_BWfGDbNnD2-MFZeURso_BgXy2yJZic=",
+        title: "Unduh Riwayat Bimbingan",
+        description: "Unduh riwayat bimbingan mahasiswa anda, dan lakukan filter berdasarkan Tahun & Tanggal untuk melengkapi data administrasi Laporan Beban Kinerja Dosen Anda",
+        link: "/tutorial"
+    }
 ];
 export default function Slider() {
     return (
@@ -30,7 +42,7 @@ export default function Slider() {
             <Swiper
                 modules={[Pagination, Autoplay, EffectFade]}
                 pagination={{ clickable: true }}
-                autoplay={{ delay: 5000 }}
+                autoplay={{ delay: 10000 }}
                 loop={true}
                 spaceBetween={30}
                 effect="fade"
@@ -49,12 +61,12 @@ export default function Slider() {
                                 <h2 className="text-white text-2xl md:text-3xl font-semibold drop-shadow-md">
                                     {slide.title}
                                 </h2>
-                                <p className="text-white text-base md:text-lg mt-2 drop-shadow-sm max-w-xl">
+                                <p className="text-gray-100 text-base md:text-md mt-2 drop-shadow-sm max-w-xl">
                                     {slide.description}
                                 </p>
                                 <Link className="mt-4" to={`/mahasiswa${slide.link}`}>
                                     <Button size="sm" variant="outline" className="w-full">
-                                        <ExternalLink className="w-4 h-4" /> Lihat Profil
+                                        <ExternalLink className="w-4 h-4" /> Kunjung Tutorial
                                     </Button>
                                 </Link>
                             </div>

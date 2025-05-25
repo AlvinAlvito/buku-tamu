@@ -108,7 +108,7 @@ export default function LoginForm() {
             </h1>
 
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Masukan NIM/NIP dan Password anda
+              Masuk dengan Akun Portalsia/Dahlia anda
             </p>
           </div>
           <div>

@@ -210,7 +210,7 @@ export default function InformasiKetersediaan() {
           </div>
           <div>
             <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-              Lokasi Goggle Maps
+              Lokasi Anda di Goggle Maps
             </p>
             <div className="relative rounded-xl overflow-hidden border border-gray-300 dark:border-gray-700" style={{ height: 200 }}>
               <iframe

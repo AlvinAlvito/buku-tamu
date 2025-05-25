@@ -136,7 +136,7 @@ const Calendar: React.FC = () => {
             eventContent={renderEventContent}
             customButtons={{
               addEventButton: {
-                text: "Add Event +",
+                text: "Buat Penanda  +",
                 click: openModal,
               },
             }}
@@ -153,15 +153,14 @@ const Calendar: React.FC = () => {
                 {selectedEvent ? "Edit Event" : "Add Event"}
               </h5>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Plan your next big moment: schedule or edit an event to stay on
-                track
+                Buat Penanda Baru pada Kalender Anda untuk mengingatkan anda tentang hari hari penting atau hari libur
               </p>
             </div>
             <div className="mt-8">
               <div>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                    Event Title
+                    Judul 
                   </label>
                   <input
                     id="event-title"
@@ -174,7 +173,7 @@ const Calendar: React.FC = () => {
               </div>
               <div className="mt-6">
                 <label className="block mb-4 text-sm font-medium text-gray-700 dark:text-gray-400">
-                  Event Color
+                  Warna 
                 </label>
                 <div className="flex flex-wrap items-center gap-4 sm:gap-5">
                   {Object.entries(calendarsEvents).map(([key, value]) => (
@@ -210,7 +209,7 @@ const Calendar: React.FC = () => {
 
               <div className="mt-6">
                 <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                  Enter Start Date
+                 Dimulai Dari
                 </label>
                 <div className="relative">
                   <input
@@ -225,7 +224,7 @@ const Calendar: React.FC = () => {
 
               <div className="mt-6">
                 <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                  Enter End Date
+                  Selesai
                 </label>
                 <div className="relative">
                   <input
@@ -244,7 +243,7 @@ const Calendar: React.FC = () => {
                 type="button"
                 className="flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] sm:w-auto"
               >
-                Close
+                Tutup
               </button>
               <button
                 onClick={handleAddOrUpdateEvent}

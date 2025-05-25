@@ -304,7 +304,7 @@ export default function InformasiKetersediaan() {
                 </div>
 
                 <div>
-                  <Label>Waktu Mulai</Label>
+                  <Label>Jam Tersedia</Label>
                   <Input
                     name="waktu_mulai"
                     type="time"
@@ -315,7 +315,7 @@ export default function InformasiKetersediaan() {
                 </div>
 
                 <div>
-                  <Label>Waktu Selesai</Label>
+                  <Label>Jam Pulang</Label>
                   <Input
                     name="waktu_selesai"
                     type="time"

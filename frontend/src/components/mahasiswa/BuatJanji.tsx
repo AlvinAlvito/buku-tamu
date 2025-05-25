@@ -12,7 +12,7 @@ export default function BuatJanji() {
   const { isOpen, openModal, closeModal } = useModal();
   const { id } = useParams();
   const [tanggal, setTanggal] = useState("");
-  const [keperluan, setKeperluan] = useState("Meminta Ttd Sempro");
+  const [keperluan, setKeperluan] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [antrianData, setAntrianData] = useState<any[]>([]);
   const [mahasiswaId, setMahasiswaId] = useState<number | null>(null);
@@ -155,17 +155,16 @@ export default function BuatJanji() {
         .catch((err) => console.error("Fetch error:", err));
     };
 
-    fetchData(); // Panggil sekali pas mount & saat dosenId/mahasiswaId berubah
+    fetchData(); 
 
     const interval = setInterval(() => {
       fetchData();
-    }, 60000); // 60000 ms = 1 menit
+    }, 20000); 
 
-    return () => clearInterval(interval); // Bersihkan interval saat unmount / dependency berubah
+    return () => clearInterval(interval); 
   }, [dosenId, mahasiswaId]);
 
 
-  // ✅ Cegah navigasi ke halaman lain
   unstable_usePrompt({
     message: "JANGAN KELUAR DARI HALAMAN INI! NANTI DOSEN GA BISA MEMANGGIL KAMU! DISINI AJA YA SAMPAI DIPANGGIL :) ",
     when: showAlert
@@ -241,8 +240,8 @@ export default function BuatJanji() {
 
                 </div>
                 <div>
-                  <Label>Keperluan</Label>
-                  <Input type="text" value={keperluan} onChange={(e) => setKeperluan(e.target.value)} />
+                  <Label>Tujuan Menemui Dosen</Label>
+                  <Input placeholder="Meminta ttd.." type="text" value={keperluan} onChange={(e) => setKeperluan(e.target.value)} />
                 </div>
               </div>
             </div>

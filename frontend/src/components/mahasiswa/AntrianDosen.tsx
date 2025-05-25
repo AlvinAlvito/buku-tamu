@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { RotateCcw, Trash2, UserX, XCircle } from "lucide-react";
 import Button from "../ui/button/Button";
 import { Modal } from "../ui/modal";
+import Alert from "../ui/alert/Alert";
 type Antrian = {
   id: number;
   mahasiswa_id: number;
@@ -27,6 +28,9 @@ export default function AntrianDosen() {
   const [dosenId, setDosenId] = useState<number | null>(null);
   const { id } = useParams();
   const [mahasiswaId, setMahasiswaId] = useState<number | null>(null);
+  const [isCooldown, setIsCooldown] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -66,8 +70,25 @@ export default function AntrianDosen() {
         .catch((err) => console.error("Fetch error:", err));
     }
   }, [dosenId]);
-  const handleRefresh = async () => {
+  const handleRefresh = async (manual = false) => {
     if (dosenId === null) return;
+
+    // Cegah klik manual saat cooldown
+    if (manual && isCooldown) {
+      setShowAlert(true);
+      let counter = 5;
+      setCountdown(counter);
+
+      const countdownInterval = setInterval(() => {
+        counter -= 1;
+        setCountdown(counter);
+        if (counter === 0) {
+          clearInterval(countdownInterval);
+          setShowAlert(false);
+        }
+      }, 1000);
+      return;
+    }
 
     try {
       const res = await fetch(`/api/antrian-dosen/${dosenId}`);
@@ -77,6 +98,12 @@ export default function AntrianDosen() {
     } catch (err) {
       console.error("Error saat refresh:", err);
     }
+
+    // Aktifkan cooldown hanya untuk klik manual
+    if (manual) {
+      setIsCooldown(true);
+      setTimeout(() => setIsCooldown(false), 5000);
+    }
   };
 
   useEffect(() => {
@@ -84,7 +111,7 @@ export default function AntrianDosen() {
 
     const interval = setInterval(() => {
       handleRefresh();
-    }, 60 * 1000); 
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [dosenId]);
@@ -94,6 +121,7 @@ export default function AntrianDosen() {
       handleRefresh();
     }
   }, [dosenId]);
+
   const handleBatalkan = (antrian: Antrian) => {
     setSelectedAntrian(antrian);
     setIsBatalkanOpen(true);
@@ -150,13 +178,20 @@ export default function AntrianDosen() {
 
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
+      {showAlert && (
+        <Alert
+          variant="warning"
+          title="Peringatan"
+          message={`Tunggu hingga ${countdown} detik lagi sebelum merefresh`}
+        />
+      )}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
           Antrian Mahasiswa Dosen
         </h3>
 
         <button
-          onClick={handleRefresh}
+         onClick={() => handleRefresh(true)}
           className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
         >
           <RotateCcw className="w-4 h-4" /> Refresh

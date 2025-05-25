@@ -39,7 +39,7 @@ export default function AntrianDosen() {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    initSocket(token); // Tidak perlu setState untuk socket
+    initSocket(token);
 
     return () => {
       disconnectSocket();
@@ -237,7 +237,7 @@ export default function AntrianDosen() {
     handleRefresh();
     const interval = setInterval(() => {
       handleRefresh();
-    }, 60 * 1000);
+    }, 10000);
     return () => clearInterval(interval);
   }, []);
 

@@ -31,7 +31,6 @@ export default function LoginForm() {
     setError("");
 
     try {
-      console.log("Mulai fetch login API");
 
       const response = await fetch("/api/auth/login", {
         method: "POST",
@@ -39,11 +38,8 @@ export default function LoginForm() {
         body: JSON.stringify({ nim, password }),
       });
 
-      console.log("Fetch selesai, status:", response.status);
-
       const now = Date.now();
       const data = await response.json();
-      console.log("Response from login API:", data);
 
       if (!response.ok) {
         throw new Error(data.message || data.error || "Login gagal");
@@ -52,16 +48,12 @@ export default function LoginForm() {
       if (!data.token || !data.user) {
         throw new Error("Response API tidak lengkap");
       }
-
       // Ingat saya
       if (isChecked) {
         localStorage.setItem("token", data.token);
       } else {
         sessionStorage.setItem("token", data.token);
       }
-
-
-
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
@@ -70,7 +62,6 @@ export default function LoginForm() {
       window.dispatchEvent(new Event("token-change"));
 
       const socket = initSocket(data.token);
-      console.log("Response data:", data);
 
       socket.on("connect", () => {
         console.log("Connected to Socket.IO server");
@@ -92,15 +83,7 @@ export default function LoginForm() {
     } finally {
       setLoading(false);
     }
-
-
-
   };
-
-
-
-
-
 
   return (
     <div className="flex flex-col flex-1">

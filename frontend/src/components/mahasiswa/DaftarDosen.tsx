@@ -5,6 +5,7 @@ import Button from "../ui/button/Button";
 import { useEffect, useState } from "react";
 import { initSocket, disconnectSocket } from "../../utils/socket";
 import { RotateCcw, ExternalLink } from "lucide-react";
+import Alert from "../ui/alert/Alert";
 
 interface Dosen {
   id: number;
@@ -25,6 +26,9 @@ export default function DaftarDosen() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const itemsPerPage = 6;
+  const [isCooldown, setIsCooldown] = useState(false);
+  const [countdown, setCountdown] = useState(5);
+  const [showAlert, setShowAlert] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -38,43 +42,34 @@ export default function DaftarDosen() {
       setLoading(false);
     }
   };
-  useEffect(() => {
 
-    fetchData();
+  useEffect(() => {
+    fetchData(); // ambil data awal
 
     const token = localStorage.getItem("token") || "";
     const socket = initSocket(token);
-    console.log("Socket initialized:", socket);
+
+    socket.on("connect", () => {
+      console.log("Socket connected dengan id:", socket.id);
+    });
 
     socket.on("updateDaftarDosen", (updatedData: Dosen[]) => {
       console.log("Data dari socket updateDaftarDosen diterima:", updatedData);
       setData(updatedData);
     });
 
-    const onUpdateDaftarDosen = (updatedData: Dosen[]) => {
-      console.log("Data dari socket updateDaftarDosen diterima:", updatedData);
-      setData(updatedData);
-    };
-
-    socket.on("connect", () => {
-      console.log("Socket connected dengan id:", socket.id);
-
-      socket.off("updateDaftarDosen");
-      socket.on("updateDaftarDosen", onUpdateDaftarDosen);
-    });
-
-
     socket.on("connect_error", (err) => {
       console.error("Socket connection error:", err);
     });
 
-    console.log("Listener updateDaftarDosen attached");
-
     return () => {
-      socket.off("updateDaftarDosen", onUpdateDaftarDosen);
+      socket.off("updateDaftarDosen");
       disconnectSocket();
     };
-  }, []);
+  }, []); // hanya sekali saat mount
+
+
+
 
   const filteredData = data.filter((dosen) =>
     (dosen.name ?? "").toLowerCase().includes(searchTerm.toLowerCase())
@@ -95,8 +90,34 @@ export default function DaftarDosen() {
   };
 
   const handleRefresh = () => {
+    if (isCooldown) {
+      setShowAlert(true);
+      let counter = 5;
+      setCountdown(counter);
+
+      const countdownInterval = setInterval(() => {
+        counter -= 1;
+        setCountdown(counter);
+        if (counter === 0) {
+          clearInterval(countdownInterval);
+          setShowAlert(false);
+        }
+      }, 1000);
+
+      return;
+    }
+
+    // Jalankan fungsi fetch
     fetchData();
+
+    // Mulai cooldown
+    setIsCooldown(true);
+    setTimeout(() => {
+      setIsCooldown(false);
+    }, 5000);
   };
+
+
   useEffect(() => {
     fetchData();
 
@@ -110,19 +131,17 @@ export default function DaftarDosen() {
     return () => clearTimeout(retryTimeout);
   }, []);
 
-
-  // useEffect(() => {
-  //   fetchData();
-  //   const interval = setInterval(() => {
-  //     fetchData();
-  //   }, 10000);
-  //   return () => clearInterval(interval);
-  // }, []);
-
   if (loading) return <p>Memuat data dosen...</p>;
 
   return (
     <div className="overflow-hidden  rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
+       {showAlert && (
+            <Alert
+              variant="warning"
+              title="Peringatan"
+              message={`Tunggu hingga ${countdown} detik lagi sebelum merefresh`}
+            />
+          )}
       <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
@@ -134,6 +153,7 @@ export default function DaftarDosen() {
           <button onClick={handleRefresh} className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
             <RotateCcw className="w-4 h-4" /> Refresh
           </button>
+         
           <div className=" lg:block">
             <form>
               <div className="relative">

@@ -10,6 +10,7 @@ interface Prodi {
   prodi: string;
   jumlah_mahasiswa: string;
   jumlah_dosen: string;
+  jumlah_antrian_berlangsung:number;
 }
 
 export default function DaftarProdi() {

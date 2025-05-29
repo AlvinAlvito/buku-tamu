@@ -15,6 +15,8 @@ interface User {
   prodi: string;
   fakultas: string;
   stambuk: string;
+  jumlah_antrian_berlangsung: number;
+  jumlah_antrian_selesai: number;
 }
 
 
@@ -133,26 +135,21 @@ export default function DaftarUser() {
                   {item.name}
                 </p>
                 <p className="text-gray-500 text-sm dark:text-gray-400">
-                  NIM: {item.nim}
+                  {item.nim} | {item.role} {item.stambuk}
                 </p>
               </div>
             </div>
 
             <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+
               <p>
-                <span className="font-medium text-gray-700 dark:text-white">Fakultas <br /></span> {item.fakultas}
+                <span className="font-medium text-yellow-700 dark:text-yellow-500 ">Total Antrian Sedang Berlangsung <br /> <span className="text-xl">{item.jumlah_antrian_berlangsung} </span></span> 
               </p>
               <p>
-                <span className="font-medium text-gray-700 dark:text-white">Program Studi <br /></span> {item.prodi}
-              </p>
-              <p>
-                <span className="font-medium text-gray-700 dark:text-white">Stambuk <br /> </span> {item.stambuk}
-              </p>
-              <p>
-                <span className="font-medium text-gray-700 dark:text-white">Role <br /></span> {item.role}
+                <span className="font-medium text-green-700  dark:text-green-500">Total Antrian Selesai <br /> <span className="text-xl"> {item.jumlah_antrian_selesai}</span></span> 
               </p>
             </div>
-            <Button variant="primary" size="sm" className="w-full">
+            <Button variant="primary" size="sm" className="w-full my-2">
               <Link to={`/admin/user/${item.id}`} className="block w-full text-center">
                 Lihat Profil
               </Link>

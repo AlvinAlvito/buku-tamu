@@ -25,7 +25,7 @@ exports.getAllProdi = async (req, res) => {
 };
 
 exports.getUsersByProdi = async (req, res) => {
-   const { namaProdi } = req.params;
+  const { namaProdi } = req.params;
 
   if (!namaProdi) {
     return res.status(400).json({ message: "Parameter namaProdi harus diisi" });
@@ -35,17 +35,34 @@ exports.getUsersByProdi = async (req, res) => {
     const [rows] = await db.execute(
       `
       SELECT 
-        id,
-        name,
-        nim,
-        foto_profil,
-        role,
-        prodi,
-        fakultas,
-        stambuk
-      FROM users
-      WHERE prodi = ?
-      ORDER BY name ASC
+        u.id,
+        u.name,
+        u.nim,
+        u.foto_profil,
+        u.role,
+        u.prodi,
+        u.fakultas,
+        u.stambuk,
+
+        -- Jumlah antrian sedang berlangsung (user sebagai mahasiswa atau dosen)
+        (
+          SELECT COUNT(*) 
+          FROM tb_antrian a 
+          WHERE (a.mahasiswa_id = u.id OR a.dosen_id = u.id)
+          AND a.status IN ('menunggu', 'proses')
+        ) AS jumlah_antrian_berlangsung,
+
+        -- Jumlah antrian selesai (user sebagai mahasiswa atau dosen)
+        (
+          SELECT COUNT(*) 
+          FROM tb_antrian a 
+          WHERE (a.mahasiswa_id = u.id OR a.dosen_id = u.id)
+          AND a.status = 'selesai'
+        ) AS jumlah_antrian_selesai
+
+      FROM users u
+      WHERE u.prodi = ?
+      ORDER BY u.name ASC
       `,
       [namaProdi]
     );

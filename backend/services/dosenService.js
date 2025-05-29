@@ -6,7 +6,10 @@ const apiBima = process.env.UINSU_API_BIMA;
 async function loginDosenViaApi(nip, password) {
   try {
     // 1. Cek apakah dosen sudah ada di tabel users
-    const [existingUsers] = await db.query("SELECT * FROM users WHERE nim = ? AND role = 'dosen'", [nip]);
+    const [existingUsers] = await db.query(
+      "SELECT * FROM users WHERE nim = ? AND role = 'dosen'",
+      [nip]
+    );
 
     if (existingUsers.length > 0) {
       // Sudah pernah login sebelumnya, langsung return data user
@@ -53,19 +56,40 @@ async function loginDosenViaApi(nip, password) {
     );
 
     const dosenData = dosenResponse.data.DataDosen?.[0];
-    if (!dosenData || (dosenData.status !== true && dosenData.status !== "true")) {
+    if (
+      !dosenData ||
+      (dosenData.status !== true && dosenData.status !== "true")
+    ) {
       throw new Error("Data dosen tidak ditemukan");
+    }
+
+    // Gabungkan nama dengan gelar depan dan belakang
+    const gelarDepan = dosenData.dsn_glrdepan?.trim();
+    const nama = dosenData.dsn_nama?.trim();
+    const gelarBelakang = dosenData.dsn_glrbelakang?.trim();
+
+    let fullName = nama;
+    if (gelarDepan) {
+      fullName = `${gelarDepan} ${fullName}`;
+    }
+    if (gelarBelakang) {
+      fullName = `${fullName}, ${gelarBelakang}`;
     }
 
     // 4. Simpan ke database lokal (users)
     const newUser = {
-      name: dosenData.dsn_nama,
+      name: fullName,
       nim: dosenData.dsn_nip,
       email: dosenData.dsn_email || null,
       password: authData.password,
       foto_profil: dosenData.dsn_urlfoto || null,
       role: "dosen",
-      prodi: dosenData.dsn_programstudi || null,
+      prodi: dosenData.dsn_programstudi
+        ? dosenData.dsn_programstudi
+            .replace(/^Prodi\s+/i, "")
+            .trim()
+            .toUpperCase()
+        : null,
       stambuk: null,
       fakultas: dosenData.dsn_fakultas || null,
       whatsapp: dosenData.dsn_hp || null,

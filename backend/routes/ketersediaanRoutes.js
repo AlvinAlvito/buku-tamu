@@ -4,7 +4,6 @@ const ketersediaanController = require('../controllers/ketersediaanController');
 
 router.get('/ketersediaan/', ketersediaanController.getAllKetersediaan);
 router.get('/ketersediaan/:id', ketersediaanController.getKetersediaanByUserId);
-
 router.put('/ketersediaan/:id', ketersediaanController.updateKetersediaan);
 
 

@@ -19,6 +19,7 @@ import LineChart from "./pages/UiElements/LineChart";
 import BarChart from "./pages/UiElements/BarChart";
 import FormElements from "./pages/UiElements/FormElements";
 import Blank from "./pages/OtherPage/Blank";
+
 import DosenAntrian from "./pages/Dosen/Antrian";
 import DosenProfile from "./pages/Dosen/Profile";
 import DosenDashboard from "./pages/Dosen/Dasboard";
@@ -26,6 +27,7 @@ import DaftarDosen from "./pages/Dosen/DaftarDosen";
 import RiwayatAntrianDosen from "./pages/Dosen/RiwayatAntrian";
 import KalenderDosen from "./pages/Dosen/Kalender";
 import TutorialDosen from "./pages/Dosen/Tutorial";
+
 import MahasiswaDashboard from "./pages/Mahasiswa/Dasboard";
 import MahasiswaProfile from "./pages/Mahasiswa/Profile";
 import MahasiswaDaftarDosen from "./pages/Mahasiswa/Dosen/DaftarDosen";
@@ -34,6 +36,8 @@ import RiwayatAntrianMahasiswa from "./pages/Mahasiswa/RiwayatAntrian";
 import KalenderMahasiswa from "./pages/Mahasiswa/Kalender";
 import TutorialMahasiswa from "./pages/Mahasiswa/Tutorial";
 import LogUser from "./components/mahasiswa/LogUser";
+
+import DaftarProdi from "./pages/Admin/DaftarProdi";
 
 export const router = createBrowserRouter([
   {
@@ -47,6 +51,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
 
+      { path: "dosen/daftar-prodi", element: <DaftarProdi /> },
       // Dosen
       { path: "dosen", element: <DosenDashboard /> },
       { path: "dosen/profile", element: <DosenProfile /> },

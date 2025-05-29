@@ -1,9 +1,10 @@
 require("dotenv").config();
 const db = require("../db");
 const jwt = require("jsonwebtoken");
-const axios = require("axios");
 const bcrypt = require("bcryptjs");
-const apiBaseUrl = process.env.UINSU_API_URL;
+const localUserService = require("../services/localUserService");
+const mahasiswaService = require("../services/mahasiswaService");
+const dosenService = require("../services/dosenService");
 
 exports.register = async (req, res) => {
   const { name, nim, email, password, role } = req.body;
@@ -43,120 +44,77 @@ exports.login = async (req, res) => {
   const { nim, password } = req.body;
 
   try {
-    // Login Akun di Database Lokal
-    const [results] = await db.query("SELECT * FROM users WHERE nim = ?", [nim]);
+    // 1. Cek apakah user sudah ada di DB lokal
+    const user = await localUserService.findUserByNim(nim);
 
-    if (results.length > 0) {
-      const dbUser = results[0];
-      const isMahasiswa = dbUser.role === "mahasiswa";
+    if (user) {
+      const isPasswordValid = await localUserService.checkLocalUserPassword(
+        user,
+        password
+      );
 
-      if (isMahasiswa) {
-        if (password !== dbUser.password) {
-          return res.status(401).json({ message: "Password salah (mahasiswa)" });
-        }
-      } else {
-        const isPasswordValid = await bcrypt.compare(password, dbUser.password);
-        if (!isPasswordValid) {
-          return res.status(401).json({ message: "Password salah (lokal)" });
-        }
+      if (!isPasswordValid) {
+        return res.status(401).json({
+          message: `Password salah (${user.role})`,
+        });
       }
 
-      // Buat token
       const token = jwt.sign(
         {
-          id: dbUser.id,
-          nim: dbUser.nim,
-          name: dbUser.name,
-          role: dbUser.role,
+          id: user.id,
+          nim: user.nim,
+          name: user.name,
+          role: user.role,
         },
         process.env.JWT_SECRET,
         { expiresIn: "1d" }
       );
 
       return res.status(200).json({
-        message: "Login berhasil (user lokal/mahasiswa)",
-        user: dbUser,
+        message: "Login berhasil (user lokal)",
+        user,
         token,
       });
     }
 
-    // Login Mahasiswa ke API SIA
-    const otentikasiResponse = await axios.post(
-      `${apiBaseUrl}/OtentikasiUser`,
-      new URLSearchParams({ username: nim, password }),
-      {
-        headers: { "UINSU-KEY": process.env.UINSU_API_KEY },
-        timeout: 7000,
-      }
-    );
+    // 2. Tentukan apakah ini dosen atau mahasiswa berdasarkan format NIM/NIDN
+    const isDosen = nim.length === 16;
+    const isMahasiswa = nim.length >= 7 && nim.length <= 12;
 
-    const authData = otentikasiResponse.data.OtentikasiUser?.[0];
-    if (!authData || !authData.status) {
-      return res.status(401).json({ message: "Login gagal - data tidak valid" });
+    let newUser;
+
+    if (isDosen) {
+      newUser = await dosenService.loginDosenViaApi(nim, password);
+    } else if (isMahasiswa) {
+      newUser = await mahasiswaService.loginMahasiswaViaApi(nim, password);
+    } else {
+      // Bisa tangani error kalau format nim tidak sesuai
+      return res.status(400).json({ message: "Format NIM tidak valid" });
     }
-
-    const user = authData.user;
-    const hashPassword = password; 
-
-    // Ambil data mahasiswa dari API
-    const alumniResponse = await axios.post(
-      `${apiBaseUrl}/DataAlumni`,
-      new URLSearchParams({ nim_mhs: nim }),
-      {
-        headers: {
-          "UINSU-KEY": process.env.UINSU_API_KEY,
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        timeout: 7000,
-      }
-    );
-
-    const alumniData = alumniResponse.data.DataAlumni?.[0];
-    if (!alumniData || (alumniData.status !== true && alumniData.status !== "true")) {
-      return res.status(404).json({ message: "Data alumni tidak ditemukan" });
-    }
-
-    const newUser = {
-      name: alumniData.nama_mahasiswa,
-      nim: user,
-      email: alumniData.email || null,
-      password: hashPassword, 
-      foto_profil: alumniData.mhsFoto || null,
-      role: "mahasiswa",
-      prodi: alumniData.PRODI || null,
-      stambuk: alumniData.mhs_angkatan || null,
-      fakultas: alumniData.FAKULTAS || null,
-      whatsapp: alumniData.handphone || null,
-    };
-
-    const [insertResult] = await db.query("INSERT INTO users SET ?", newUser);
-    const savedUser = {
-      id: insertResult.insertId,
-      ...newUser,
-    };
 
     const token = jwt.sign(
       {
-        id: savedUser.id,
-        nim: savedUser.nim,
-        name: savedUser.name,
-        role: savedUser.role,
+        id: newUser.id,
+        nim: newUser.nim,
+        name: newUser.name,
+        role: newUser.role,
       },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
 
     return res.status(200).json({
-      message: "Login berhasil (API SIA) & data disimpan",
-      user: savedUser,
+      message: "Login berhasil (API eksternal)",
+      user: newUser,
       token,
     });
   } catch (error) {
     console.error("🔥 ERROR:", error.response?.data || error.message);
-    return res.status(500).json({ message: "Terjadi kesalahan saat login" });
+    return res.status(500).json({
+      message: error.message || "Terjadi kesalahan saat login",
+    });
   }
 };
-
 
 exports.verifyToken = async (socket, next) => {
   const token = socket.handshake.auth.token;

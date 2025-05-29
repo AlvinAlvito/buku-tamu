@@ -109,7 +109,7 @@ export default function LoginForm() {
             </h1>
 
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Masuk dengan Akun Portalsia/Dahlia anda
+              Masuk dengan akun Portalsia anda
             </p>
           </div>
           <div>
@@ -118,7 +118,7 @@ export default function LoginForm() {
               <div className="space-y-6">
                 <div>
                   <Label>
-                    NIM/NIP <span className="text-error-500">*</span>{" "}
+                    NIM/NIP/NIB <span className="text-error-500">*</span>{" "}
                   </Label>
                   <Input
                     placeholder="0701212166"
@@ -160,7 +160,7 @@ export default function LoginForm() {
                     to="/reset-password"
                     className="text-sm text-green-500 hover:text-green-600 dark:text-green-400"
                   >
-                    Lupa Password?
+                    Lihat panduan penggunaan
                   </Link>
                 </div>
                 <div>

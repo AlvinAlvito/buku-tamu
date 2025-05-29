@@ -78,7 +78,7 @@ exports.login = async (req, res) => {
     }
 
     // 2. Tentukan apakah ini dosen atau mahasiswa berdasarkan format NIM/NIDN
-    const isDosen = nim.length === 16;
+    const isDosen =  nim.length >= 15 && nim.length <= 18;
     const isMahasiswa = nim.length >= 7 && nim.length <= 12;
 
     let newUser;

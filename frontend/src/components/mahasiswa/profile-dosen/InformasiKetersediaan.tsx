@@ -56,7 +56,7 @@ export default function InformasiKetersediaan() {
         <div className="grid grid-cols-2 gap-6  lg:items-start lg:justify-between">
           <div>
             <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
-              Informasi Ketersediaan
+              Informasi Lokasi & Ketersediaan Dosen
             </h4>
 
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">

@@ -135,16 +135,16 @@ export default function InformasiKetersediaan() {
           <div>
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:mb-6">
               <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-                Informasi Ketersediaan
+                Informasi Lokasi & Ketersediaan Anda
               </h4>
               <Button
                 size="sm"
                 onClick={openModal}
                 variant="outline"
-                className=" flex items-center gap-2 justify-center"
+                className=" flex items-center gap-2 justify-center m-2"
               >
                 <PenBoxIcon size={16} />
-                Update Informasi Ketersediaan
+                Update Informasi Lokasi & Ketersediaan Anda
               </Button>
             </div>
 

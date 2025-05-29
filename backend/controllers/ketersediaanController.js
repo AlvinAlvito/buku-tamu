@@ -57,70 +57,62 @@ exports.updateKetersediaan = async (req, res) => {
     waktu_selesai,
   } = req.body;
 
-  if (
-    !lokasi_kampus ||
-    !gedung_ruangan ||
-    !jadwal_libur ||
-    status_ketersediaan === undefined ||
-    !waktu_mulai ||
-    !waktu_selesai
-  ) {
-    return res.status(400).json({ error: "Semua field harus diisi." });
+  // Buat object field yang ingin diupdate (hanya jika ada isinya)
+  const fieldsToUpdate = {};
+  if (lokasi_kampus !== undefined) fieldsToUpdate.lokasi_kampus = lokasi_kampus;
+  if (gedung_ruangan !== undefined) fieldsToUpdate.gedung_ruangan = gedung_ruangan;
+  if (jadwal_libur !== undefined) fieldsToUpdate.jadwal_libur = jadwal_libur;
+  if (status_ketersediaan !== undefined) fieldsToUpdate.status_ketersediaan = status_ketersediaan;
+  if (link_maps !== undefined) fieldsToUpdate.link_maps = link_maps;
+  if (waktu_mulai !== undefined) fieldsToUpdate.waktu_mulai = waktu_mulai;
+  if (waktu_selesai !== undefined) fieldsToUpdate.waktu_selesai = waktu_selesai;
+
+  if (Object.keys(fieldsToUpdate).length === 0) {
+    return res.status(400).json({ error: "Tidak ada field yang dikirim untuk diupdate." });
   }
 
-  const query = `
-    UPDATE tb_ketersediaan
-    SET lokasi_kampus = ?, gedung_ruangan = ?, jadwal_libur = ?, status_ketersediaan = ?, link_maps = ?, waktu_mulai = ?, waktu_selesai = ?
-    WHERE id = ?`;
+  // Buat bagian SET dari query secara dinamis
+  const setClause = Object.keys(fieldsToUpdate)
+    .map((key) => `${key} = ?`)
+    .join(", ");
+  const values = Object.values(fieldsToUpdate);
 
-  db.query(
-    query,
-    [
-      lokasi_kampus,
-      gedung_ruangan,
-      jadwal_libur,
-      status_ketersediaan,
-      link_maps,
-      waktu_mulai,
-      waktu_selesai,
-      id,
-    ],
-    async (err, results) => {
-      if (err) {
-        console.error("Query error:", err);
-        return res.status(500).json({ error: "Gagal memperbarui data." });
-      }
+  const query = `UPDATE tb_ketersediaan SET ${setClause} WHERE id = ?`;
 
-      if (results.affectedRows === 0) {
-        return res.status(404).json({ error: "Data tidak ditemukan." });
-      }
-
-      console.log("UPDATE BERHASIL");
-
-      // Ambil data terbaru setelah update
-      try {
-        const [rows] = await db.promise().query(`
-          SELECT k.id, k.user_id, u.name, u.nim, u.foto_profil,
-                 k.lokasi_kampus, k.gedung_ruangan, k.link_maps,
-                 k.jadwal_libur, k.status_ketersediaan,
-                 k.waktu_mulai, k.waktu_selesai
-          FROM tb_ketersediaan k
-          JOIN users u ON k.user_id = u.id
-        `);
-        const io = getIO();
-        
-        if (!io) {
-          console.warn("Socket.IO tidak tersedia");
-        } else {
-          io.emit("updateDaftarDosen", rows);
-          console.log(`Emit updateDaftarDosen dengan ${rows.length} data`);
-        }
-      } catch (error) {
-        console.error("Error ambil data setelah update:", error);
-      }
-
-      return res.json({ success: true });
+  db.query(query, [...values, id], async (err, results) => {
+    if (err) {
+      console.error("Query error:", err);
+      return res.status(500).json({ error: "Gagal memperbarui data." });
     }
-  );
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: "Data tidak ditemukan." });
+    }
+
+    console.log("UPDATE BERHASIL");
+
+    try {
+      const [rows] = await db.promise().query(`
+        SELECT k.id, k.user_id, u.name, u.nim, u.foto_profil,
+               k.lokasi_kampus, k.gedung_ruangan, k.link_maps,
+               k.jadwal_libur, k.status_ketersediaan,
+               k.waktu_mulai, k.waktu_selesai
+        FROM tb_ketersediaan k
+        JOIN users u ON k.user_id = u.id
+      `);
+
+      const io = getIO();
+      if (io) {
+        io.emit("updateDaftarDosen", rows);
+        console.log(`Emit updateDaftarDosen dengan ${rows.length} data`);
+      } else {
+        console.warn("Socket.IO tidak tersedia");
+      }
+    } catch (error) {
+      console.error("Error ambil data setelah update:", error);
+    }
+
+    return res.json({ success: true });
+  });
 };
 

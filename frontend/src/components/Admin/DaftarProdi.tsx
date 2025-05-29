@@ -12,7 +12,7 @@ interface Prodi {
   jumlah_dosen: string;
 }
 
-export default function DaftarDosen() {
+export default function DaftarProdi() {
   const [data, setData] = useState<Prodi[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -116,7 +116,7 @@ export default function DaftarDosen() {
             <div className="space-y-4 text-gray-600 dark:text-gray-400">
               <div className="grid grid-cols-2 gap-6">
                 <div className="flex flex-col items-center">
-                  <span className="font-semibold text-lg text-gray-700 dark:text-white mb-1">
+                  <span className="font-semibold text-md text-gray-700 dark:text-white mb-1">
                     Jumlah Mahasiswa
                   </span>
                   <span className="text-2xl font-bold text-center text-gray-900 dark:text-white">
@@ -124,7 +124,7 @@ export default function DaftarDosen() {
                   </span>
                 </div>
                 <div className="flex flex-col items-center">
-                  <span className="font-semibold text-lg text-gray-700 dark:text-white mb-1">
+                  <span className="font-semibold text-md text-gray-700 dark:text-white mb-1">
                     Jumlah Dosen
                   </span>
                   <span className="text-2xl font-bold text-center text-gray-900 dark:text-white">
@@ -134,7 +134,8 @@ export default function DaftarDosen() {
               </div>
 
               <Button variant="primary" size="sm" className="w-full">
-                <Link to={`/admin/prodi/${encodeURIComponent(item.prodi)}`} className="block w-full text-center">
+                <Link to={`/dosen/daftar-prodi/${encodeURIComponent(item.prodi)}`} className="block w-full text-center">
+
                   Lihat
                 </Link>
               </Button>

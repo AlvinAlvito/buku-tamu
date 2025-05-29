@@ -25,7 +25,7 @@ exports.getAllProdi = async (req, res) => {
 };
 
 exports.getUsersByProdi = async (req, res) => {
-  const { namaProdi } = req.params;
+   const { namaProdi } = req.params;
 
   if (!namaProdi) {
     return res.status(400).json({ message: "Parameter namaProdi harus diisi" });
@@ -38,12 +38,14 @@ exports.getUsersByProdi = async (req, res) => {
         id,
         name,
         nim,
-        email,
+        foto_profil,
         role,
-        foto_profil
+        prodi,
+        fakultas,
+        stambuk
       FROM users
-      WHERE prodi = ? AND role IN ('mahasiswa', 'dosen')
-      ORDER BY role ASC, name ASC
+      WHERE prodi = ?
+      ORDER BY name ASC
       `,
       [namaProdi]
     );
@@ -52,7 +54,7 @@ exports.getUsersByProdi = async (req, res) => {
   } catch (error) {
     console.error("Error getUsersByProdi:", error);
     res.status(500).json({
-      message: "Gagal mengambil data user berdasarkan prodi",
+      message: "Gagal mengambil data pengguna berdasarkan prodi",
       error: error.message,
     });
   }

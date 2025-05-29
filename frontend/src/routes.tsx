@@ -38,6 +38,7 @@ import TutorialMahasiswa from "./pages/Mahasiswa/Tutorial";
 import LogUser from "./components/mahasiswa/LogUser";
 
 import DaftarProdi from "./pages/Admin/DaftarProdi";
+import DaftarUser from "./pages/Admin/DaftarUser";
 
 export const router = createBrowserRouter([
   {
@@ -52,6 +53,7 @@ export const router = createBrowserRouter([
       { index: true, element: <Home /> },
 
       { path: "dosen/daftar-prodi", element: <DaftarProdi /> },
+      { path: "dosen/daftar-prodi/:namaProdi", element: <DaftarUser /> },
       // Dosen
       { path: "dosen", element: <DosenDashboard /> },
       { path: "dosen/profile", element: <DosenProfile /> },

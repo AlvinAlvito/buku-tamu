@@ -1,13 +1,13 @@
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import DaftarProdi from "../../components/Admin/DaftarProdi";
+import DaftarUser from "../../components/Admin/DaftarUser";
 
 export default function Prodi() {
   return (
     <>
 
-      <PageBreadcrumb pageTitle="Daftar Fakultas & Prodi " />
+      <PageBreadcrumb pageTitle="Daftar Mahasiswa & Dosen" />
       <div className="space-y-6">
-          <DaftarProdi />
+          <DaftarUser />
       </div>
     </>
   );

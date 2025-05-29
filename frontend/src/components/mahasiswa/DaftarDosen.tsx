@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { initSocket, disconnectSocket } from "../../utils/socket";
 import { RotateCcw, ExternalLink } from "lucide-react";
 import Alert from "../ui/alert/Alert";
+import { baseUrl } from "../../lib/api";
 
 interface Dosen {
   id: number;
@@ -33,7 +34,7 @@ export default function DaftarDosen() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/daftar-dosen");
+      const res = await fetch(`${baseUrl}/api/daftar-dosen`);
       const result = await res.json();
       setData(result);
     } catch (err) {

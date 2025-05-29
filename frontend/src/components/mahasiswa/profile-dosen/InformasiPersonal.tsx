@@ -1,6 +1,6 @@
-import { useModal } from "../../../hooks/useModal";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
+import { baseUrl } from "../../../lib/api";
 
 export default function InformasiPersonal() {
 
@@ -33,7 +33,7 @@ export default function InformasiPersonal() {
   useEffect(() => {
     const fetchDosen = async () => {
       try {
-        const res = await fetch(`/api/daftar-dosen/${id}`);
+        const res = await fetch(`${baseUrl}/api/daftar-dosen/${id}`);
         const result = await res.json();
         setDosen(result);
       } catch (error) {

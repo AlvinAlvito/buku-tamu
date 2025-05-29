@@ -12,6 +12,7 @@ import Button from "../ui/button/Button";
 import { Download } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { baseUrl } from "../../lib/api";
 
 
 type RiwayatItem = {
@@ -72,7 +73,7 @@ export default function RiwayatAntrian() {
         const storedUser = localStorage.getItem("user");
         if (!storedUser) throw new Error("User belum login");
         const user = JSON.parse(storedUser);
-        const res = await fetch(`/api/riwayat?id=${user.id}&role=${user.role}`);
+        const res = await fetch(`${baseUrl}/api/riwayat?id=${user.id}&role=${user.role}`);
         const data = await res.json();
         setAllData(data);
         setCurrentPage(1);

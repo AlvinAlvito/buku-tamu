@@ -6,6 +6,7 @@ import { Modal } from "../ui/modal";
 import { UserCheck, TimerIcon, Megaphone, CheckCircle, Trash2, XCircle, UserX, RotateCcw } from "lucide-react";
 import { toast } from "react-toastify";
 import { initSocket, getSocket, disconnectSocket } from "../../utils/socket";
+import { baseUrl } from "../../lib/api";
 
 
 
@@ -49,7 +50,7 @@ export default function AntrianDosen() {
 
 
   const fetchAntrian = () => {
-    fetch(`/api/antrian-dosen/${dosenId}`)
+    fetch(`${baseUrl}/api/antrian-dosen/${dosenId}`)
       .then((res) => res.json())
       .then((data) => setAntrianData(data))
       .catch((err) => console.error("Fetch error:", err));
@@ -83,7 +84,7 @@ export default function AntrianDosen() {
 
   const handlePanggil = async (antrian: Antrian) => {
     try {
-      const response = await fetch(`/api/antrian/${antrian.id}/panggil`, {
+      const response = await fetch(`${baseUrl}/api/antrian/${antrian.id}/panggil`, {
         method: "PUT",
       });
 
@@ -131,7 +132,7 @@ export default function AntrianDosen() {
     if (!selectedAntrian) return;
 
     try {
-      const response = await fetch(`/api/update-status-pemanggilan/${selectedAntrian.id}`, {
+      const response = await fetch(`${baseUrl}/api/update-status-pemanggilan/${selectedAntrian.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -167,7 +168,7 @@ export default function AntrianDosen() {
     if (!selectedAntrian) return;
 
     try {
-      const response = await fetch(`/api/update-status-pemanggilan-selesai/${selectedAntrian.id}`, {
+      const response = await fetch(`${baseUrl}/api/update-status-pemanggilan-selesai/${selectedAntrian.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -193,7 +194,7 @@ export default function AntrianDosen() {
     if (!selectedAntrian) return;
 
     try {
-      const response = await fetch(`/api/update-status-pemanggilan-batalkan/${selectedAntrian.id}`, {
+      const response = await fetch(`${baseUrl}/api/update-status-pemanggilan-batalkan/${selectedAntrian.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -2,6 +2,7 @@ import { Table, TableBody, TableCell, TableHeader, TableRow } from "../ui/table"
 import Badge from "../ui/badge/Badge";
 import { useEffect, useState } from "react";
 import Select from "../form/Select";
+import { baseUrl } from "../../lib/api";
 
 
 type LogUser = {
@@ -40,7 +41,7 @@ export default function LogUser() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`/api/profil/log-user`);
+        const res = await fetch(`${baseUrl}/api/profil/log-user`);
         const data = await res.json();
         setAllData(data);
         setFilteredData(data);

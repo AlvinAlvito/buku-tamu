@@ -2,6 +2,7 @@
 import { useParams } from "react-router";
 import Badge from "../../ui/badge/Badge";
 import { useEffect, useState } from "react";
+import { baseUrl } from "../../../lib/api";
 export default function InformasiKetersediaan() {
 
   const coordinate = {
@@ -33,7 +34,7 @@ export default function InformasiKetersediaan() {
   useEffect(() => {
     const fetchDosen = async () => {
       try {
-        const res = await fetch(`/api/daftar-dosen/${id}`);
+        const res = await fetch(`${baseUrl}/api/daftar-dosen/${id}`);
         const result = await res.json();
         setDosen(result);
       } catch (error) {

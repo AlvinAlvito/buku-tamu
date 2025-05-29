@@ -6,6 +6,7 @@ import { RotateCcw, Trash2, UserX, XCircle } from "lucide-react";
 import Button from "../ui/button/Button";
 import { Modal } from "../ui/modal";
 import Alert from "../ui/alert/Alert";
+import { baseUrl } from "../../lib/api";
 type Antrian = {
   id: number;
   mahasiswa_id: number;
@@ -43,7 +44,7 @@ export default function AntrianDosen() {
   useEffect(() => {
     const fetchDosenId = async () => {
       try {
-        const res = await fetch("/api/ketersediaan/");
+        const res = await fetch(`${baseUrl}/api/ketersediaan/`);
         const data = await res.json();
 
         const ketersediaan = data.find((item: any) => item.id === parseInt(id!));
@@ -64,7 +65,7 @@ export default function AntrianDosen() {
 
   useEffect(() => {
     if (dosenId !== null) {
-      fetch(`/api/antrian-dosen/${dosenId}`)
+      fetch(`${baseUrl}/api/antrian-dosen/${dosenId}`)
         .then((res) => res.json())
         .then((data) => setAntrianData(data))
         .catch((err) => console.error("Fetch error:", err));
@@ -91,7 +92,7 @@ export default function AntrianDosen() {
     }
 
     try {
-      const res = await fetch(`/api/antrian-dosen/${dosenId}`);
+      const res = await fetch(`${baseUrl}/api/antrian-dosen/${dosenId}`);
       if (!res.ok) throw new Error("Gagal fetch antrian dosen");
       const data = await res.json();
       setAntrianData(data);
@@ -130,7 +131,7 @@ export default function AntrianDosen() {
     if (!selectedAntrian) return;
 
     try {
-      const response = await fetch(`/api/update-status-pemanggilan-batalkan/${selectedAntrian.id}`, {
+      const response = await fetch(`${baseUrl}/api/update-status-pemanggilan-batalkan/${selectedAntrian.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

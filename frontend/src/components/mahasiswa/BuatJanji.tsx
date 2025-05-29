@@ -7,6 +7,7 @@ import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import { ChevronLeftIcon } from "../../icons";
 import Alert from "../ui/alert/Alert";
+import { baseUrl } from "../../lib/api";
 
 export default function BuatJanji() {
   const { isOpen, openModal, closeModal } = useModal();
@@ -14,13 +15,13 @@ export default function BuatJanji() {
   const [tanggal, setTanggal] = useState("");
   const [keperluan, setKeperluan] = useState("");
   const [showAlert, setShowAlert] = useState(false);
-  const [antrianData, setAntrianData] = useState<any[]>([]);
+  const [, setAntrianData] = useState<any[]>([]);
   const [mahasiswaId, setMahasiswaId] = useState<number | null>(null);
   const [dosenId, setDosenId] = useState<number | null>(null);
 
 
   const fetchDosenId = async (ketersediaanId: string): Promise<number> => {
-    const res = await fetch("/api/ketersediaan");
+    const res = await fetch(`${baseUrl}/api/ketersediaan`);
     if (!res.ok) throw new Error("Gagal ambil data ketersediaan");
     const data = await res.json();
 
@@ -42,7 +43,7 @@ export default function BuatJanji() {
 
       const dosenId = await fetchDosenId(id!);
 
-      const ketersediaanRes = await fetch(`/api/ketersediaan/${dosenId}`);
+      const ketersediaanRes = await fetch(`${baseUrl}/api/ketersediaan/${dosenId}`);
       if (!ketersediaanRes.ok) throw new Error("Gagal mengambil data ketersediaan");
 
       const data = {
@@ -53,7 +54,7 @@ export default function BuatJanji() {
         waktu_pendaftaran: tanggal,
       };
 
-      const response = await fetch("/api/tambah-antrian", {
+      const response = await fetch(`${baseUrl}/api/tambah-antrian`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -113,7 +114,7 @@ export default function BuatJanji() {
   useEffect(() => {
     const fetchDosenId = async () => {
       try {
-        const res = await fetch("/api/ketersediaan/");
+        const res = await fetch(`${baseUrl}/api/ketersediaan/`);
         const data = await res.json();
 
         const ketersediaan = data.find((item: any) => item.id === parseInt(id!));
@@ -136,7 +137,7 @@ export default function BuatJanji() {
     if (dosenId === null || mahasiswaId === null) return;
 
     const fetchData = () => {
-      fetch(`/api/antrian-dosen/${dosenId}`)
+      fetch(`${baseUrl}/api/antrian-dosen/${dosenId}`)
         .then((res) => res.json())
         .then((data) => {
           setAntrianData(data);

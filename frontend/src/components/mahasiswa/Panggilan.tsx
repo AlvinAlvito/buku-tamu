@@ -4,6 +4,7 @@ import { initSocket } from "../../utils/socket";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
 import { BellIcon } from "lucide-react";
+import { baseUrl } from "../../lib/api";
 
 export default function BuatJanji() {
   const { id } = useParams();
@@ -12,13 +13,13 @@ export default function BuatJanji() {
   const [countdown, setCountdown] = useState(60);
   const [dosenId, setDosenId] = useState<number | null>(null);
   const [antrianId, setAntrianId] = useState<number | null>(null);
-  const [socket, setSocket] = useState<any>(null);
+  const [, setSocket] = useState<any>(null);
 
   // Ambil dosenId berdasarkan id ketersediaan dari URL
   useEffect(() => {
     const fetchDosenId = async () => {
       try {
-        const res = await fetch("/api/ketersediaan/");
+        const res = await fetch(`${baseUrl}/api/ketersediaan/`);
         const data = await res.json();
 
         const ketersediaan = data.find((item: any) => item.id === parseInt(id!));
@@ -41,7 +42,7 @@ export default function BuatJanji() {
     // Ambil antrian milik mahasiswa sendiri berdasarkan dosenId
     const fetchAntrianSaya = async () => {
       try {
-        const res = await fetch(`/api/antrian-dosen/${dosenId}`);
+        const res = await fetch(`${baseUrl}/api/antrian-dosen/${dosenId}`);
         if (!res.ok) throw new Error("Gagal fetch antrian dosen");
 
         const data = await res.json();

@@ -8,6 +8,7 @@ import Switch from "../../form/switch/Switch";
 import Badge from "../../ui/badge/Badge";
 import Select from "../../form/Select";
 import { PenBoxIcon } from "lucide-react";
+import { baseUrl } from "../../../lib/api";
 
 export default function InformasiKetersediaan() {
   const coordinate = {
@@ -65,7 +66,7 @@ export default function InformasiKetersediaan() {
 
   useEffect(() => {
     if (!user?.id) return;
-    fetch(`http://localhost:3000/api/ketersediaan/${user.id}`)
+    fetch(`${baseUrl}/api/ketersediaan/${user.id}`)
       .then((r) => r.json())
       .then((d) => {
         if (!d) return;
@@ -97,7 +98,7 @@ export default function InformasiKetersediaan() {
       return;
     }
 
-    fetch(`/api/ketersediaan/${ketersediaanId}`, {
+    fetch(`${baseUrl}/api/ketersediaan/${ketersediaanId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

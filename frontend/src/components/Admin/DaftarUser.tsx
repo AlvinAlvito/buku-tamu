@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import {  RotateCcw, Search } from "lucide-react";
+import { RotateCcw, Search } from "lucide-react";
 import { baseUrl } from "../../lib/api";
 import Button from "../ui/button/Button";
 import { Link, useParams } from "react-router";
@@ -76,7 +76,7 @@ export default function DaftarUser() {
   const handleRefresh = () => {
     fetchData();
   };
-    function toTitleCase(str: string | undefined): string {
+  function toTitleCase(str: string | undefined): string {
     if (!str) return "";
     return str
       .toLowerCase()

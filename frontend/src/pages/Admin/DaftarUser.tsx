@@ -2,6 +2,7 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import DaftarUser from "../../components/Admin/DaftarUser";
 import { Link } from "react-router";
 import { ChevronLeftIcon } from "lucide-react";
+import GrafikTujuan from "../../components/Admin/Grafik/Tujuan";
 
 export default function Prodi() {
   return (
@@ -12,6 +13,9 @@ export default function Prodi() {
         <ChevronLeftIcon className="size-5" />
         Kembali
       </Link>
+      <div className="space-y-6 my-5" >
+        <GrafikTujuan/>
+      </div>
       <div className="space-y-6">
         <DaftarUser />
       </div>

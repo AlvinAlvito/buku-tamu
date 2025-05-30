@@ -3,10 +3,11 @@ const { panggilMahasiswaSocket } = require("../controllers/socketController");
 
 exports.insertAntrian = async (req, res) => {
   try {
-    const { mahasiswa_id, dosen_id, alasan } = req.body;
+    const { mahasiswa_id, dosen_id, alasan = "", tujuan = "Lainnya" } = req.body;
 
-    if (!mahasiswa_id || !dosen_id || !alasan) {
-      return res.status(400).json({ message: "Semua field wajib diisi." });
+    // Validasi field wajib
+    if (!mahasiswa_id || !dosen_id) {
+      return res.status(400).json({ message: "Mahasiswa ID dan Dosen ID wajib diisi." });
     }
 
     // Cek user roles
@@ -47,9 +48,9 @@ exports.insertAntrian = async (req, res) => {
 
     // Insert antrian baru
     const [insertResult] = await db.execute(
-      `INSERT INTO tb_antrian (mahasiswa_id, dosen_id, waktu_pendaftaran, alasan, status)
-       VALUES (?, ?, NOW(), ?, 'menunggu')`,
-      [mahasiswa_id, dosen_id, alasan]
+      `INSERT INTO tb_antrian (mahasiswa_id, dosen_id, waktu_pendaftaran, tujuan, alasan, status)
+       VALUES (?, ?, NOW(), ?, ?, 'menunggu')`,
+      [mahasiswa_id, dosen_id, tujuan, alasan]
     );
 
     return res.status(201).json({
@@ -58,6 +59,7 @@ exports.insertAntrian = async (req, res) => {
         id: insertResult.insertId,
         mahasiswa_id,
         dosen_id,
+        tujuan,
         alasan,
         status: "menunggu",
         waktu_pendaftaran: new Date()
@@ -71,6 +73,7 @@ exports.insertAntrian = async (req, res) => {
     return res.status(500).json({ message: "Terjadi kesalahan pada server." });
   }
 };
+
 
 // antrianController.js
 exports.getAntrianDosenById = async (req, res) => {

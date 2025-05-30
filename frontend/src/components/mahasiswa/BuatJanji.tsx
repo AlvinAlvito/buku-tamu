@@ -8,16 +8,33 @@ import Label from "../form/Label";
 import { ChevronLeftIcon } from "../../icons";
 import Alert from "../ui/alert/Alert";
 import { baseUrl } from "../../lib/api";
+import Select from "../form/Select";
 
 export default function BuatJanji() {
   const { isOpen, openModal, closeModal } = useModal();
   const { id } = useParams();
   const [tanggal, setTanggal] = useState("");
+  const [tujuan, setTujuan] = useState(""); // ✅ state untuk tujuan
   const [keperluan, setKeperluan] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [, setAntrianData] = useState<any[]>([]);
   const [mahasiswaId, setMahasiswaId] = useState<number | null>(null);
   const [dosenId, setDosenId] = useState<number | null>(null);
+
+  const tujuanOptions = [
+    { value: "Bimbingan Skripsi / Tugas Akhir", label: "Bimbingan Skripsi / Tugas Akhir" },
+    { value: "Konsultasi Akademik", label: "Konsultasi Akademik" },
+    { value: "Konsultasi Nilai Mata Kuliah", label: "Konsultasi Nilai Mata Kuliah" },
+    { value: "Revisi Tugas / Ujian", label: "Revisi Tugas / Ujian" },
+    { value: "Pengajuan Judul Skripsi", label: "Pengajuan Judul Skripsi" },
+    { value: "Persetujuan KRS / KHS", label: "Persetujuan KRS / KHS" },
+    { value: "Tanda Tangan Dokumen Akademik", label: "Tanda Tangan Dokumen Akademik" },
+    { value: "Pendampingan PKL / Magang", label: "Pendampingan PKL / Magang" },
+    { value: "Diskusi Kegiatan Kampus / Organisasi", label: "Diskusi Kegiatan Kampus / Organisasi" },
+    { value: "Pengurusan Administrasi Akademik", label: "Pengurusan Administrasi Akademik" },
+    { value: "Pembimbingan Lomba / Kompetisi", label: "Pembimbingan Lomba / Kompetisi" },
+    { value: "Lainnya", label: "Lainnya" },
+  ];
 
 
   const fetchDosenId = async (ketersediaanId: string): Promise<number> => {
@@ -49,6 +66,7 @@ export default function BuatJanji() {
       const data = {
         mahasiswa_id: mahasiswaId,
         dosen_id: dosenId,
+        tujuan: tujuan,              // ✅ kirim tujuan ke backend
         alasan: keperluan,
         status: "menunggu",
         waktu_pendaftaran: tanggal,
@@ -82,7 +100,6 @@ export default function BuatJanji() {
       }
     }
   };
-
 
 
   useEffect(() => {
@@ -156,13 +173,13 @@ export default function BuatJanji() {
         .catch((err) => console.error("Fetch error:", err));
     };
 
-    fetchData(); 
+    fetchData();
 
     const interval = setInterval(() => {
       fetchData();
-    }, 20000); 
+    }, 20000);
 
-    return () => clearInterval(interval); 
+    return () => clearInterval(interval);
   }, [dosenId, mahasiswaId]);
 
 
@@ -237,12 +254,26 @@ export default function BuatJanji() {
                     step={1}
                     className="cursor-not-allowed bg-gray-100"
                   />
-
-
                 </div>
+
                 <div>
-                  <Label>Tujuan Menemui Dosen</Label>
-                  <Input placeholder="Meminta ttd.." type="text" value={keperluan} onChange={(e) => setKeperluan(e.target.value)} />
+                  <Label>Tujuan Janji Temu</Label>
+                  <Select
+                    options={tujuanOptions}
+                    placeholder="Pilih tujuan"
+                    value={tujuan}
+                    onChange={(value: string) => setTujuan(value)}
+                  />
+                </div>
+
+                <div>
+                  <Label>Detail</Label>
+                  <Input
+                    placeholder="Contoh: Meminta tanda tangan formulir PKL"
+                    type="text"
+                    value={keperluan}
+                    onChange={(e) => setKeperluan(e.target.value)}
+                  />
                 </div>
               </div>
             </div>
@@ -256,13 +287,11 @@ export default function BuatJanji() {
                 size="sm"
                 onClick={(e) => {
                   e.preventDefault();
-                  handleSave();
+                  handleSave(); 
                 }}
               >
                 Simpan
               </Button>
-
-
             </div>
           </form>
         </div>

@@ -55,12 +55,13 @@ export const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <Home /> },
-
+      // Admin
       { path: "admin/daftar-prodi", element: <DaftarProdi /> },
       { path: "admin/daftar-prodi/:namaProdi", element: <DaftarUser /> },
       { path: "admin/daftar-prodi/profil/dosen/:id", element: <ProfilDosen /> },
       { path: "admin/daftar-prodi/profil/mahasiswa/:id", element: <ProfilMahasiswa /> },
       { path: "admin", element: <AdminDashboard /> },
+      
       // Dosen
       { path: "dosen", element: <DosenDashboard /> },
       { path: "dosen/profile", element: <DosenProfile /> },

@@ -1,10 +1,11 @@
 
 import { useEffect, useState } from "react";
-import { RotateCcw, Search } from "lucide-react";
+import {  RotateCcw, Search } from "lucide-react";
 import { baseUrl } from "../../lib/api";
 import Button from "../ui/button/Button";
 import { Link, useParams } from "react-router";
 import Select from "../form/Select";
+import Badge from "../ui/badge/Badge";
 
 interface User {
   id: number;
@@ -75,15 +76,27 @@ export default function DaftarUser() {
   const handleRefresh = () => {
     fetchData();
   };
+    function toTitleCase(str: string | undefined): string {
+    if (!str) return "";
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
+  }
 
   if (loading) return <p>Memuat data pengguna...</p>;
 
   return (
+
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
+
+
       <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Daftar Mahasiswa & Dosen Prodi {namaProdi}
+          Prodi {toTitleCase(namaProdi)}
         </h3>
+
 
         <div className="flex items-center gap-3">
           <button
@@ -143,18 +156,30 @@ export default function DaftarUser() {
             <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
 
               <p>
-                <span className="font-medium text-yellow-700 dark:text-yellow-500 ">Total Antrian Sedang Berlangsung <br /> <span className="text-xl">{item.jumlah_antrian_berlangsung} </span></span>
+                <span className="font-medium  ">Total Antrian Sedang Berlangsung <br /> <span className="text-xl">
+                  <Badge
+                    variant="light"
+                    color="warning"
+                    size="lg">
+                    {item.jumlah_antrian_berlangsung}
+                  </Badge> </span></span>
               </p>
               <p>
-                <span className="font-medium text-green-700  dark:text-green-500">Total Antrian Selesai <br /> <span className="text-xl"> {item.jumlah_antrian_selesai}</span></span>
+                <span className="font-medium ">Total Antrian Selesai <br /> <span className="text-xl">
+                  <Badge
+                    variant="light"
+                    color="success"
+                    size="lg">
+                    {item.jumlah_antrian_selesai}
+                  </Badge> </span></span>
               </p>
             </div>
             <Button variant="primary" size="sm" className="w-full my-2">
               <Link
                 to={
                   item.role === "dosen"
-                    ? `/dosen/daftar-prodi/profil/dosen/${item.id}`
-                    : `/dosen/daftar-prodi/profil/mahasiswa/${item.id}`
+                    ? `/admin/daftar-prodi/profil/dosen/${item.id}`
+                    : `/admin/daftar-prodi/profil/mahasiswa/${item.id}`
                 }
                 className="block w-full text-center"
               >

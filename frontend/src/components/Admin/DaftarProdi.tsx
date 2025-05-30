@@ -4,6 +4,7 @@ import { RotateCcw, Search } from "lucide-react";
 import { baseUrl } from "../../lib/api";
 import Button from "../ui/button/Button";
 import { Link } from "react-router";
+import Badge from "../ui/badge/Badge";
 
 interface Prodi {
   fakultas: string;
@@ -121,7 +122,12 @@ export default function DaftarProdi() {
                     Jumlah Mahasiswa
                   </span>
                   <span className="text-2xl font-bold text-center text-gray-900 dark:text-white">
-                    {item.jumlah_mahasiswa}
+                    <Badge
+                      variant="light"
+                      color="primary"
+                      size="lg">
+                      {item.jumlah_mahasiswa}
+                    </Badge>
                   </span>
                 </div>
                 <div className="flex flex-col items-center">
@@ -129,13 +135,18 @@ export default function DaftarProdi() {
                     Jumlah Dosen
                   </span>
                   <span className="text-2xl font-bold text-center text-gray-900 dark:text-white">
-                    {item.jumlah_dosen}
+                    <Badge
+                    variant="light"
+                    color="success"
+                    size="lg">
+                      {item.jumlah_dosen}
+                    </Badge>
                   </span>
                 </div>
               </div>
 
               <Button variant="primary" size="sm" className="w-full">
-                <Link to={`/dosen/daftar-prodi/${encodeURIComponent(item.prodi)}`} className="block w-full text-center">
+                <Link to={`/admin/daftar-prodi/${encodeURIComponent(item.prodi)}`} className="block w-full text-center">
 
                   Lihat
                 </Link>

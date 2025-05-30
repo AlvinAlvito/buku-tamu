@@ -41,6 +41,8 @@ import DaftarProdi from "./pages/Admin/DaftarProdi";
 import DaftarUser from "./pages/Admin/DaftarUser";
 import ProfilDosen from "./pages/Admin/ProfilDosen";
 import ProfilMahasiswa from "./pages/Admin/ProfilMahasiswa";
+import AdminDashboard from "./pages/Admin/Dasboard";
+
 
 export const router = createBrowserRouter([
   {
@@ -54,10 +56,11 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
 
-      { path: "dosen/daftar-prodi", element: <DaftarProdi /> },
-      { path: "dosen/daftar-prodi/:namaProdi", element: <DaftarUser /> },
-      { path: "dosen/daftar-prodi/profil/dosen/:id", element: <ProfilDosen /> },
-      { path: "dosen/daftar-prodi/profil/mahasiswa/:id", element: <ProfilMahasiswa /> },
+      { path: "admin/daftar-prodi", element: <DaftarProdi /> },
+      { path: "admin/daftar-prodi/:namaProdi", element: <DaftarUser /> },
+      { path: "admin/daftar-prodi/profil/dosen/:id", element: <ProfilDosen /> },
+      { path: "admin/daftar-prodi/profil/mahasiswa/:id", element: <ProfilMahasiswa /> },
+      { path: "admin", element: <AdminDashboard /> },
       // Dosen
       { path: "dosen", element: <DosenDashboard /> },
       { path: "dosen/profile", element: <DosenProfile /> },

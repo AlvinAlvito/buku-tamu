@@ -25,7 +25,7 @@ export default function LoginForm() {
       console.log("Token ditemukan di storage");
     }
   }, []);
-  
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -78,7 +78,10 @@ export default function LoginForm() {
         navigate("/mahasiswa");
       } else if (data.user.role === "dosen") {
         navigate("/dosen");
+      } else if (data.user.role === "admin") {
+        navigate("/admin");
       }
+
     } catch (err: any) {
       setError(err.message);
     } finally {

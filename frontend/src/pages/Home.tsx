@@ -17,6 +17,8 @@ export default function Home() {
     navigate("/mahasiswa");
   } else if (user.role === "dosen") {
     navigate("/dosen");
+  } else if (user.role === "admin") {
+    navigate("/admin");
   }
 }, [navigate]);
 

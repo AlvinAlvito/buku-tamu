@@ -42,6 +42,7 @@ exports.getLogRiwayatByUser = async (req, res) => {
         lr.status,
         lr.created_at,
         a.alasan,
+        a.tujuan,
         a.waktu_pendaftaran
       FROM tb_log_riwayat lr
       LEFT JOIN users mhs ON lr.mahasiswa_id = mhs.id

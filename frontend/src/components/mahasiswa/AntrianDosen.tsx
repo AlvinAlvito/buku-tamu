@@ -12,6 +12,7 @@ type Antrian = {
   mahasiswa_id: number;
   dosen_id: number;
   waktu_pendaftaran: string;
+  tujuan: string;
   alasan: string;
   status: "menunggu" | "proses" | "selesai" | "dibatalkan";
   mahasiswa_name: string;
@@ -251,7 +252,7 @@ export default function AntrianDosen() {
                     Waktu Pendaftaran <br />
                   </span>
                   {new Date(item.waktu_pendaftaran).toLocaleString()}{" "}
-                  <span className="text-sm text-gray-300">
+                  <span className="text-sm text-success-500">
                     {getTimeAgo(item.waktu_pendaftaran)}
                   </span>
                 </p>
@@ -259,7 +260,7 @@ export default function AntrianDosen() {
                   <span className="font-medium text-gray-700 dark:text-white">
                     Tujuan <br />
                   </span>{" "}
-                  {item.alasan}
+                  {item.tujuan}, {item.alasan}
                 </p>
                 <p>
                   <span className="font-medium text-gray-700 dark:text-white">

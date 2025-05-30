@@ -29,6 +29,7 @@ type RiwayatItem = {
 
   waktu_pendaftaran: string;
   status: string;
+  tujuan: string;
   alasan: string;
 };
 
@@ -150,7 +151,7 @@ useEffect(() => {
     });
     doc.text(`Tanggal Unduh: ${tanggalDownload}`, 14, 40);
 
-    const tableColumn = ["Nama Mahasiswa", "NIM", "Prodi", "Tanggal Bimbingan", "Waktu Bimbingan", "Alasan", "Status"];
+    const tableColumn = ["Nama Mahasiswa", "NIM", "Prodi", "Tanggal Bimbingan", "Waktu Bimbingan", "Tujuan", "Status"];
     const tableRows = data.map(item => [
       item.nama_mahasiswa,
       item.nim_mahasiswa,
@@ -166,7 +167,7 @@ useEffect(() => {
         second: "2-digit",
         hour12: false,
       }) + " WIB",
-      item.alasan,
+      item.tujuan + ". " + item.alasan,
       item.status,
     ]);
 
@@ -301,7 +302,7 @@ useEffect(() => {
 
 
                 <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                  {item.alasan || "-"}
+                  {item.tujuan}, {item.alasan} 
                 </TableCell>
 
                 <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">

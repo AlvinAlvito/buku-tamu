@@ -28,6 +28,7 @@ type RiwayatItem = {
 
   waktu_selesai: string;
   status: string;
+  tujuan: string;
   alasan: string;
   waktu_pendaftaran: string;
 };
@@ -97,25 +98,46 @@ export default function RiwayatAntrian() {
     setFilteredData(result);
   }, [filters, allData]);
 
-  const downloadPdf = (data: RiwayatItem[], filters: { bulan: string; tahun: string }) => {
+ const downloadPdf = (data: RiwayatItem[], filters: { bulan: string; tahun: string }) => {
     const doc = new jsPDF();
 
-    // Tentukan judul berdasarkan filter
+    // Tentukan judul
     let title = "Riwayat Bimbingan Akademik Keseluruhan";
     if (filters.tahun && filters.bulan) {
-      // Cari nama bulan dari bulanOptions
       const bulanLabel = bulanOptions.find(b => b.value === filters.bulan)?.label || filters.bulan;
       title = `Riwayat Bimbingan Akademik Tahun ${filters.tahun} Bulan ${bulanLabel}`;
     } else if (filters.tahun) {
       title = `Riwayat Bimbingan Akademik Tahun ${filters.tahun}`;
     }
 
-    doc.text(title, 14, 20);
+    // Center-kan judul
+    doc.setFontSize(14);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const textWidth = doc.getTextWidth(title);
+    const centerX = (pageWidth - textWidth) / 2;
+    doc.text(title, centerX, 20); // Judul di tengah halaman
 
-    const tableColumn = ["Nama Dosen", "NIP", "Tanggal Bimbingan", "Waktu Bimbingan", "Alasan", "Status"];
+    // Info dosen (kiri, lebih kecil)
+    doc.setFontSize(10);
+    if (data.length > 0) {
+      const { nama_mahasiswa, nim_mahasiswa } = data[0];
+      doc.text(`Nama : ${nama_mahasiswa}`, 14, 28);
+      doc.text(`NIM: ${nim_mahasiswa}`, 14, 34);
+    }
+
+    // Info tanggal unduh
+    const tanggalDownload = new Date().toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+    doc.text(`Tanggal Unduh: ${tanggalDownload}`, 14, 40);
+
+    const tableColumn = ["Nama Mahasiswa", "NIM", "Prodi", "Tanggal Bimbingan", "Waktu Bimbingan", "Tujuan", "Status"];
     const tableRows = data.map(item => [
-      item.nama_dosen,
-      item.nim_dosen,
+      item.nama_mahasiswa,
+      item.nim_mahasiswa,
+      item.prodi_mahasiswa,
       new Date(item.waktu_selesai).toLocaleDateString("id-ID", {
         day: "numeric",
         month: "long",
@@ -127,17 +149,17 @@ export default function RiwayatAntrian() {
         second: "2-digit",
         hour12: false,
       }) + " WIB",
-      item.alasan,
+      item.tujuan + ". " + item.alasan,
       item.status,
     ]);
 
     autoTable(doc, {
       head: [tableColumn],
       body: tableRows,
-      startY: 30,
+      startY: 46,
     });
 
-    doc.save("riwayat-antrian.pdf");
+    doc.save("Riwayat Bimbingan Akademik.pdf");
   };
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -252,7 +274,7 @@ export default function RiwayatAntrian() {
 
 
                 <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                  {item.alasan || "-"}
+                    {item.tujuan}, {item.alasan}
                 </TableCell>
 
                 <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">

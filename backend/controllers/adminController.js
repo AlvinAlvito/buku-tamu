@@ -107,6 +107,7 @@ exports.getRiwayatByProdi = async (req, res) => {
         lr.status,
         lr.created_at,
         a.alasan,
+        a.tujuan,
         a.waktu_pendaftaran
       FROM tb_log_riwayat lr
       LEFT JOIN users mhs ON lr.mahasiswa_id = mhs.id
@@ -184,6 +185,7 @@ exports.getProfilDosen = async (req, res) => {
     d.foto_profil AS foto_dosen,
 
     a.status,
+    a.tujuan,
     a.alasan,
     a.waktu_pendaftaran
 
@@ -242,8 +244,8 @@ exports.getProfilMahasiswa = async (req, res) => {
     }
 
     // Ambil seluruh antrian milik mahasiswa ini
-const [antrian] = await db.execute(
-  `
+    const [antrian] = await db.execute(
+      `
   SELECT 
     m.name AS nama_mahasiswa,
     m.nim AS nim_mahasiswa,
@@ -258,6 +260,7 @@ const [antrian] = await db.execute(
     d.fakultas AS fakultas_dosen,
 
     a.status,
+    a.tujuan,
     a.alasan,
     a.waktu_pendaftaran
 
@@ -267,9 +270,8 @@ const [antrian] = await db.execute(
   WHERE a.mahasiswa_id = ?
   ORDER BY a.waktu_pendaftaran DESC
   `,
-  [id]
-);
-
+      [id]
+    );
 
     res.json({
       profil,
@@ -281,5 +283,59 @@ const [antrian] = await db.execute(
       message: "Gagal mengambil data profil mahasiswa",
       error: error.message,
     });
+  }
+};
+
+exports.getGrafikTujuanByProdi = async (req, res) => {
+  const { namaProdi } = req.params;
+
+  if (!namaProdi) {
+    return res.status(400).json({ message: "Nama prodi wajib diisi." });
+  }
+
+  try {
+    const [rows] = await db.execute(
+      `
+      SELECT 
+        a.tujuan,
+        COUNT(*) AS total
+      FROM tb_antrian a
+      JOIN users m ON a.mahasiswa_id = m.id
+      WHERE m.prodi = ?
+      GROUP BY a.tujuan
+      `,
+      [namaProdi]
+    );
+
+    const daftarTujuan = [
+      'Bimbingan Skripsi / Tugas Akhir',
+      'Konsultasi Akademik',
+      'Konsultasi Nilai Mata Kuliah',
+      'Revisi Tugas / Ujian',
+      'Pengajuan Judul Skripsi',
+      'Persetujuan KRS / KHS',
+      'Tanda Tangan Dokumen Akademik',
+      'Pendampingan PKL / Magang',
+      'Diskusi Kegiatan Kampus / Organisasi',
+      'Pengurusan Administrasi Akademik',
+      'Pembimbingan Lomba / Kompetisi',
+      'Lainnya'
+    ];
+
+    const hasil = daftarTujuan.map((tujuan) => {
+      const found = rows.find((row) => row.tujuan === tujuan);
+      return {
+        tujuan,
+        total: found ? Number(found.total) : 0,
+      };
+    });
+
+    res.json({
+      prodi: namaProdi,
+      grafik: hasil,
+    });
+  } catch (error) {
+    console.error("Error getGrafikTujuanByProdi:", error);
+    res.status(500).json({ message: "Gagal mengambil data grafik tujuan", error: error.message });
   }
 };

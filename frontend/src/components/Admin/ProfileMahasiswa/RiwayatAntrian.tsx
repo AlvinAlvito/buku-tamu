@@ -4,15 +4,16 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-} from "../ui/table";
-import Badge from "../ui/badge/Badge";
+} from "../../ui/table";
+import Badge from "../../ui/badge/Badge";
 import { useEffect, useState } from "react";
-import Select from "../form/Select";
-import Button from "../ui/button/Button";
+import Select from "../../form/Select";
+import Button from "../../ui/button/Button";
 import { Download } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { baseUrl } from "../../lib/api";
+import { baseUrl } from "../../../lib/api";
+import { useParams } from "react-router";
 
 
 type RiwayatItem = {
@@ -25,11 +26,11 @@ type RiwayatItem = {
   nama_dosen: string;
   nim_dosen: string;
   foto_dosen: string | null;
+  prodi_dosen: string;
 
-  waktu_selesai: string;
+  waktu_pendaftaran: string;
   status: string;
   alasan: string;
-  waktu_pendaftaran: string;
 };
 
 
@@ -66,36 +67,54 @@ export default function RiwayatAntrian() {
     { value: "2029", label: "2029" },
     { value: "2030", label: "2030" },
   ];
+const { id } = useParams<{ id: string }>();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const storedUser = localStorage.getItem("user");
-        if (!storedUser) throw new Error("User belum login");
-        const user = JSON.parse(storedUser);
-        const res = await fetch(`${baseUrl}/api/riwayat?id=${user.id}&role=${user.role}`);
-        const data = await res.json();
-        setAllData(data);
-        setCurrentPage(1);
-      } catch (error) {
-        console.error("Gagal memuat data:", error);
-      }
-    };
-    fetchData();
-  }, []);
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      if (!id) throw new Error("ID dosen tidak ditemukan di URL");
 
-  useEffect(() => {
-    const result = allData.filter((item) => {
-      const date = new Date(item.waktu_selesai);
-      const bulan = (date.getMonth() + 1).toString();
-      const tahun = date.getFullYear().toString();
-      const cocokBulan = !filters.bulan || filters.bulan === bulan;
-      const cocokTahun = !filters.tahun || filters.tahun === tahun;
-      return cocokBulan && cocokTahun;
-    });
+      const res = await fetch(`${baseUrl}/api/admin/prodi/profil/mahasiswa?id=${id}`);
+      const json = await res.json();
 
-    setFilteredData(result);
-  }, [filters, allData]);
+      const antrian = json.antrian || [];
+
+      // ✅ Hanya ambil status: menunggu, proses, selesai
+      const filtered = antrian.filter((item: RiwayatItem) => {
+        const status = item.status.toLowerCase();
+        return status === "menunggu" || status === "proses" || status === "selesai";
+      });
+
+      setAllData(antrian);
+      setFilteredData(filtered);
+      setCurrentPage(1);
+    } catch (error) {
+      console.error("Gagal memuat data:", error);
+    }
+  };
+
+  fetchData();
+}, [id]);
+
+
+useEffect(() => {
+  const result = allData.filter((item) => {
+    const status = item.status.toLowerCase();
+    if (status !== "menunggu" && status !== "proses" && status !== "selesai") return false;
+
+    const date = new Date(item.waktu_pendaftaran);
+    const bulan = (date.getMonth() + 1).toString();
+    const tahun = date.getFullYear().toString();
+
+    const cocokBulan = !filters.bulan || filters.bulan === bulan;
+    const cocokTahun = !filters.tahun || filters.tahun === tahun;
+
+    return cocokBulan && cocokTahun;
+  });
+
+  setFilteredData(result);
+}, [filters, allData]);
+
 
   const downloadPdf = (data: RiwayatItem[], filters: { bulan: string; tahun: string }) => {
     const doc = new jsPDF();
@@ -119,9 +138,9 @@ export default function RiwayatAntrian() {
     // Info dosen (kiri, lebih kecil)
     doc.setFontSize(10);
     if (data.length > 0) {
-      const { nama_dosen, nim_dosen } = data[0];
-      doc.text(`Nama Dosen: ${nama_dosen}`, 14, 28);
-      doc.text(`NIP: ${nim_dosen}`, 14, 34);
+      const { nama_mahasiswa, nim_mahasiswa } = data[0];
+      doc.text(`Nama mahasiswa: ${nama_mahasiswa}`, 14, 28);
+      doc.text(`NIM: ${nim_mahasiswa}`, 14, 34);
     }
 
     // Info tanggal unduh
@@ -132,17 +151,17 @@ export default function RiwayatAntrian() {
     });
     doc.text(`Tanggal Unduh: ${tanggalDownload}`, 14, 40);
 
-    const tableColumn = ["Nama Mahasiswa", "NIM", "Prodi", "Tanggal Bimbingan", "Waktu Bimbingan", "Alasan", "Status"];
+    const tableColumn = ["Nama Dosen", "NIP", "Prodi", "Tanggal Bimbingan", "Waktu Bimbingan", "Alasan", "Status"];
     const tableRows = data.map(item => [
-      item.nama_mahasiswa,
-      item.nim_mahasiswa,
-      item.prodi_mahasiswa,
-      new Date(item.waktu_selesai).toLocaleDateString("id-ID", {
+      item.nama_dosen,
+      item.nim_dosen,
+      item.prodi_dosen,
+      new Date(item.waktu_pendaftaran).toLocaleDateString("id-ID", {
         day: "numeric",
         month: "long",
         year: "numeric",
       }),
-      new Date(item.waktu_selesai).toLocaleTimeString("id-ID", {
+      new Date(item.waktu_pendaftaran).toLocaleTimeString("id-ID", {
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
@@ -218,7 +237,7 @@ export default function RiwayatAntrian() {
           <TableHeader className="border-gray-100 dark:border-gray-800 border-y">
             <TableRow>
               <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Nama Mahasiswa
+                Nama Dosen
               </TableCell>
               <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
                 Tanggal Bimbingan
@@ -243,28 +262,28 @@ export default function RiwayatAntrian() {
                     <div className="h-[50px] w-[50px] overflow-hidden rounded-md">
                       <img
                         src={
-                          item.foto_mahasiswa
-                            ? `https://pmb.uinsu.ac.id/file/photo/${item.foto_mahasiswa}`
+                          item.foto_dosen
+                            ? `https://pmb.uinsu.ac.id/file/photo/${item.foto_dosen}`
                             : "/images/user/owner.jpg"
                         }
-                        alt={item.nama_mahasiswa || "Mahasiswa"}
+                        alt={item.nama_dosen || "dosen"}
                         className="h-[50px] w-[50px] object-cover"
                       />
                     </div>
                     <div>
                       <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                        {toTitleCase(item.nama_mahasiswa)}
+                        {toTitleCase(item.nama_dosen)}
                       </p>
                       <span className="text-gray-500 text-theme-xs dark:text-gray-400">
-                        {item.nim_mahasiswa} | {toTitleCase(item.prodi_mahasiswa)} ({item.stambuk_mahasiswa})
+                        {item.nim_dosen} | {toTitleCase(item.prodi_dosen)} 
                       </span>
                     </div>
                   </div>
                 </TableCell>
 
                 <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                  {item.waktu_selesai
-                    ? new Date(item.waktu_selesai).toLocaleDateString("id-ID", {
+                  {item.waktu_pendaftaran
+                    ? new Date(item.waktu_pendaftaran).toLocaleDateString("id-ID", {
                       day: "numeric",
                       month: "long",
                       year: "numeric",
@@ -272,8 +291,8 @@ export default function RiwayatAntrian() {
                     : "-"}
                 </TableCell>
                 <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                  {item.waktu_selesai
-                    ? new Date(item.waktu_selesai).toLocaleTimeString("id-ID", {
+                  {item.waktu_pendaftaran
+                    ? new Date(item.waktu_pendaftaran).toLocaleTimeString("id-ID", {
                       hour: "2-digit",
                       minute: "2-digit",
                       second: "2-digit",

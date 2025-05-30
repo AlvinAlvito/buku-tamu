@@ -143,17 +143,25 @@ export default function DaftarUser() {
             <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
 
               <p>
-                <span className="font-medium text-yellow-700 dark:text-yellow-500 ">Total Antrian Sedang Berlangsung <br /> <span className="text-xl">{item.jumlah_antrian_berlangsung} </span></span> 
+                <span className="font-medium text-yellow-700 dark:text-yellow-500 ">Total Antrian Sedang Berlangsung <br /> <span className="text-xl">{item.jumlah_antrian_berlangsung} </span></span>
               </p>
               <p>
-                <span className="font-medium text-green-700  dark:text-green-500">Total Antrian Selesai <br /> <span className="text-xl"> {item.jumlah_antrian_selesai}</span></span> 
+                <span className="font-medium text-green-700  dark:text-green-500">Total Antrian Selesai <br /> <span className="text-xl"> {item.jumlah_antrian_selesai}</span></span>
               </p>
             </div>
             <Button variant="primary" size="sm" className="w-full my-2">
-              <Link to={`/admin/user/${item.id}`} className="block w-full text-center">
+              <Link
+                to={
+                  item.role === "dosen"
+                    ? `/dosen/daftar-prodi/profil/dosen/${item.id}`
+                    : `/dosen/daftar-prodi/profil/mahasiswa/${item.id}`
+                }
+                className="block w-full text-center"
+              >
                 Lihat Profil
               </Link>
             </Button>
+
           </div>
         ))}
       </div>
@@ -175,8 +183,8 @@ export default function DaftarUser() {
               key={pageNum}
               onClick={() => handlePageChange(pageNum)}
               className={`px-3 py-1 rounded border ${pageNum === currentPage
-                  ? "bg-green-600 text-white border-green-600"
-                  : "border-gray-300 dark:border-gray-700"
+                ? "bg-green-600 text-white border-green-600"
+                : "border-gray-300 dark:border-gray-700"
                 }`}
             >
               {pageNum}

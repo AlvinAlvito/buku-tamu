@@ -127,3 +127,159 @@ exports.getRiwayatByProdi = async (req, res) => {
     });
   }
 };
+
+exports.getProfilDosen = async (req, res) => {
+  const { id } = req.query;
+
+  if (!id) {
+    return res.status(400).json({ message: "Parameter id harus diisi" });
+  }
+
+  try {
+    // Ambil data profil dosen + ketersediaan
+    const [[profil]] = await db.execute(
+      `
+  SELECT 
+    u.id,
+    u.name,
+    u.nim,
+    u.foto_profil,
+    u.role,
+    u.prodi,
+    u.fakultas,
+    u.email,
+    u.whatsapp,
+    u.bio,
+
+    k.lokasi_kampus,
+    k.gedung_ruangan,
+    k.link_maps,
+    k.jadwal_libur,
+    k.status_ketersediaan,
+    k.waktu_mulai,
+    k.waktu_selesai
+
+  FROM users u
+  LEFT JOIN tb_ketersediaan k ON u.id = k.user_id
+  WHERE u.id = ? AND u.role = 'dosen'
+  `,
+      [id]
+    );
+    if (!profil) {
+      return res.status(404).json({ message: "Dosen tidak ditemukan" });
+    }
+
+    // Ambil seluruh antrian dosen ini
+    const [antrian] = await db.execute(
+      `
+  SELECT 
+    m.name AS nama_mahasiswa,
+    m.nim AS nim_mahasiswa,
+    m.foto_profil AS foto_mahasiswa,
+    m.prodi AS prodi_mahasiswa,
+    m.stambuk AS stambuk_mahasiswa,
+
+    d.name AS nama_dosen,
+    d.nim AS nim_dosen,
+    d.foto_profil AS foto_dosen,
+
+    a.status,
+    a.alasan,
+    a.waktu_pendaftaran
+
+  FROM tb_antrian a
+  JOIN users m ON a.mahasiswa_id = m.id
+  JOIN users d ON a.dosen_id = d.id
+  WHERE a.dosen_id = ?
+  ORDER BY a.waktu_pendaftaran DESC
+  `,
+      [id]
+    );
+
+    res.json({
+      profil,
+      antrian,
+    });
+  } catch (error) {
+    console.error("Error getProfilDosen:", error);
+    res.status(500).json({
+      message: "Gagal mengambil data profil dosen",
+      error: error.message,
+    });
+  }
+};
+
+exports.getProfilMahasiswa = async (req, res) => {
+  const { id } = req.query;
+
+  if (!id) {
+    return res.status(400).json({ message: "Parameter id harus diisi" });
+  }
+
+  try {
+    // Ambil data profil mahasiswa
+    const [[profil]] = await db.execute(
+      `
+      SELECT 
+        u.id,
+        u.name,
+        u.nim,
+        u.foto_profil,
+        u.role,
+        u.prodi,
+        u.fakultas,
+        u.email,
+        u.whatsapp,
+        u.bio
+      FROM users u
+      WHERE u.id = ? AND u.role = 'mahasiswa'
+      `,
+      [id]
+    );
+
+    if (!profil) {
+      return res.status(404).json({ message: "Mahasiswa tidak ditemukan" });
+    }
+
+    // Ambil seluruh antrian milik mahasiswa ini
+const [antrian] = await db.execute(
+  `
+  SELECT 
+    m.name AS nama_mahasiswa,
+    m.nim AS nim_mahasiswa,
+    m.foto_profil AS foto_mahasiswa,
+    m.prodi AS prodi_mahasiswa,
+    m.stambuk AS stambuk_mahasiswa,
+
+    d.name AS nama_dosen,
+    d.nim AS nim_dosen,
+    d.foto_profil AS foto_dosen,
+    d.prodi AS prodi_dosen,
+    d.fakultas AS fakultas_dosen,
+
+    a.status,
+    a.alasan,
+    a.waktu_pendaftaran
+
+  FROM tb_antrian a
+  JOIN users m ON a.mahasiswa_id = m.id
+  JOIN users d ON a.dosen_id = d.id
+  WHERE a.mahasiswa_id = ?
+  ORDER BY a.waktu_pendaftaran DESC
+  `,
+  [id]
+);
+
+
+    res.json({
+      profil,
+      antrian,
+    });
+  } catch (error) {
+    console.error("Error getProfilMahasiswa:", error);
+    res.status(500).json({
+      message: "Gagal mengambil data profil mahasiswa",
+      error: error.message,
+    });
+  }
+};

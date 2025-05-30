@@ -39,6 +39,8 @@ import LogUser from "./components/mahasiswa/LogUser";
 
 import DaftarProdi from "./pages/Admin/DaftarProdi";
 import DaftarUser from "./pages/Admin/DaftarUser";
+import ProfilDosen from "./pages/Admin/ProfilDosen";
+import ProfilMahasiswa from "./pages/Admin/ProfilMahasiswa";
 
 export const router = createBrowserRouter([
   {
@@ -54,6 +56,8 @@ export const router = createBrowserRouter([
 
       { path: "dosen/daftar-prodi", element: <DaftarProdi /> },
       { path: "dosen/daftar-prodi/:namaProdi", element: <DaftarUser /> },
+      { path: "dosen/daftar-prodi/profil/dosen/:id", element: <ProfilDosen /> },
+      { path: "dosen/daftar-prodi/profil/mahasiswa/:id", element: <ProfilMahasiswa /> },
       // Dosen
       { path: "dosen", element: <DosenDashboard /> },
       { path: "dosen/profile", element: <DosenProfile /> },

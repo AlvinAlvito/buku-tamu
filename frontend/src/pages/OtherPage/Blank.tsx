@@ -40,7 +40,7 @@ export default function Blank() {
         <Link
           to="https://avinto.my.id" target="_blank">
           <p className="absolute text-md text-center text-gray-500 -translate-x-1/2 bottom-6 left-1/2 dark:text-gray-400">
-            &copy; {new Date().getFullYear()} - <span className="font-semibold underline">Paris Alvito</span>
+            &copy; {new Date().getFullYear()} - <span className="font-semibold underline">UIN Sumatera Utara | av_into</span>
           </p>
         </Link>
       </div>

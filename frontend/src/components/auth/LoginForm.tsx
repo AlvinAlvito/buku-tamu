@@ -1,6 +1,6 @@
 import { baseUrl } from "../../lib/api";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
@@ -159,12 +159,14 @@ export default function LoginForm() {
                       Ingat Saya
                     </span>
                   </div>
-                  <Link
-                    to="/reset-password"
+                  <a
+                    href="/Panduan SI-BIMA.pdf"
+                    download
                     className="text-sm text-green-500 hover:text-green-600 dark:text-green-400"
                   >
-                    Lihat panduan penggunaan
-                  </Link>
+                    Unduh panduan penggunaan
+                  </a>
+
                 </div>
                 <div>
                   {error && (

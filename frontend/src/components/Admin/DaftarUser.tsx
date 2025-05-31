@@ -139,7 +139,13 @@ export default function DaftarUser() {
           >
             <div className="flex items-center gap-4 mb-4">
               <img
-                src={item.foto_profil ? `https://pmb.uinsu.ac.id/file/photo/${item.foto_profil}` : "/images/user/user-01.jpg"}
+                src={
+                  item.foto_profil
+                    ? item.foto_profil.startsWith("http")
+                      ? item.foto_profil // untuk dosen: sudah full URL
+                      : `https://pmb.uinsu.ac.id/file/photo/${item.foto_profil}` // untuk mahasiswa
+                    : "/images/user/user-01.jpg" // default jika tidak ada foto
+                }
                 alt={item.name}
                 className="w-14 h-14 rounded-xl object-cover"
               />

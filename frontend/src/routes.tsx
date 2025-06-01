@@ -42,6 +42,7 @@ import DaftarUser from "./pages/Admin/DaftarUser";
 import ProfilDosen from "./pages/Admin/ProfilDosen";
 import ProfilMahasiswa from "./pages/Admin/ProfilMahasiswa";
 import AdminDashboard from "./pages/Admin/Dasboard";
+import AppContent from "./components/auth/Session";
 
 
 export const router = createBrowserRouter([
@@ -49,6 +50,7 @@ export const router = createBrowserRouter([
     path: "/",
     element: (
       <ProtectedRoute>
+        <AppContent /> {/* Pengecekan session */}
         <ScrollToTop />
         <AppLayout />
       </ProtectedRoute>

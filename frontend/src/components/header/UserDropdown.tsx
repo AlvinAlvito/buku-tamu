@@ -42,12 +42,17 @@ export default function UserDropdown() {
           <img
             src={
               user?.foto_profil
-                ? `https://pmb.uinsu.ac.id/file/photo/${user.foto_profil}`
+                ? user.role === "mahasiswa"
+                  ? `https://pmb.uinsu.ac.id/file/photo/${user.foto_profil}`
+                  : user.role === "dosen"
+                    ? user.foto_profil
+                    : "/images/user/owner.jpg"
                 : "/images/user/owner.jpg"
             }
             alt="User"
             className="h-full w-full object-cover object-center"
           />
+
         </span>
 
 

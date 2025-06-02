@@ -1,6 +1,7 @@
 require("dotenv").config();
 const db = require("../db");
 const jwt = require("jsonwebtoken");
+const axios = require("axios");
 const bcrypt = require("bcryptjs");
 const localUserService = require("../services/localUserService");
 const mahasiswaService = require("../services/mahasiswaService");
@@ -52,11 +53,10 @@ exports.login = async (req, res) => {
         user,
         password
       );
-
       if (!isPasswordValid) {
-        return res.status(401).json({
-          message: `Password salah (${user.role})`,
-        });
+        return res
+          .status(401)
+          .json({ message: `Password salah (${user.role})` });
       }
 
       const token = jwt.sign(
@@ -77,37 +77,67 @@ exports.login = async (req, res) => {
       });
     }
 
-    // 2. Tentukan apakah ini dosen atau mahasiswa berdasarkan format NIM/NIDN
-    const isDosen =  nim.length >= 15 && nim.length <= 18;
-    const isMahasiswa = nim.length >= 7 && nim.length <= 12;
-
-    let newUser;
-
-    if (isDosen) {
-      newUser = await dosenService.loginDosenViaApi(nim, password);
-    } else if (isMahasiswa) {
-      newUser = await mahasiswaService.loginMahasiswaViaApi(nim, password);
-    } else {
-      // Bisa tangani error kalau format nim tidak sesuai
-      return res.status(400).json({ message: "Format NIM tidak valid" });
-    }
-
-    const token = jwt.sign(
+    // 2. Lakukan otentikasi via API Portal
+    const otentikasiResponse = await axios.post(
+      `${process.env.UINSU_API_PORTAL}/OtentikasiUser`,
+      new URLSearchParams({ username: nim, password }),
       {
-        id: newUser.id,
-        nim: newUser.nim,
-        name: newUser.name,
-        role: newUser.role,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+        headers: { "UINSU-KEY": process.env.UINSU_API_KEY },
+        timeout: 7000,
+      }
     );
 
-    return res.status(200).json({
-      message: "Login berhasil (API eksternal)",
-      user: newUser,
-      token,
-    });
+    const authData = otentikasiResponse.data.OtentikasiUser?.[0];
+    if (!authData || !authData.status) {
+      return res.status(401).json({ message: "NIM atau password salah" });
+    }
+
+    // 3. Cek role dari hasil otentikasi (1 = mahasiswa, 2 = dosen)
+    if (authData.role === "1") {
+      // Mahasiswa
+      const mahasiswa = await mahasiswaService.loginMahasiswaViaApi(
+        nim,
+        password
+      );
+      const token = jwt.sign(
+        {
+          id: mahasiswa.id,
+          nim: mahasiswa.nim,
+          name: mahasiswa.name,
+          role: mahasiswa.role,
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "1d" }
+      );
+
+      return res.status(200).json({
+        message: "Login berhasil (mahasiswa API)",
+        user: mahasiswa,
+        token,
+      });
+    } else if (authData.role === "2") {
+      // Dosen
+      const dosen = await dosenService.loginDosenViaApi(nim, password, authData);
+
+      const token = jwt.sign(
+        {
+          id: dosen.id,
+          nim: dosen.nim,
+          name: dosen.name,
+          role: dosen.role,
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "1d" }
+      );
+
+      return res.status(200).json({
+        message: "Login berhasil (dosen API)",
+        user: dosen,
+        token,
+      });
+    } else {
+      return res.status(403).json({ message: "Role tidak dikenali" });
+    }
   } catch (error) {
     console.error("🔥 ERROR:", error.response?.data || error.message);
     return res.status(500).json({

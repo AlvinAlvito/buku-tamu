@@ -4,13 +4,15 @@ const md5 = require("md5"); // pastikan sudah install: npm install md5
 
 const apiPortal = process.env.UINSU_API_PORTAL;
 
-async function loginMahasiswaViaApi(nim, password) {
+async function loginMahasiswaViaApi(nim) {
   try {
-    // 1. Cek apakah mahasiswa sudah ada di tabel users
-    const [existingUsers] = await db.query("SELECT * FROM users WHERE nim = ? AND role = 'mahasiswa'", [nim]);
+    // 1. Cek apakah user sudah ada di DB lokal
+    const [existingUsers] = await db.query(
+      "SELECT * FROM users WHERE nim = ? AND role = 'mahasiswa'",
+      [nim]
+    );
 
     if (existingUsers.length > 0) {
-      // Sudah pernah login sebelumnya, return data user
       const user = existingUsers[0];
       return {
         id: user.id,
@@ -26,22 +28,7 @@ async function loginMahasiswaViaApi(nim, password) {
       };
     }
 
-    // 2. Otentikasi ke API Portal
-    const otentikasiResponse = await axios.post(
-      `${apiPortal}/OtentikasiUser`,
-      new URLSearchParams({ username: nim, password }),
-      {
-        headers: { "UINSU-KEY": process.env.UINSU_API_KEY },
-        timeout: 7000,
-      }
-    );
-
-    const authData = otentikasiResponse.data.OtentikasiUser?.[0];
-    if (!authData || !authData.status) {
-      throw new Error("Login gagal - data tidak valid");
-    }
-
-    // 3. Ambil data mahasiswa detail
+    // 2. Ambil data mahasiswa dari API DataAlumni
     const alumniResponse = await axios.post(
       `${apiPortal}/DataAlumni`,
       new URLSearchParams({ nim_mhs: nim }),
@@ -56,15 +43,15 @@ async function loginMahasiswaViaApi(nim, password) {
 
     const alumniData = alumniResponse.data.DataAlumni?.[0];
     if (!alumniData || (alumniData.status !== true && alumniData.status !== "true")) {
-      throw new Error("Data alumni tidak ditemukan");
+      throw new Error("Data mahasiswa tidak ditemukan di API");
     }
 
-    // 4. Simpan ke database lokal
+    // 3. Simpan ke DB lokal
     const newUser = {
       name: alumniData.nama_mahasiswa,
-      nim: authData.user,
+      nim: nim,
       email: alumniData.email || null,
-      password: authData.password,
+      password: null, // Tidak menyimpan password dari API
       foto_profil: alumniData.mhsFoto || null,
       role: "mahasiswa",
       prodi: alumniData.PRODI || null,
@@ -83,6 +70,8 @@ async function loginMahasiswaViaApi(nim, password) {
     throw error;
   }
 }
+
+
 
 module.exports = {
   loginMahasiswaViaApi,

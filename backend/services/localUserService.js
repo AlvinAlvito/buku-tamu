@@ -1,5 +1,5 @@
 const bcrypt = require("bcryptjs");
-const crypto = require("crypto"); // untuk md5
+const crypto = require("crypto");
 const db = require("../db");
 
 async function findUserByNim(nim) {
@@ -8,8 +8,8 @@ async function findUserByNim(nim) {
 }
 
 async function checkLocalUserPassword(user, password) {
-  if (user.role === "mahasiswa") {
-    // Hash input password dengan MD5
+  if (user.role === "mahasiswa" || user.role === "dosen") {
+    // Pakai MD5
     const inputPasswordHash = crypto.createHash("md5").update(password).digest("hex");
     return inputPasswordHash === user.password;
   } else {

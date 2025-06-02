@@ -15,6 +15,24 @@ export default function InformasiKetersediaan() {
     lat: -3.597031,
     lng: 98.678513
   };
+
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          const mapsLink = `https://www.google.com/maps?q=${lat},${lon}`;
+          setForm((prev) => ({ ...prev, maps: mapsLink }));
+        },
+        (error) => {
+          console.error("Gagal mendapatkan lokasi:", error.message);
+        }
+      );
+    } else {
+      console.error("Geolocation tidak didukung oleh browser ini.");
+    }
+  }, []);
   const getEmbedUrl = (url: string | undefined): string => {
     const defaultLocation = "3.600840,98.681326";
 
@@ -66,12 +84,13 @@ export default function InformasiKetersediaan() {
 
   useEffect(() => {
     if (!user?.id) return;
+
     fetch(`${baseUrl}/api/ketersediaan/${user.id}`)
       .then((r) => r.json())
       .then((d) => {
         if (!d) return;
-        setKetersediaanId(d.id);
-        setForm({
+
+        const baseForm = {
           lokasi: d.lokasi_kampus ?? "",
           gedung: d.gedung_ruangan ?? "",
           jadwal: d.jadwal_libur ?? "",
@@ -79,10 +98,39 @@ export default function InformasiKetersediaan() {
           status: d.status_ketersediaan === "Tersedia",
           waktu_mulai: d.waktu_mulai ?? "",
           waktu_selesai: d.waktu_selesai ?? "",
-        });
+        };
+
+        // Kalau belum ada maps (lokasi kosong), ambil lokasi baru
+        if (!d.link_maps) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const { latitude, longitude } = position.coords;
+              const mapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
+              setForm({
+                ...baseForm,
+                maps: mapsLink,
+              });
+            },
+            (error) => {
+              console.error("Gagal ambil lokasi:", error);
+              setForm(baseForm);
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 10000,
+              maximumAge: 0,
+            }
+          );
+
+        } else {
+          setForm(baseForm);
+        }
+
+        setKetersediaanId(d.id);
       })
       .catch(console.error);
   }, [user]);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -93,6 +141,10 @@ export default function InformasiKetersediaan() {
   };
 
   const handleSave = () => {
+    if (!form.lokasi || form.lokasi.trim() === "") {
+      alert("Lokasi kampus wajib diisi!");
+      return;
+    }
     if (!ketersediaanId) {
       console.error("ID ketersediaan tidak ditemukan.");
       return;
@@ -300,7 +352,7 @@ export default function InformasiKetersediaan() {
                 </div>
 
                 <div>
-                  <Label>Masukan Titik Kordinat Link Google Maps</Label>
+                  <Label>Lokasi Maps Anda terisi secara otomatis</Label>
                   <Input name="maps" value={form.maps} type="text" onChange={handleChange} />
                 </div>
 

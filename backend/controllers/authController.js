@@ -96,8 +96,7 @@ exports.login = async (req, res) => {
     if (authData.role === "1") {
       // Mahasiswa
       const mahasiswa = await mahasiswaService.loginMahasiswaViaApi(
-        nim,
-        password
+       nim, password, authData
       );
       const token = jwt.sign(
         {

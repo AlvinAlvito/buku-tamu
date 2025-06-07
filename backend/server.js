@@ -18,6 +18,14 @@ const server = http.createServer(app);
 const io = init(server); 
 app.use(cors());
 app.use(express.json());
+// ✅ Middleware anti-cache
+app.use((req, res, next) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  next();
+});
+
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
   handleSocketConnection(socket, io);

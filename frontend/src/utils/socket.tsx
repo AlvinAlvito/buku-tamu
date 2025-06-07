@@ -1,10 +1,10 @@
 import { io, Socket } from "socket.io-client";
-
+import { baseUrl } from "../lib/api";
 let socket: Socket | null = null;
 
 export const initSocket = (token: string): Socket => {
   if (!socket) {
-    socket = io("http://localhost:3000", {
+    socket = io(`${baseUrl}`, {
       auth: {
         token,
       },

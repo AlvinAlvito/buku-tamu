@@ -4,7 +4,7 @@ const md5 = require("md5"); // pastikan sudah install: npm install md5
 
 const apiPortal = process.env.UINSU_API_PORTAL;
 
-async function loginMahasiswaViaApi(nim) {
+async function loginMahasiswaViaApi(nim, authData) {
   try {
     // 1. Cek apakah user sudah ada di DB lokal
     const [existingUsers] = await db.query(
@@ -28,6 +28,10 @@ async function loginMahasiswaViaApi(nim) {
       };
     }
 
+    if (!authData) {
+      throw new Error("AuthData harus diberikan ke fungsi loginMahasiswaViaApi");
+    }
+
     // 2. Ambil data mahasiswa dari API DataAlumni
     const alumniResponse = await axios.post(
       `${apiPortal}/DataAlumni`,
@@ -42,7 +46,10 @@ async function loginMahasiswaViaApi(nim) {
     );
 
     const alumniData = alumniResponse.data.DataAlumni?.[0];
-    if (!alumniData || (alumniData.status !== true && alumniData.status !== "true")) {
+    if (
+      !alumniData ||
+      (alumniData.status !== true && alumniData.status !== "true")
+    ) {
       throw new Error("Data mahasiswa tidak ditemukan di API");
     }
 
@@ -51,7 +58,7 @@ async function loginMahasiswaViaApi(nim) {
       name: alumniData.nama_mahasiswa,
       nim: nim,
       email: alumniData.email || null,
-      password: null, // Tidak menyimpan password dari API
+      password: authData.password, // Tidak menyimpan password dari API
       foto_profil: alumniData.mhsFoto || null,
       role: "mahasiswa",
       prodi: alumniData.PRODI || null,
@@ -70,8 +77,6 @@ async function loginMahasiswaViaApi(nim) {
     throw error;
   }
 }
-
-
 
 module.exports = {
   loginMahasiswaViaApi,

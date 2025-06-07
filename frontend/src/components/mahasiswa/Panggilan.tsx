@@ -108,13 +108,14 @@ export default function BuatJanji() {
     };
   }, [antrianId, openModal]);
 
-  // Timer countdown modal
   useEffect(() => {
     let timer: ReturnType<typeof setInterval>;
+    let vibrateInterval: ReturnType<typeof setInterval>;
     let audio: HTMLAudioElement;
 
     if (isOpen) {
-      audio = new Audio("/ringtone.mp3");
+      // Ganti dengan direct link dari GitHub raw file
+      audio = new Audio("https://raw.githubusercontent.com/AlvinAlvito/buku-tamu/main/frontend/public/ringtone.mp3");
       audio.loop = true;
 
       const playAudio = () => {
@@ -124,15 +125,22 @@ export default function BuatJanji() {
       };
 
       playAudio();
+
+      // Vibrasi terus menerus: 400ms getar, 200ms henti, ulangi
       if (navigator.vibrate) {
-        navigator.vibrate([400, 200, 400]);
+        navigator.vibrate([400, 200]);
+        vibrateInterval = setInterval(() => {
+          navigator.vibrate([400, 200]);
+        }, 600); // total waktu dari pola [400, 200] = 600ms
       }
 
+      // Timer countdown
       timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
-            audio.pause();       
+            clearInterval(vibrateInterval);
+            audio.pause();
             navigator.vibrate(0);
             closeModal();
             return 0;
@@ -142,12 +150,12 @@ export default function BuatJanji() {
       }, 1000);
     }
 
+    // Cleanup saat modal ditutup
     return () => {
       clearInterval(timer);
-      if (audio) {
-        audio.pause();
-      }
-      navigator.vibrate(0); 
+      clearInterval(vibrateInterval);
+      if (audio) audio.pause();
+      navigator.vibrate(0);
     };
   }, [isOpen, closeModal]);
 

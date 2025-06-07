@@ -4,7 +4,7 @@ const md5 = require("md5"); // pastikan sudah install: npm install md5
 
 const apiPortal = process.env.UINSU_API_PORTAL;
 
-async function loginMahasiswaViaApi(nim, authData) {
+async function loginMahasiswaViaApi(nim,password, authData) {
   try {
     // 1. Cek apakah user sudah ada di DB lokal
     const [existingUsers] = await db.query(
@@ -58,7 +58,7 @@ async function loginMahasiswaViaApi(nim, authData) {
       name: alumniData.nama_mahasiswa,
       nim: nim,
       email: alumniData.email || null,
-      password: authData.password, // Tidak menyimpan password dari API
+      password: authData.password, 
       foto_profil: alumniData.mhsFoto || null,
       role: "mahasiswa",
       prodi: alumniData.PRODI || null,

@@ -19,6 +19,8 @@ export default function InformasiPersonal() {
     bio: string | null;
     foto_profil: string | null;
     lokasi_kampus: string;
+    fakultas: string;
+    prodi: string;
     gedung_ruangan: string;
     link_maps: string;
     jadwal_libur: string;
@@ -69,7 +71,7 @@ useEffect(() => {
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Posisi
+                Role
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                 {mahasiswa.role}
@@ -82,6 +84,24 @@ useEffect(() => {
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                 {mahasiswa.email}
+              </p>
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                Prodi
+              </p>
+              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                {mahasiswa.prodi}
+              </p>
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+               Fakultas
+              </p>
+              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                {mahasiswa.fakultas}
               </p>
             </div>
 

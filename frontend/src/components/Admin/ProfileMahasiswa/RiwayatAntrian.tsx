@@ -264,7 +264,7 @@ useEffect(() => {
                       <img
                         src={
                           item.foto_dosen
-                            ? `https://pmb.uinsu.ac.id/file/photo/${item.foto_dosen}`
+                            ? `${item.foto_dosen}`
                             : "/images/user/owner.jpg"
                         }
                         alt={item.nama_dosen || "dosen"}

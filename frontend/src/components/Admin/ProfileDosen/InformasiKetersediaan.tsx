@@ -9,7 +9,6 @@ export default function InformasiKetersediaan() {
     lat: -3.597031,
     lng: 98.678513
   };
-  const gmapsUrl = `https://www.google.com/maps?q=${coordinate.lat},${coordinate.lng}`;
   // const gmapsImage = `https://maps.googleapis.com/maps/api/staticmap?center=${coordinate.lat},${coordinate.lng}&zoom=15&size=600x300&markers=color:red%7C${coordinate.lat},${coordinate.lng}&key=YOUR_GOOGLE_MAPS_API_KEY`; // ganti dengan API key
   interface Dosen {
     id: number;
@@ -125,7 +124,7 @@ export default function InformasiKetersediaan() {
               Titik Kordinat
             </p>
             <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-              <a href={gmapsUrl} target="_blank" rel="noopener noreferrer" className="block rounded-xl overflow-hidden border border-gray-300 dark:border-gray-700">
+              <a href={dosen.link_maps} target="_blank" rel="noopener noreferrer" className="block rounded-xl overflow-hidden border border-gray-300 dark:border-gray-700">
                 <iframe
                   width="100%"
                   height="200"

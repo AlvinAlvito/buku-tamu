@@ -11,6 +11,8 @@ export default function InformasiPersonal() {
     nim: string;
     email: string;
     role: "mahasiswa" | "dosen";
+    prodi: string;
+    fakultas: string;
     facebook: string | null;
     twitter: string | null;
     linkedin: string | null;
@@ -45,8 +47,14 @@ useEffect(() => {
     fetchDosen();
   }
 }, [id]);
-
-
+  function toTitleCase(str: string | undefined): string {
+    if (!str) return "";
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
+  }
   if (!dosen) return <p>Memuat data dosen...</p>;
 
   return (
@@ -69,10 +77,10 @@ useEffect(() => {
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Posisi
+                Role
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {dosen.role}
+                {toTitleCase(dosen.role)}
               </p>
             </div>
 
@@ -82,6 +90,24 @@ useEffect(() => {
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                 {dosen.email}
+              </p>
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                Prodi
+              </p>
+              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                {toTitleCase(dosen.prodi)}
+              </p>
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                Fakultas
+              </p>
+              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                {dosen.fakultas}
               </p>
             </div>
 

@@ -110,7 +110,7 @@ export default function DaftarProdi() {
                   {item.prodi}
                 </p>
                 <p className="text-gray-500 text-sm dark:text-gray-400">
-                  Fakultas: {item.fakultas}
+                   {item.fakultas}
                 </p>
               </div>
             </div>

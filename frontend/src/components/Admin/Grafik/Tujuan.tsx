@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import DonutChart from '../../charts/DonutChart';
+import { baseUrl } from "../../../lib/api";
 
 interface ApiResponse {
     tujuan: string;
@@ -15,7 +16,7 @@ export default function GrafikTujuan() {
     useEffect(() => {
         if (!namaProdi) return;
 
-        fetch(`/api/admin/prodi/${encodeURIComponent(namaProdi)}/grafik-tujuan`)
+        fetch(`${baseUrl}/api/admin/prodi/${encodeURIComponent(namaProdi)}/grafik-tujuan`)
             .then((res) => res.json())
             .then((data) => {
                 const formattedData = data.grafik.map((item: ApiResponse) => ({

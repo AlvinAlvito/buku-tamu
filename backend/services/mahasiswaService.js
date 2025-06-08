@@ -63,7 +63,7 @@ async function loginMahasiswaViaApi(nim,password, authData) {
       role: "mahasiswa",
       prodi: alumniData.PRODI || null,
       stambuk: alumniData.mhs_angkatan || null,
-      fakultas: alumniData.FAKULTAS || null,
+      fakultas: alumniData.FAKULTAS ? `Fakultas ${alumniData.FAKULTAS}` : null,
       whatsapp: alumniData.handphone || null,
     };
 

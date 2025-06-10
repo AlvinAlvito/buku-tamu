@@ -55,7 +55,7 @@ export default function IndosenasiKetersediaan() {
       <div className="p-5 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
         <div className="grid grid-cols-2 gap-6  lg:items-start lg:justify-between">
          <div>
-            <div className="grid grid-cols-2 gap-4 lg:gap-7 2xl:gap-x-32">
+            <div className="grid grid-cols-1 gap-4 lg:gap-7 2xl:gap-x-32">
               <div>
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                   Lokasi Kampus

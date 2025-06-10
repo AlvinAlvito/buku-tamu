@@ -3,7 +3,7 @@ import { useParams } from "react-router";
 import Badge from "../../ui/badge/Badge";
 import { useEffect, useState } from "react";
 import { baseUrl } from "../../../lib/api";
-export default function InformasiKetersediaan() {
+export default function IndosenasiKetersediaan() {
 
   const coordinate = {
     lat: -3.597031,
@@ -54,12 +54,8 @@ export default function InformasiKetersediaan() {
 
       <div className="p-5 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
         <div className="grid grid-cols-2 gap-6  lg:items-start lg:justify-between">
-          <div>
-            <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
-              Informasi Lokasi & Ketersediaan Dosen
-            </h4>
-
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
+         <div>
+            <div className="grid grid-cols-2 gap-4 lg:gap-7 2xl:gap-x-32">
               <div>
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                   Lokasi Kampus
@@ -80,19 +76,24 @@ export default function InformasiKetersediaan() {
 
               <div>
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  Jadwal Libur
+                  Jadwal Tetap Dosen
                 </p>
                 <p className="text-xl font-medium text-gray-800 dark:text-white/90">
-                  {dosen.jadwal_libur}
+                  Hari: {dosen.jadwal_libur}
+                </p>
+                <p className="text-xl font-medium text-gray-800 dark:text-white/90">
+                  {dosen.waktu_mulai && dosen.waktu_selesai
+                    ? `${dosen.waktu_mulai.slice(0, 5)} - ${dosen.waktu_selesai.slice(0, 5)}`
+                    : "-"}
                 </p>
               </div>
 
               <div>
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  Status Ketersediaan
+                  Status Ketersediaan Saat ini
                 </p>
                 <p className="text-xl font-medium text-gray-800 dark:text-white/90">
-                  {dosen.status_ketersediaan === "Tersedia" ? (
+                  {dosen.status_ketersediaan ? (
                     <Badge variant="light" color="success">
                       Tersedia
                     </Badge>
@@ -102,21 +103,13 @@ export default function InformasiKetersediaan() {
                     </Badge>
                   )}
                 </p>
-
               </div>
-              <div className="grid grid-cols-1 gap-1">
-                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  Waktu Tersedia
-                </p>
-                <p className="text-xl font-medium text-gray-800 dark:text-white/90">
-                  {dosen.waktu_mulai && dosen.waktu_selesai
-                    ? `${dosen.waktu_mulai.slice(0, 5)} - ${dosen.waktu_selesai.slice(0, 5)}`
-                    : "-"}
-                </p>
 
-              </div>
+
 
             </div>
+
+
           </div>
 
           <div>

@@ -14,7 +14,8 @@ export default function BuatJanji() {
   const { isOpen, openModal, closeModal } = useModal();
   const { id } = useParams();
   const [tanggal, setTanggal] = useState("");
-  const [tujuan, setTujuan] = useState(""); // ✅ state untuk tujuan
+  const [tujuan, setTujuan] = useState("");
+  const [tujuanError, setTujuanError] = useState("");
   const [keperluan, setKeperluan] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [, setAntrianData] = useState<any[]>([]);
@@ -50,6 +51,14 @@ export default function BuatJanji() {
 
   const handleSave = async () => {
     try {
+      // Validasi: tujuan tidak boleh kosong
+      if (!tujuan) {
+        setTujuanError("Tujuan janji temu wajib diisi");
+        return;
+      } else {
+        setTujuanError(""); // reset error kalau sudah diisi
+      }
+
       const userString = localStorage.getItem("user");
       const user = userString ? JSON.parse(userString) : null;
       const mahasiswaId = user?.id;
@@ -66,7 +75,7 @@ export default function BuatJanji() {
       const data = {
         mahasiswa_id: mahasiswaId,
         dosen_id: dosenId,
-        tujuan: tujuan,              // ✅ kirim tujuan ke backend
+        tujuan: tujuan,
         alasan: keperluan,
         status: "menunggu",
         waktu_pendaftaran: tanggal,
@@ -262,9 +271,16 @@ export default function BuatJanji() {
                     options={tujuanOptions}
                     placeholder="Pilih tujuan"
                     value={tujuan}
-                    onChange={(value: string) => setTujuan(value)}
+                    onChange={(value: string) => {
+                      setTujuan(value);
+                      setTujuanError(""); // reset error saat dipilih
+                    }}
                   />
+                  {tujuanError && (
+                    <p className="mt-1 text-sm text-red-600">{tujuanError}</p>
+                  )}
                 </div>
+
 
                 <div>
                   <Label>Detail</Label>
@@ -287,7 +303,7 @@ export default function BuatJanji() {
                 size="sm"
                 onClick={(e) => {
                   e.preventDefault();
-                  handleSave(); 
+                  handleSave();
                 }}
               >
                 Simpan

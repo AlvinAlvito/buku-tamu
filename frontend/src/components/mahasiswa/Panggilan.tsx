@@ -113,26 +113,31 @@ export default function BuatJanji() {
     let vibrateInterval: ReturnType<typeof setInterval>;
     let audio: HTMLAudioElement;
 
+    // Helper aman untuk vibrasi
+    const safeVibrate = (pattern: number | number[]) => {
+      if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+        navigator.vibrate(pattern);
+      }
+    };
+
     if (isOpen) {
-      // Ganti dengan direct link dari GitHub raw file
+      // Mainkan audio dering
       audio = new Audio("https://raw.githubusercontent.com/AlvinAlvito/buku-tamu/main/frontend/public/ringtone.mp3");
       audio.loop = true;
 
       const playAudio = () => {
         audio.play().catch((err) => {
-          console.warn("Autoplay gagal. Mungkin belum ada interaksi:", err);
+          console.warn("Autoplay gagal. Mungkin belum ada interaksi pengguna:", err);
         });
       };
 
       playAudio();
 
-      // Vibrasi terus menerus: 400ms getar, 200ms henti, ulangi
-      if (navigator.vibrate) {
-        navigator.vibrate([400, 200]);
-        vibrateInterval = setInterval(() => {
-          navigator.vibrate([400, 200]);
-        }, 600); // total waktu dari pola [400, 200] = 600ms
-      }
+      // Vibrasi jika didukung
+      safeVibrate([400, 200]);
+      vibrateInterval = setInterval(() => {
+        safeVibrate([400, 200]);
+      }, 600);
 
       // Timer countdown
       timer = setInterval(() => {
@@ -140,8 +145,8 @@ export default function BuatJanji() {
           if (prev <= 1) {
             clearInterval(timer);
             clearInterval(vibrateInterval);
-            audio.pause();
-            navigator.vibrate(0);
+            if (audio) audio.pause();
+            safeVibrate(0); // Stop getar
             closeModal();
             return 0;
           }
@@ -155,10 +160,9 @@ export default function BuatJanji() {
       clearInterval(timer);
       clearInterval(vibrateInterval);
       if (audio) audio.pause();
-      navigator.vibrate(0);
+      safeVibrate(0);
     };
   }, [isOpen, closeModal]);
-
 
   return (
     <>

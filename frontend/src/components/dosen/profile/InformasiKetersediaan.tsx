@@ -221,16 +221,21 @@ export default function InformasiKetersediaan() {
 
               <div>
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  Jadwal Libur
+                  Jadwal Tetap Dosen
                 </p>
                 <p className="text-xl font-medium text-gray-800 dark:text-white/90">
-                  {form.jadwal}
+                  Hari: {form.jadwal}
+                </p>
+                <p className="text-xl font-medium text-gray-800 dark:text-white/90">
+                  {form.waktu_mulai && form.waktu_selesai
+                    ? `${form.waktu_mulai.slice(0, 5)} - ${form.waktu_selesai.slice(0, 5)}`
+                    : "-"}
                 </p>
               </div>
 
               <div>
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  Status Ketersediaan
+                  Status Ketersediaan Saat ini
                 </p>
                 <p className="text-xl font-medium text-gray-800 dark:text-white/90">
                   {form.status ? (
@@ -245,17 +250,7 @@ export default function InformasiKetersediaan() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 gap-1">
-                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  Waktu Tersedia
-                </p>
-                <p className="text-xl font-medium text-gray-800 dark:text-white/90">
-                  {form.waktu_mulai && form.waktu_selesai
-                    ? `${form.waktu_mulai.slice(0, 5)} - ${form.waktu_selesai.slice(0, 5)}`
-                    : "-"}
-                </p>
 
-              </div>
 
             </div>
 
@@ -304,8 +299,8 @@ export default function InformasiKetersediaan() {
           </div>
           <form className="flex flex-col">
             <div className="px-2 overflow-y-auto custom-scrollbar">
-              <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Lokasi Kampus */}
                 <div>
                   <Label>Pilih Lokasi Kampus</Label>
                   <Select
@@ -318,19 +313,21 @@ export default function InformasiKetersediaan() {
                   />
                 </div>
 
+                {/* Gedung / Ruangan */}
                 <div>
                   <Label>Gedung/Ruangan</Label>
-                  <Input name="gedung" type="text" value={form.gedung} onChange={handleChange} />
+                  <Input
+                    name="gedung"
+                    type="text"
+                    value={form.gedung}
+                    onChange={handleChange}
+                  />
                 </div>
 
+                {/* Status Ketersediaan */}
                 <div>
-                  <Label>Jadwal Libur</Label>
-                  <Input name="jadwal" type="text" value={form.jadwal} onChange={handleChange} />
-                </div>
-
-                <div>
-                  <Label>Status Ketersediaan</Label>
-                  <div className="flex items-center gap-3">
+                  <Label>Status Ketersediaan Saat ini</Label>
+                  <div className="flex items-center gap-3 mt-1">
                     <Switch
                       label=""
                       checked={form.status}
@@ -350,35 +347,67 @@ export default function InformasiKetersediaan() {
                     )}
                   </div>
                 </div>
-
-                <div>
+                {/* Lokasi Maps */}
+                <div >
                   <Label>Lokasi Maps Anda terisi secara otomatis</Label>
-                  <Input name="maps" value={form.maps} type="text" onChange={handleChange} />
+                  <Input
+                    name="maps"
+                    value={form.maps}
+                    type="text"
+                    onChange={handleChange}
+                  />
                 </div>
 
+                {/* Header Jadwal Tetap Dosen */}
+                <div className="lg:col-span-2">
+                  <h3 className="text-xl font-semibold text-gray-800 dark:text-white/90">
+                    Jadwal Tetap Dosen
+                  </h3>
+                </div>
+
+                {/* Hari */}
+                <div>
+                  <Label>Hari</Label>
+                  <Input
+                    name="jadwal"
+                    placeholder="Senin s/d Jum'at"
+                    type="text"
+                    value={form.jadwal}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                {/* Jam Tersedia */}
                 <div>
                   <Label>Jam Tersedia</Label>
                   <Input
                     name="waktu_mulai"
                     type="time"
                     value={form.waktu_mulai || ""}
-                    onChangeTime24={(val) => setForm(prev => ({ ...prev, waktu_mulai: val }))}
+                    onChangeTime24={(val) =>
+                      setForm((prev) => ({ ...prev, waktu_mulai: val }))
+                    }
                     onChange={handleChange}
                   />
                 </div>
 
+                {/* Jam Pulang */}
                 <div>
                   <Label>Jam Pulang</Label>
                   <Input
                     name="waktu_selesai"
                     type="time"
                     value={form.waktu_selesai || ""}
-                    onChangeTime24={(val) => setForm(prev => ({ ...prev, waktu_selesai: val }))}
+                    onChangeTime24={(val) =>
+                      setForm((prev) => ({ ...prev, waktu_selesai: val }))
+                    }
                     onChange={handleChange}
                   />
                 </div>
 
+
               </div>
+
             </div>
 
             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">

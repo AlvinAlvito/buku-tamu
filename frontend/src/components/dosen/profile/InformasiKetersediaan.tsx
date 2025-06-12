@@ -192,7 +192,7 @@ export default function InformasiKetersediaan() {
               <Button
                 size="sm"
                 onClick={openModal}
-                variant="outline"
+                variant="primary"
                 className=" flex items-center gap-2 justify-center m-2"
               >
                 <PenBoxIcon size={16} />
@@ -355,6 +355,7 @@ export default function InformasiKetersediaan() {
                     value={form.maps}
                     type="text"
                     onChange={handleChange}
+                    disabled
                   />
                 </div>
 
@@ -377,33 +378,35 @@ export default function InformasiKetersediaan() {
                   />
                 </div>
 
-                {/* Jam Tersedia */}
-                <div>
-                  <Label>Jam Tersedia</Label>
-                  <Input
-                    name="waktu_mulai"
-                    type="time"
-                    value={form.waktu_mulai || ""}
-                    onChangeTime24={(val) =>
-                      setForm((prev) => ({ ...prev, waktu_mulai: val }))
-                    }
-                    onChange={handleChange}
-                  />
+                {/* Jam Tersedia & Jam Pulang dalam 1 row */}
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <Label>Jam Tersedia</Label>
+                    <Input
+                      name="waktu_mulai"
+                      type="time"
+                      value={form.waktu_mulai || ""}
+                      onChangeTime24={(val) =>
+                        setForm((prev) => ({ ...prev, waktu_mulai: val }))
+                      }
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Jam Pulang</Label>
+                    <Input
+                      name="waktu_selesai"
+                      type="time"
+                      value={form.waktu_selesai || ""}
+                      onChangeTime24={(val) =>
+                        setForm((prev) => ({ ...prev, waktu_selesai: val }))
+                      }
+                      onChange={handleChange}
+                    />
+                  </div>
                 </div>
 
-                {/* Jam Pulang */}
-                <div>
-                  <Label>Jam Pulang</Label>
-                  <Input
-                    name="waktu_selesai"
-                    type="time"
-                    value={form.waktu_selesai || ""}
-                    onChangeTime24={(val) =>
-                      setForm((prev) => ({ ...prev, waktu_selesai: val }))
-                    }
-                    onChange={handleChange}
-                  />
-                </div>
 
 
               </div>

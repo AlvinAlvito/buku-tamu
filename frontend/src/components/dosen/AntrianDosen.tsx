@@ -252,6 +252,9 @@ export default function AntrianDosen() {
       .join(" ");
   }
 
+  const antrianAktif = antrianData
+    .filter(item => item.status === "menunggu" || item.status === "proses")
+    .sort((a, b) => new Date(a.waktu_pendaftaran).getTime() - new Date(b.waktu_pendaftaran).getTime());
 
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
@@ -266,9 +269,9 @@ export default function AntrianDosen() {
         </button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
-        {antrianData.length === 0 && (
+        {antrianAktif.length === 0 && (
           <p className="text-gray-500 dark:text-gray-400 col-span-full text-center">
-            Tidak ada antrian saat ini.
+            Tidak ada antrian mahasiswa saat ini.
           </p>
         )}
 
@@ -328,7 +331,7 @@ export default function AntrianDosen() {
                   </span>{" "}
                   {item.tujuan},  {item.alasan}
                 </p>
-                
+
                 <p>
                   <span className="font-medium text-gray-700 dark:text-white">
                     Status
@@ -397,7 +400,7 @@ export default function AntrianDosen() {
               Sedang Memanggil Mahasiswa
             </h4>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-              Notifikasi pemanggilan telah dikirim. Harap tunggu dalam waktu berikut...
+              Sedang Memanggil Mahasiswa. Jika Mahasiswa belum datang juga saat dipanggil, Lewatkan saja dulu & Panggil Mahasiswa yang lain. Harap tunggu dalam waktu berikut...
             </p>
 
             <div className="flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-800 px-6 py-4 rounded-xl mb-6">

@@ -5,6 +5,13 @@ import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
 import { BellIcon } from "lucide-react";
 import { baseUrl } from "../../lib/api";
+declare global {
+  interface Window {
+    NotifyFlutter?: {
+      postMessage: (message: string) => void;
+    };
+  }
+}
 
 export default function BuatJanji() {
   const { id } = useParams();
@@ -118,35 +125,46 @@ export default function BuatJanji() {
       if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
         navigator.vibrate(pattern);
       }
+
+      // ✅ Kirim perintah ke Flutter WebView agar getar
+      if (window.NotifyFlutter && typeof window.NotifyFlutter.postMessage === "function") {
+        window.NotifyFlutter.postMessage("vibrate");
+      }
+    };
+
+    // Fungsi untuk mainkan suara
+    const triggerSound = () => {
+      // Untuk browser biasa
+      audio = new Audio("https://raw.githubusercontent.com/AlvinAlvito/buku-tamu/main/frontend/public/ringtone.mp3");
+      audio.loop = true;
+      audio.play().catch((err) => {
+        console.warn("Autoplay gagal. Mungkin belum ada interaksi pengguna:", err);
+      });
+
+      // ✅ Kirim perintah ke Flutter WebView agar bunyi
+      if (window.NotifyFlutter && typeof window.NotifyFlutter.postMessage === "function") {
+        window.NotifyFlutter.postMessage("sound");
+      }
     };
 
     if (isOpen) {
-      // Mainkan audio dering
-      audio = new Audio("https://raw.githubusercontent.com/AlvinAlvito/buku-tamu/main/frontend/public/ringtone.mp3");
-      audio.loop = true;
-
-      const playAudio = () => {
-        audio.play().catch((err) => {
-          console.warn("Autoplay gagal. Mungkin belum ada interaksi pengguna:", err);
-        });
-      };
-
-      playAudio();
-
-      // Vibrasi jika didukung
+      triggerSound();
       safeVibrate([400, 200]);
+
       vibrateInterval = setInterval(() => {
         safeVibrate([400, 200]);
       }, 600);
 
-      // Timer countdown
       timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
             clearInterval(vibrateInterval);
             if (audio) audio.pause();
-            safeVibrate(0); // Stop getar
+
+            if (window.NotifyFlutter) window.NotifyFlutter.postMessage("stop");
+
+            safeVibrate(0);
             closeModal();
             return 0;
           }
@@ -155,7 +173,7 @@ export default function BuatJanji() {
       }, 1000);
     }
 
-    // Cleanup saat modal ditutup
+    // Cleanup
     return () => {
       clearInterval(timer);
       clearInterval(vibrateInterval);

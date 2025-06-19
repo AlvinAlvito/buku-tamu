@@ -15,30 +15,31 @@ export default function Dashboard() {
         description="Adalah sebuah website & aplikasi Bimbingan Akademik milik UINSU "
       />
       <div className="grid grid-cols-12 gap-4 md:gap-6">
-        <div className="col-span-12 space-y-6 xl:col-span-12">
+        {/* User Aktif */}
+        <div className="col-span-12 order-1">
           <UserAktif />
         </div>
 
-        <div className="col-span-12 grid grid-cols-12 gap-6">
-          <div className="col-span-12 lg:col-span-6">
-            <div className="h-full">
-              <Slider />
-            </div>
-          </div>
-
-          <div className="col-span-12 lg:col-span-6">
-            <div className="h-full">
-              <GrafikAntrian />
-            </div>
+        {/* Slider */}
+        <div className="col-span-12 lg:col-span-6 order-2">
+          <div className="h-full">
+            <Slider />
           </div>
         </div>
 
+        {/* Grafik Antrian */}
+        <div className="col-span-12 lg:col-span-6 order-4 lg:order-3">
+          <div className="h-full">
+            <GrafikAntrian />
+          </div>
+        </div>
 
-        <div className="col-span-12 xl:col-span-12">
+        {/* Dosen */}
+        <div className="col-span-12 order-3 lg:order-4">
           <Dosen />
         </div>
-
       </div>
+
 
     </>
   );

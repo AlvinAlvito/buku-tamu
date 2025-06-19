@@ -67,10 +67,7 @@ export default function DaftarDosen() {
       socket.off("updateDaftarDosen");
       disconnectSocket();
     };
-  }, []); // hanya sekali saat mount
-
-
-
+  }, []); 
 
   const sortedData = [...data].sort((a, b) => {
     if (a.status_ketersediaan === "Tersedia" && b.status_ketersediaan !== "Tersedia") return -1;

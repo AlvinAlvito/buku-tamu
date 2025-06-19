@@ -24,6 +24,7 @@ type RiwayatItem = {
 
   nama_dosen: string;
   nim_dosen: string;
+  prodi_dosen: string;
   foto_dosen: string | null;
 
   waktu_selesai: string;
@@ -133,11 +134,11 @@ export default function RiwayatAntrian() {
     });
     doc.text(`Tanggal Unduh: ${tanggalDownload}`, 14, 40);
 
-    const tableColumn = ["Nama Mahasiswa", "NIM", "Prodi", "Tanggal Bimbingan", "Waktu Bimbingan", "Tujuan", "Status"];
+    const tableColumn = ["Nama Dosen", "NIM", "Prodi", "Tanggal Bimbingan", "Waktu Bimbingan", "Tujuan", "Status"];
     const tableRows = data.map(item => [
-      item.nama_mahasiswa,
-      item.nim_mahasiswa,
-      item.prodi_mahasiswa,
+      item.nama_dosen,
+      item.nim_dosen,
+      item.prodi_dosen,
       new Date(item.waktu_selesai).toLocaleDateString("id-ID", {
         day: "numeric",
         month: "long",

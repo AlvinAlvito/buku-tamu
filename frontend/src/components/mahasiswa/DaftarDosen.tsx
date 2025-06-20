@@ -268,7 +268,7 @@ export default function DaftarDosen() {
             <div className="mt-4 gap-2 w-full">
               <Link to={`/mahasiswa/daftar-dosen/antrian/${dosen.id}`}>
                 <Button size="sm" variant="success" className="w-full">
-                  <ExternalLink className="w-4 h-4" /> Lihat Profil
+                  <ExternalLink className="w-4 h-4" /> Buat Antrian
                 </Button>
               </Link>
             </div>

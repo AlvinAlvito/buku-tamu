@@ -9,12 +9,15 @@ import { ChevronLeftIcon } from "../../icons";
 import Alert from "../ui/alert/Alert";
 import { baseUrl } from "../../lib/api";
 import Select from "../form/Select";
+import { PenBoxIcon } from "lucide-react";
 
 export default function BuatJanji() {
   const { isOpen, openModal, closeModal } = useModal();
   const { id } = useParams();
+
   const [tanggal, setTanggal] = useState("");
-  const [tujuan, setTujuan] = useState("");
+  const [kategori, setKategori] = useState(""); // <- state untuk kategori
+  const [tujuan, setTujuan] = useState("");     // <- state untuk tujuan
   const [tujuanError, setTujuanError] = useState("");
   const [keperluan, setKeperluan] = useState("");
   const [showAlert, setShowAlert] = useState(false);
@@ -22,8 +25,7 @@ export default function BuatJanji() {
   const [mahasiswaId, setMahasiswaId] = useState<number | null>(null);
   const [dosenId, setDosenId] = useState<number | null>(null);
 
-  const tujuanOptions = [
-    { value: "Bimbingan Skripsi / Tugas Akhir", label: "Bimbingan Skripsi / Tugas Akhir" },
+  const tujuanAkademikOptions = [
     { value: "Konsultasi Akademik", label: "Konsultasi Akademik" },
     { value: "Konsultasi Nilai Mata Kuliah", label: "Konsultasi Nilai Mata Kuliah" },
     { value: "Revisi Tugas / Ujian", label: "Revisi Tugas / Ujian" },
@@ -37,6 +39,29 @@ export default function BuatJanji() {
     { value: "Lainnya", label: "Lainnya" },
   ];
 
+  const tujuanSkripsiOptions = [
+    { value: "Bimbingan Proposal Pengajuan Judul", label: "Bimbingan Proposal Pengajuan Judul" },
+    { value: "Bimbingan BAB 1", label: "Bimbingan BAB 1" },
+    { value: "Bimbingan BAB 2", label: "Bimbingan BAB 2" },
+    { value: "Bimbingan BAB 3", label: "Bimbingan BAB 3" },
+    { value: "Bimbingan Seminar Proposal", label: "Bimbingan Seminar Proposal" },
+    { value: "Bimbingan BAB 4", label: "Bimbingan BAB 4" },
+    { value: "Pengajuan Submit Jurnal", label: "Pengajuan Submit Jurnal" },
+    { value: "Bimbingan BAB 5", label: "Bimbingan BAB 5" },
+    { value: "Bimbingan Sidang", label: "Bimbingan Sidang" }
+  ];
+
+  const kategoriOptions = [
+    { value: "Akademik", label: "Akademik" },
+    { value: "Skripsi", label: "Skripsi" },
+  ];
+
+  // Fungsi untuk mengambil tujuan berdasarkan kategori yang dipilih
+  const getTujuanOptions = () => {
+    if (kategori === "Akademik") return tujuanAkademikOptions;
+    if (kategori === "Skripsi") return tujuanSkripsiOptions;
+    return [];
+  };
 
   const fetchDosenId = async (ketersediaanId: string): Promise<number> => {
     const res = await fetch(`${baseUrl}/api/ketersediaan`);
@@ -205,27 +230,16 @@ export default function BuatJanji() {
             <ChevronLeftIcon className="size-5" />
             Kembali
           </Link>
-          <button
+          <Button
+            size="md"
             onClick={openModal}
-            className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
+            variant="primary"
+            className=" flex items-center gap-2 justify-center m-2 "
           >
-            <svg
-              className="fill-current"
-              width="18"
-              height="18"
-              viewBox="0 0 18 18"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M15.0911 2.78206C14.2125 1.90338 12.7878 1.90338 11.9092 2.78206L4.57524 10.116C4.26682 10.4244 4.0547 10.8158 3.96468 11.2426L3.31231 14.3352C3.25997 14.5833 3.33653 14.841 3.51583 15.0203C3.69512 15.1996 3.95286 15.2761 4.20096 15.2238L7.29355 14.5714C7.72031 14.4814 8.11172 14.2693 8.42013 13.9609L15.7541 6.62695C16.6327 5.74827 16.6327 4.32365 15.7541 3.44497L15.0911 2.78206ZM12.9698 3.84272C13.2627 3.54982 13.7376 3.54982 14.0305 3.84272L14.6934 4.50563C14.9863 4.79852 14.9863 5.2734 14.6934 5.56629L14.044 6.21573L12.3204 4.49215L12.9698 3.84272ZM11.2597 5.55281L5.6359 11.1766C5.53309 11.2794 5.46238 11.4099 5.43238 11.5522L5.01758 13.5185L6.98394 13.1037C7.1262 13.0737 7.25666 13.003 7.35947 12.9002L12.9833 7.27639L11.2597 5.55281Z"
-                fill=""
-              />
-            </svg>
-            Buat Janji Temu
-          </button>
+            <PenBoxIcon size={16} />
+            Buat Antrian Janji Temu
+          </Button>
+
         </div>
 
         <div className="flex flex-col gap-4 my-3">
@@ -254,6 +268,8 @@ export default function BuatJanji() {
           <form className="flex flex-col">
             <div className="px-2 overflow-y-auto custom-scrollbar">
               <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+
+                {/* Waktu */}
                 <div>
                   <Label>Waktu Pendaftaran</Label>
                   <Input
@@ -265,15 +281,30 @@ export default function BuatJanji() {
                   />
                 </div>
 
+                {/* Kategori */}
                 <div>
+                  <Label>Pilih Kategori Bimbingan</Label>
+                  <Select
+                    options={kategoriOptions}
+                    placeholder="Pilih kategori"
+                    value={kategori}
+                    onChange={(value: string) => {
+                      setKategori(value);
+                      setTujuan(""); // reset tujuan saat kategori diganti
+                    }}
+                  />
+                </div>
+
+                {/* Tujuan */}
+                <div className="lg:col-span-2">
                   <Label>Tujuan Janji Temu</Label>
                   <Select
-                    options={tujuanOptions}
+                    options={getTujuanOptions()}
                     placeholder="Pilih tujuan"
                     value={tujuan}
                     onChange={(value: string) => {
                       setTujuan(value);
-                      setTujuanError(""); // reset error saat dipilih
+                      setTujuanError("");
                     }}
                   />
                   {tujuanError && (
@@ -281,8 +312,8 @@ export default function BuatJanji() {
                   )}
                 </div>
 
-
-                <div>
+                {/* Detail Keperluan */}
+                <div className="lg:col-span-2">
                   <Label>Detail</Label>
                   <Input
                     placeholder="Contoh: Meminta tanda tangan formulir PKL"
@@ -291,6 +322,7 @@ export default function BuatJanji() {
                     onChange={(e) => setKeperluan(e.target.value)}
                   />
                 </div>
+
               </div>
             </div>
 
@@ -303,7 +335,7 @@ export default function BuatJanji() {
                 size="sm"
                 onClick={(e) => {
                   e.preventDefault();
-                  handleSave();
+                  handleSave(); // pastikan handleSave menggunakan `kategori`, `tujuan`, `keperluan`, `tanggal`
                 }}
               >
                 Simpan

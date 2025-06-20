@@ -20,6 +20,7 @@ type RiwayatItem = {
   nim_mahasiswa: string;
   foto_mahasiswa: string | null;
   prodi_mahasiswa: string;
+  fakultas_mahasiswa: string;
   stambuk_mahasiswa: string;
 
   nama_dosen: string;
@@ -98,69 +99,138 @@ export default function RiwayatAntrian() {
     setFilteredData(result);
   }, [filters, allData]);
 
+
   const downloadPdf = (data: RiwayatItem[], filters: { bulan: string; tahun: string }) => {
     const doc = new jsPDF();
 
-    // Tentukan judul
-    let title = "Riwayat Bimbingan Akademik Keseluruhan";
-    if (filters.tahun && filters.bulan) {
-      const bulanLabel = bulanOptions.find(b => b.value === filters.bulan)?.label || filters.bulan;
-      title = `Riwayat Bimbingan Akademik Tahun ${filters.tahun} Bulan ${bulanLabel}`;
-    } else if (filters.tahun) {
-      title = `Riwayat Bimbingan Akademik Tahun ${filters.tahun}`;
-    }
-
-    // Center-kan judul
-    doc.setFontSize(14);
     const pageWidth = doc.internal.pageSize.getWidth();
-    const textWidth = doc.getTextWidth(title);
-    const centerX = (pageWidth - textWidth) / 2;
-    doc.text(title, centerX, 20); // Judul di tengah halaman
+    const centerX = (text: string) => (pageWidth - doc.getTextWidth(text)) / 2;
 
-    // Info dosen (kiri, lebih kecil)
-    doc.setFontSize(10);
-    if (data.length > 0) {
-      const { nama_dosen, nim_dosen } = data[0];
-      doc.text(`Nama Dosen: ${nama_dosen}`, 14, 28);
-      doc.text(`NIP: ${nim_dosen}`, 14, 34);
-    }
+    // 🔰 Logo dari /public/logo-uinsu.png
+    const logoImg = new Image();
+    logoImg.src = "/logo-uinsu.png";
 
-    // Info tanggal unduh
-    const tanggalDownload = new Date().toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-    doc.text(`Tanggal Unduh: ${tanggalDownload}`, 14, 40);
+    logoImg.onload = () => {
+      doc.addImage(logoImg, "PNG", 14, 10, 20, 20);
 
-    const tableColumn = ["Nama Mahasiswa", "NIM", "Prodi", "Tanggal Bimbingan", "Waktu Bimbingan", "Tujuan", "Status"];
-    const tableRows = data.map(item => [
-      item.nama_mahasiswa,
-      item.nim_mahasiswa,
-      item.prodi_mahasiswa,
-      new Date(item.waktu_selesai).toLocaleDateString("id-ID", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      }),
-      new Date(item.waktu_selesai).toLocaleTimeString("id-ID", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-      }) + " WIB",
-      item.tujuan + ". " + item.alasan,
-      item.status,
-    ]);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text("KEMENTERIAN AGAMA", centerX("KEMENTERIAN AGAMA"), 14);
 
-    autoTable(doc, {
-      head: [tableColumn],
-      body: tableRows,
-      startY: 46,
-    });
+      doc.setFontSize(15);
+      doc.text("UNIVERSITAS ISLAM NEGERI SUMATERA UTARA", centerX("UNIVERSITAS ISLAM NEGERI SUMATERA UTARA"), 20);
 
-    doc.save("Riwayat Bimbingan Akademik.pdf");
+      const rawFakultas = data[0]?.fakultas_mahasiswa || "";
+      const fakultasUpper = `FAKULTAS ${rawFakultas}`.toUpperCase();
+
+      doc.setFontSize(12);
+      doc.text(fakultasUpper, centerX(fakultasUpper), 26); // GANTI dari 24 → 26
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      const alamat = "Jalan Williem Iskandar Pasar V Medan Estate 20371, Telp. (061) 6615683, 6622925";
+      doc.text(alamat, centerX(alamat), 32);
+
+
+      // 🔰 Garis pembatas
+      doc.setLineWidth(0.5);
+      doc.line(14, 36, pageWidth - 14, 36);
+
+      // 🔰 Judul
+      let title = "RIWAYAT BIMBINGAN AKADEMIK KESELURUHAN";
+      if (filters.tahun && filters.bulan) {
+        const bulanLabel = bulanOptions.find(b => b.value === filters.bulan)?.label || filters.bulan;
+        title = `RIWAYAT BIMBINGAN AKADEMIK TAHUN ${filters.tahun} BULAN ${bulanLabel}`;
+      } else if (filters.tahun) {
+        title = `RIWAYAT BIMBINGAN AKADEMIK TAHUN ${filters.tahun}`;
+      }
+
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "bold");
+      doc.text(title, centerX(title), 44);
+
+      // 🔰 Info Dosen dan Tanggal
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      if (data.length > 0) {
+        const { nama_dosen, nim_dosen } = data[0];
+        doc.text(`Nama Dosen: ${nama_dosen}`, 14, 52);
+        doc.text(`NIP: ${nim_dosen}`, 14, 58);
+      }
+
+      const tanggalDownload = new Date().toLocaleDateString("id-ID", {
+        day: "numeric", month: "long", year: "numeric",
+      });
+      doc.text(`Tanggal Unduh: ${tanggalDownload}`, 14, 64);
+
+      // 🔰 Tabel
+      const tableColumn = ["No", "Nama Mahasiswa", "NIM", "Prodi", "Tanggal Bimbingan", "Waktu Bimbingan", "Tujuan", "Status"];
+      const tableRows = data.map((item, index) => [
+        index + 1,
+        item.nama_mahasiswa,
+        item.nim_mahasiswa,
+        item.prodi_mahasiswa,
+        new Date(item.waktu_selesai).toLocaleDateString("id-ID"),
+        new Date(item.waktu_selesai).toLocaleTimeString("id-ID", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        }) + " WIB",
+        item.tujuan + ". " + item.alasan,
+        item.status,
+      ]);
+
+
+      autoTable(doc, {
+        startY: 70,
+        head: [tableColumn],
+        body: tableRows,
+        styles: {
+          font: 'helvetica',
+          fontSize: 9,
+          textColor: '#000000',
+          fillColor: [255, 255, 255], // putih / transparan
+          cellPadding: 3,
+          halign: 'left',
+          valign: 'middle',
+          lineWidth: 0.5,
+          lineColor: '#000000',
+        },
+        headStyles: {
+          fontStyle: 'bold',
+          halign: 'center',
+          fillColor: [255, 255, 255], // header putih juga
+          textColor: '#000000',
+          lineWidth: 0.5,
+          lineColor: '#000000',
+        },
+        bodyStyles: {
+          fontStyle: 'normal',
+          halign: 'left', // rata kiri
+        },
+        columnStyles: {
+          0: { halign: 'center' }, // NO
+          1: { halign: 'left' }, // NAMA
+          2: { halign: 'center' }, // NIM
+          3: { halign: 'left' }, // PRODI
+          4: { halign: 'left' }, // TANGGAL
+          5: { halign: 'center' }, // WAKTU
+          6: { halign: 'left' }, // TUJUAN
+          7: { halign: 'left' }, // STATUS
+
+        },
+        tableLineWidth: 0.1,
+        tableLineColor: '#000000',
+        theme: 'grid', // grid = semua border aktif
+      });
+
+
+      doc.save("Riwayat_Bimbingan_UINSU.pdf");
+    };
   };
+
+
 
 
   function toTitleCase(str: string | undefined): string {

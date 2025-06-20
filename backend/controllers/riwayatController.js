@@ -31,6 +31,7 @@ exports.getLogRiwayatByUser = async (req, res) => {
         mhs.nim AS nim_mahasiswa,
         mhs.foto_profil AS foto_mahasiswa,
         mhs.prodi AS prodi_mahasiswa,
+        mhs.fakultas AS fakultas_mahasiswa,
         mhs.stambuk AS stambuk_mahasiswa,
         
         lr.dosen_id,

@@ -291,11 +291,8 @@ export default function InformasiKetersediaan() {
         <div className="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Edit Informasi Ketersediaan
+              Update Informasi Ketersediaan anda Saat ini
             </h4>
-            <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-              Update Informasi Ketersediaan anda agar Mahasiswa bisa menemukan anda
-            </p>
           </div>
           <form className="flex flex-col">
             <div className="px-2 overflow-y-auto custom-scrollbar">
@@ -362,7 +359,7 @@ export default function InformasiKetersediaan() {
                 {/* Header Jadwal Tetap Dosen */}
                 <div className="lg:col-span-2">
                   <h3 className="text-xl font-semibold text-gray-800 dark:text-white/90">
-                    Jadwal Tetap Dosen
+                    Jadwal Tetap Anda
                   </h3>
                 </div>
 
@@ -394,7 +391,7 @@ export default function InformasiKetersediaan() {
                   </div>
 
                   <div>
-                    <Label>Jam Pulang</Label>
+                    <Label>Jam Tidak Tesedia</Label>
                     <Input
                       name="waktu_selesai"
                       type="time"

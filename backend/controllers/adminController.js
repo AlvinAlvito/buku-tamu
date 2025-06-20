@@ -307,28 +307,10 @@ exports.getGrafikTujuanByProdi = async (req, res) => {
       [namaProdi]
     );
 
-    const daftarTujuan = [
-      'Bimbingan Skripsi / Tugas Akhir',
-      'Konsultasi Akademik',
-      'Konsultasi Nilai Mata Kuliah',
-      'Revisi Tugas / Ujian',
-      'Pengajuan Judul Skripsi',
-      'Persetujuan KRS / KHS',
-      'Tanda Tangan Dokumen Akademik',
-      'Pendampingan PKL / Magang',
-      'Diskusi Kegiatan Kampus / Organisasi',
-      'Pengurusan Administrasi Akademik',
-      'Pembimbingan Lomba / Kompetisi',
-      'Lainnya'
-    ];
-
-    const hasil = daftarTujuan.map((tujuan) => {
-      const found = rows.find((row) => row.tujuan === tujuan);
-      return {
-        tujuan,
-        total: found ? Number(found.total) : 0,
-      };
-    });
+    const hasil = rows.map((row) => ({
+      tujuan: row.tujuan,
+      total: Number(row.total),
+    }));
 
     res.json({
       prodi: namaProdi,

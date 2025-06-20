@@ -17,8 +17,8 @@ export default function DonutChart({ data }: DonutChartProps) {
   return (
     <div
       style={{
-        height: '110%',
-        width: '150%',
+        height: '90%',
+        width: '135%',
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',

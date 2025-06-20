@@ -4,61 +4,88 @@ import DonutChart from '../../charts/DonutChart';
 import { baseUrl } from "../../../lib/api";
 
 interface ApiResponse {
-    tujuan: string;
-    total: number;
+  tujuan: string;
+  total: number;
 }
 
 export default function GrafikTujuan() {
-    const { namaProdi } = useParams();
-    const [chartData, setChartData] = useState<{ id: string; label: string; value: number }[]>([]);
-    const [loading, setLoading] = useState(true);
+  const { namaProdi } = useParams();
+  const [akademikData, setAkademikData] = useState<{ id: string; label: string; value: number }[]>([]);
+  const [skripsiData, setSkripsiData] = useState<{ id: string; label: string; value: number }[]>([]);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        if (!namaProdi) return;
+  useEffect(() => {
+    if (!namaProdi) return;
 
-        fetch(`${baseUrl}/api/admin/prodi/${encodeURIComponent(namaProdi)}/grafik-tujuan`)
-            .then((res) => res.json())
-            .then((data) => {
-                const formattedData = data.grafik.map((item: ApiResponse) => ({
-                    id: item.tujuan,
-                    label: item.tujuan,
-                    value: item.total,
-                }));
-                setChartData(formattedData);
-                setLoading(false);
-            })
-            .catch((err) => {
-                console.error('Gagal memuat data:', err);
-                setLoading(false);
-            });
-    }, [namaProdi]);
+    fetch(`${baseUrl}/api/admin/prodi/${encodeURIComponent(namaProdi)}/grafik-tujuan`)
+      .then((res) => res.json())
+      .then((data) => {
+        const akademik: typeof akademikData = [];
+        const skripsi: typeof skripsiData = [];
 
-    function toTitleCase(str: string | undefined): string {
-        if (!str) return '';
-        return str
-            .toLowerCase()
-            .split(' ')
-            .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
-            .join(' ');
-    }
+        data.grafik.forEach((item: ApiResponse) => {
+          const entry = {
+            id: item.tujuan,
+            label: item.tujuan,
+            value: item.total,
+          };
+          if (item.tujuan.startsWith("Bimbingan")) {
+            skripsi.push(entry);
+          } else {
+            akademik.push(entry);
+          }
+        });
 
-    if (loading) return <p>Loading grafik...</p>;
+        setAkademikData(akademik);
+        setSkripsiData(skripsi);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Gagal memuat data:", err);
+        setLoading(false);
+      });
+  }, [namaProdi]);
 
-    return (
-        <div className="overflow-hidden h-[600px] rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 w-full max-w-full mx-auto">
-            <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90 text-center sm:text-left  sm:w-auto">
-                    Grafik Tujuan Bimbingan Prodi {toTitleCase(namaProdi)}
-                </h3>
-            </div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-6 h-full">
-                <div className="flex-shrink-0 w-full sm:w-3/5 h-[400px]  mx-auto">
-                    <DonutChart data={chartData} />
-                </div>
-            </div>
+  function toTitleCase(str: string | undefined): string {
+    if (!str) return "";
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
+  }
+
+  if (loading) return <p>Loading grafik...</p>;
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Grafik Akademik */}
+      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03]">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90 mb-4 text-center">
+          Grafik Tujuan Bimbingan Akademik <br /> Prodi {toTitleCase(namaProdi)}
+        </h3>
+        <div className="h-[400px]">
+          {akademikData.length > 0 ? (
+            <DonutChart data={akademikData} />
+          ) : (
+            <p className="text-center text-gray-500">Tidak ada data akademik.</p>
+          )}
         </div>
+      </div>
 
-
-
-    );
+      {/* Grafik Skripsi */}
+      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03]">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90 mb-4 text-center">
+          Grafik Tujuan Bimbingan Skripsi <br /> Prodi {toTitleCase(namaProdi)}
+        </h3>
+        <div className="h-[400px]">
+          {skripsiData.length > 0 ? (
+            <DonutChart data={skripsiData} />
+          ) : (
+            <p className="text-center text-gray-500">Tidak ada data skripsi.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }

@@ -29,7 +29,6 @@ export default function BuatJanji() {
     { value: "Konsultasi Akademik", label: "Konsultasi Akademik" },
     { value: "Konsultasi Nilai Mata Kuliah", label: "Konsultasi Nilai Mata Kuliah" },
     { value: "Revisi Tugas / Ujian", label: "Revisi Tugas / Ujian" },
-    { value: "Pengajuan Judul Skripsi", label: "Pengajuan Judul Skripsi" },
     { value: "Persetujuan KRS / KHS", label: "Persetujuan KRS / KHS" },
     { value: "Tanda Tangan Dokumen Akademik", label: "Tanda Tangan Dokumen Akademik" },
     { value: "Pendampingan PKL / Magang", label: "Pendampingan PKL / Magang" },
@@ -46,7 +45,8 @@ export default function BuatJanji() {
     { value: "Bimbingan BAB 3", label: "Bimbingan BAB 3" },
     { value: "Bimbingan Seminar Proposal", label: "Bimbingan Seminar Proposal" },
     { value: "Bimbingan BAB 4", label: "Bimbingan BAB 4" },
-    { value: "Pengajuan Submit Jurnal", label: "Pengajuan Submit Jurnal" },
+    { value: "Bimbingan Pengajuan Submit Jurnal", label: "Bimbingan Pengajuan Submit Jurnal" },
+    { value: "Bimbingan Komprehensif", label: "Bimbingan Komprehensif" },
     { value: "Bimbingan BAB 5", label: "Bimbingan BAB 5" },
     { value: "Bimbingan Sidang", label: "Bimbingan Sidang" }
   ];

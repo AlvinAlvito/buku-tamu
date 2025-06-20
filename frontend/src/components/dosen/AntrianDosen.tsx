@@ -320,9 +320,16 @@ export default function AntrianDosen() {
                     Waktu Pendaftaran <br />
                   </span>
                   {new Date(item.waktu_pendaftaran).toLocaleString()}{" "}
-                  <span className="text-sm text-gray-300">
+                  <span className="text-sm text-success-500">
                     {getTimeAgo(item.waktu_pendaftaran)}
                   </span>
+                </p>
+
+                <p>
+                  <span className="font-medium text-gray-700 dark:text-white">
+                    Kategori <br />
+                  </span>{" "}
+                  {item.tujuan?.startsWith("Bimbingan") ? "Bimbingan Skripsi" : "Bimbingan Akademik"}
                 </p>
 
                 <p>

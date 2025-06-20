@@ -193,7 +193,7 @@ export default function AntrianDosen() {
         </h3>
 
         <button
-         onClick={() => handleRefresh(true)}
+          onClick={() => handleRefresh(true)}
           className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
         >
           <RotateCcw className="w-4 h-4" /> Refresh
@@ -256,6 +256,13 @@ export default function AntrianDosen() {
                     {getTimeAgo(item.waktu_pendaftaran)}
                   </span>
                 </p>
+                <p>
+                  <span className="font-medium text-gray-700 dark:text-white">
+                    Kategori <br />
+                  </span>{" "}
+                  {item.tujuan?.startsWith("Bimbingan") ? "Bimbingan Skripsi" : "Bimbingan Akademik"}
+                </p>
+
                 <p>
                   <span className="font-medium text-gray-700 dark:text-white">
                     Tujuan <br />

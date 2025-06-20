@@ -3,16 +3,18 @@ import Badge from "../ui/badge/Badge";
 import { Link } from "react-router";
 import Button from "../ui/button/Button";
 import { useEffect, useState } from "react";
-import { initSocket, disconnectSocket } from "../../utils/socket";
-import { RotateCcw, ExternalLink } from "lucide-react";
+import { RotateCcw, ExternalLink, SearchCheck } from "lucide-react";
 import Alert from "../ui/alert/Alert";
 import { baseUrl } from "../../lib/api";
+import Select from "../form/Select";
 
 interface Dosen {
   id: number;
   user_id: number;
   name: string;
   nim: string;
+  fakultas: string;
+  prodi: string;
   foto_profil: string | null;
   lokasi_kampus: string;
   gedung_ruangan: string;
@@ -30,13 +32,40 @@ export default function DaftarDosen() {
   const [isCooldown, setIsCooldown] = useState(false);
   const [countdown, setCountdown] = useState(5);
   const [showAlert, setShowAlert] = useState(false);
+  const [filters, setFilters] = useState({ fakultas: "" });
+  const [fakultasList, setFakultasList] = useState<{ value: string; label: string }[]>([
+    { value: "", label: "Semua Fakultas" },
+  ]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const fetchData = async () => {
     setLoading(true);
     try {
       const res = await fetch(`${baseUrl}/api/daftar-dosen`);
-      const result = await res.json();
+      const result: Dosen[] = await res.json();
       setData(result);
+
+      // Normalisasi: trim dan kapitalisasi agar konsisten
+      const normalizedFakultas = result
+        .map((d) => d.fakultas?.trim())
+        .filter(Boolean)
+        .map((f) =>
+          f
+            .toLowerCase()
+            .replace(/\b\w/g, (char) => char.toUpperCase()) // to Title Case
+        );
+
+      const uniqueFakultas = Array.from(new Set(normalizedFakultas));
+
+      const options = [
+        { value: "", label: "Semua Fakultas" },
+        ...uniqueFakultas.map((f) => ({ value: f, label: f })),
+      ];
+
+      setFakultasList(options);
     } catch (err) {
       console.error("Gagal fetch data dosen:", err);
     } finally {
@@ -44,30 +73,6 @@ export default function DaftarDosen() {
     }
   };
 
-  useEffect(() => {
-    fetchData(); // ambil data awal
-
-    const token = localStorage.getItem("token") || "";
-    const socket = initSocket(token);
-
-    socket.on("connect", () => {
-      console.log("Socket connected dengan id:", socket.id);
-    });
-
-    socket.on("updateDaftarDosen", (updatedData: Dosen[]) => {
-      console.log("Data dari socket updateDaftarDosen diterima:", updatedData);
-      setData(updatedData);
-    });
-
-    socket.on("connect_error", (err) => {
-      console.error("Socket connection error:", err);
-    });
-
-    return () => {
-      socket.off("updateDaftarDosen");
-      disconnectSocket();
-    };
-  }, []); 
 
   const sortedData = [...data].sort((a, b) => {
     if (a.status_ketersediaan === "Tersedia" && b.status_ketersediaan !== "Tersedia") return -1;
@@ -75,24 +80,30 @@ export default function DaftarDosen() {
     return 0;
   });
 
-  const filteredData = sortedData.filter((dosen) =>
-    (dosen.name ?? "").toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredData = sortedData.filter((dosen) => {
+    const matchNama = (dosen.name ?? "").toLowerCase().includes(searchTerm.toLowerCase());
+    const matchFakultas =
+      filters.fakultas === "" ||
+      (dosen.fakultas?.toLowerCase().trim() === filters.fakultas.toLowerCase().trim());
+
+    return matchNama && matchFakultas;
+  });
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, data]);
-
+  }, [searchTerm, filters]);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
+
   const handlePageChange = (page: number) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
   };
+
 
   const handleRefresh = () => {
     if (isCooldown) {
@@ -154,46 +165,55 @@ export default function DaftarDosen() {
           </h3>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button onClick={handleRefresh} className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
-            <RotateCcw className="w-4 h-4" /> Refresh
-          </button>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:flex lg:items-center lg:gap-3">
+          {/* Refresh Button - 50% on mobile */}
+          <div className="sm:col-span-1 w-full lg:w-auto">
+            <button
+              onClick={handleRefresh}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
+            >
+              <RotateCcw className="w-4 h-4" /> Refresh
+            </button>
+          </div>
 
-          <div className=" lg:block">
+          {/* Select Fakultas - 50% on mobile */}
+          <div className="sm:col-span-1 w-full lg:w-auto">
+            <Select
+              options={fakultasList}
+              value={filters.fakultas}
+              placeholder="Pilih Fakultas"
+              onChange={(val) => setFilters((prev) => ({ ...prev, fakultas: val }))}
+              className="w-full"
+            />
+          </div>
+
+          {/* Search Input - full width in mobile */}
+          <div className="col-span-full sm:col-span-2 w-full lg:flex-1">
             <form>
               <div className="relative">
-                <span className="absolute -translate-y-1/2 pointer-events-none left-4 top-1/2">
-                  <svg
-                    className="fill-gray-500 dark:fill-gray-400"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M3.04175 9.37363C3.04175 5.87693 5.87711 3.04199 9.37508 3.04199C12.8731 3.04199 15.7084 5.87693 15.7084 9.37363C15.7084 12.8703 12.8731 15.7053 9.37508 15.7053C5.87711 15.7053 3.04175 12.8703 3.04175 9.37363ZM9.37508 1.54199C5.04902 1.54199 1.54175 5.04817 1.54175 9.37363C1.54175 13.6991 5.04902 17.2053 9.37508 17.2053C11.2674 17.2053 13.003 16.5344 14.357 15.4176L17.177 18.238C17.4699 18.5309 17.9448 18.5309 18.2377 18.238C18.5306 17.9451 18.5306 17.4703 18.2377 17.1774L15.418 14.3573C16.5365 13.0033 17.2084 11.2669 17.2084 9.37363C17.2084 5.04817 13.7011 1.54199 9.37508 1.54199Z"
-                      fill=""
-                    />
-                  </svg>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <SearchCheck className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                 </span>
                 <input
                   type="text"
                   placeholder="Cari nama dosen..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
+                  className="h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-800 dark:bg-dark-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
                 />
-
               </div>
             </form>
           </div>
         </div>
+
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {currentItems.length === 0 && (
+          <p className="text-gray-500 dark:text-gray-400 col-span-full text-center">
+            Tidak ada dosen yang tersedia.
+          </p>
+        )}
         {currentItems.map((dosen) => (
           <div
             key={dosen.id}
@@ -210,7 +230,7 @@ export default function DaftarDosen() {
                   {dosen.name}
                 </p>
                 <p className="text-gray-500 text-sm dark:text-gray-400">
-                  NIP: {dosen.nim}
+                  NIP: {dosen.nim} | {dosen.fakultas}
                 </p>
               </div>
             </div>

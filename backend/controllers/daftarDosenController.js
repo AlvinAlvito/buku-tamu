@@ -11,6 +11,8 @@ exports.getAllDaftarDosen = async (req, res) => {
          k.user_id, 
          u.name, 
          u.nim,     
+         u.prodi,
+         u.fakultas,
          u.foto_profil,    
          k.lokasi_kampus, 
          k.gedung_ruangan, 
